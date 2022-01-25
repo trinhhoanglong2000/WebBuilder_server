@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const accountService = require('./accountService');
 
 exports.createAccount = async (req, res) => {
@@ -16,7 +15,7 @@ exports.createAccount = async (req, res) => {
     if (newAccount) {
         res.status(201).json({
             statusCode: 201,
-            data: accountObj,
+            data: newAccount,
             message: "Register successfully!"
         })
     }

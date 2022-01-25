@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Joi = require('joi');
 
 mongoose.Promise = global.Promise;
 
@@ -35,15 +34,5 @@ const accountSchema = new mongoose.Schema({
         default: null
     }
 });
-
-accountSchema.methods.joiValidate = (accountObj) => {
-    var schema = {
-        email: Joi.string().required(),
-        password: Joi.string().min(8).max(30).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-        phone: Joi.string().alphanum().length(5),
-        gender: Joi.boolean(),
-        DOB: Joi.date()
-    }
-}
 
 module.exports = mongoose.model('Account', accountSchema);
