@@ -7,7 +7,9 @@ exports.createAccount = async (req, res) => {
         password: req.body.password,
         phone: req.body.phone,
         gender: req.body.gender,
-        DOB: req.body.DOB
+        DOB: req.body.DOB,
+        fbID: req.body.fbID,
+        ggID: req.body.ggID
     }
     const newAccount = await accountService.createAccount(accountObj);
     if (newAccount) {

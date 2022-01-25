@@ -8,7 +8,9 @@ exports.createAccount = (accountObj) => {
         password: accountObj.password,
         phone: accountObj.phone,
         gender: accountObj.gender,
-        DOB: accountObj.DOB
+        DOB: accountObj.DOB,
+        fbID: accountObj.fbID,
+        ggID: accountObj.ggID
     });
     
     return account.save();
