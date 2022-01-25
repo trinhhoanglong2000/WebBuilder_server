@@ -1,20 +1,15 @@
-const accountsModel = require('./accountModel');
+const mongoose = require('mongoose');
+const Account = require('./accountModel');
 
-exports.list = () => accountsModel.getAccounts();
-
-exports.findAcc = async (username) => {
-    var accs = await accountsModel.getAccounts();
-    return accs.find(acc => acc.username == username);
+exports.createAccount = (accountObj) => {
+    const account = new Account({
+        _id: mongoose.Types.ObjectId(),
+        email: accountObj.email,
+        password: accountObj.password,
+        phone: accountObj.phone,
+        gender: accountObj.gender,
+        DOB: accountObj.DOB
+    });
+    
+    return account.save();
 }
-
-exports.findAccWithMail = async (email) => {
-    var accs = await accountsModel.getAccounts();
-    return accs.find(acc => acc.email == email);
-}
-
-exports.updateInfoForOneField = async (field, infor, idObj) => {
-    await accountsModel.updateInfoForOneField(field, infor, idObj);
-}
-
-exports.create = (accObj) => accountsModel.createAccount(accObj);
-

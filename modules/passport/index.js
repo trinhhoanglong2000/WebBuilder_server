@@ -11,7 +11,7 @@ passport.use(new LocalStrategy(
     const acc = await accountService.findAcc(username);
     if (acc) {
       if (acc.password == password) {
-          return done(null, {id: acc.id, username: username, studentID: acc.studentID});
+          return done(null, {id: acc.id, username: username});
       }
     }
     return done(null, false, {message: 'incorrect'});

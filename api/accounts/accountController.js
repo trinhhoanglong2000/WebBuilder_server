@@ -1,24 +1,26 @@
+const mongoose = require('mongoose');
 const accountService = require('./accountService');
 
-exports.list = async function(req, res) {
-    const accs = await accountService.list();
-
-    if (accs) {
-        res.status(200).json(accs);
-    } else {
-        res.status(404).json({message: 'No accounts available!'});
+exports.createAccount = async (req, res) => {
+    const accountObj = {
+        email: req.body.email,
+        password: req.body.password,
+        phone: req.body.phone,
+        gender: req.body.gender,
+        DOB: req.body.DOB
     }
-};
-
-exports.create = async function(req, res) {
-    const newAcc = req.body;
-    const result = await accountService.create(newAcc);
-
-    if (result) {
-        res.status(201).json({message: 'Account created!', id: result.insertId});
-    } else {
-        res.status(500).json({message: 'Error Account class!'});
+    const newAccount = await accountService.createAccount(accountObj);
+    if (newAccount) {
+        res.status(201).json({
+            statusCode: 201,
+            data: accountObj,
+            message: "Register successfully!"
+        })
     }
-};
-
-    
+    else {
+        res.status(500).json({
+            statusCode: 500,
+            message: "Server error!"
+        })
+    }
+}

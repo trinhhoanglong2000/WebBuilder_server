@@ -4,6 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors=require('cors');
+require('dotenv').config();
+const mongoose = require('mongoose');
 
 const passport = require('./modules/passport');
 const accountsRouter = require('./api/accounts');
@@ -11,8 +13,18 @@ const loginRouter = require('./modules/passport/loginRouter');
 const authRouter = require('./api/authenticator');
 const app = express();
 
-const connection = require("./database");
-//connection.connect;
+mongoose.connect(process.env.DATABASE_URL, 
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+)
+.then(() => {
+  console.log("DB connected!")
+})
+.catch((err) => {
+ console.log("DB not connected " + err);
+})
 
 app.use(logger('dev'));
 app.use(express.json());
