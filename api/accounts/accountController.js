@@ -5,6 +5,7 @@ exports.createAccount = async (req, res) => {
     const accountObj = {
         email: req.body.email,
         password: req.body.password,
+        fullname: req.body.fullname,
         phone: req.body.phone,
         gender: req.body.gender,
         DOB: req.body.DOB,

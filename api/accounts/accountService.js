@@ -6,6 +6,7 @@ exports.createAccount = (accountObj) => {
         _id: mongoose.Types.ObjectId(),
         email: accountObj.email,
         password: accountObj.password,
+        fullname: accountObj.fullname,
         phone: accountObj.phone,
         gender: accountObj.gender,
         DOB: accountObj.DOB,
