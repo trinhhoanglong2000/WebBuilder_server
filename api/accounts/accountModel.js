@@ -13,6 +13,10 @@ const accountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  fullname: {
+    type: String,
+    required: true,
+  },
   phone: String,
   gender: {
       type: Boolean,
@@ -26,9 +30,9 @@ const accountSchema = new mongoose.Schema({
 
 // accountSchema.methods.joiValidate = (accountObj) => {
 //     var schema = {
-//         email: Joi.types.String().required(),
-//         password: Joi.types.String().min(8).max(30).regex(/[a-zA-Z0-9]{3,30}/).required(),
-//         phone: Joi.types.String().,
+//         email: Joi.string().required(),
+//         password: Joi.string().min(8).max(30).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+//         phone: Joi.string().,
 //         gender: ,
 //         DOB: 
 //     }
