@@ -26,3 +26,20 @@ exports.createAccount = async (req, res) => {
         })
     }
 }
+
+exports.getUserByEmail = async (req, res) => {
+    const result = await accountService.getUserByEmail('user1@gmail.com');
+    if (result) {
+        res.status(200).json({
+            statusCode: 201,
+            data: result,
+            message: "get user successfully!"
+        })
+    }
+    else {
+        res.status(500).json({
+            statusCode: 500,
+            message: "Server error!"
+        })
+    }
+}

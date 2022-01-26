@@ -32,6 +32,10 @@ const accountSchema = new mongoose.Schema({
     ggID: {
         type: String,
         default: null
+    },
+    isActive: {
+        type: Boolean,
+        default: false
     }
 });
 
