@@ -7,7 +7,7 @@ exports.createAccount = (accountObj) => {
 
     // check validate
     const result = validate.validateAccount(accountObj);
-    if (result.error) throw err;
+    if (result.error) return false;
     
     // hash pw
     accountObj.password = genSalt.hashPassword(accountObj.password);

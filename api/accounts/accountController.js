@@ -1,11 +1,12 @@
 const accountService = require('./accountService');
+const http = require('../../const');
 
 exports.createAccount = async (req, res) => {
     // check exist account
     const is_existed = await accountService.getUserByEmail(req.body.email);
     if (is_existed) {
-        res.status(409).json({
-            statusCode: 409,
+        res.status(http.Conflict).json({
+            statusCode: http.Conflict,
             message: "email was taken!"
         })
         return;
@@ -24,15 +25,15 @@ exports.createAccount = async (req, res) => {
     }
     const newAccount = await accountService.createAccount(accountObj);
     if (newAccount) {
-        res.status(201).json({
-            statusCode: 201,
+        res.status(http.Created).json({
+            statusCode: http.Created,
             data: newAccount,
             message: "Register successfully!"
         })
     }
     else {
-        res.status(500).json({
-            statusCode: 500,
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
             message: "Server error!"
         })
     }
@@ -41,15 +42,15 @@ exports.createAccount = async (req, res) => {
 exports.getUserByEmail = async (req, res) => {
     const result = await accountService.getUserByEmail('nvx.pnhatminh@gmail.com');
     if (result) {
-        res.status(200).json({
-            statusCode: 200,
+        res.status(http.Success).json({
+            statusCode: http.Success,
             data: result,
             message: "get user successfully!"
         })
     }
     else {
-        res.status(500).json({
-            statusCode: 500,
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
             message: "Server error!"
         })
     }
