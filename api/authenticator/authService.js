@@ -3,87 +3,118 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const axios = require('axios');
 const accountService = require('../accounts/accountService');
 const jwt = require('jsonwebtoken');
-
-exports.googleSignIn = async (tokenID) => {
-    const ticket = await client.verifyIdToken({
-        idToken: tokenID,
-        audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    
-    const mail = payload['email'];
-    
-    const ggID = payload['sub'];
-    const name = payload['name'];
-    const acc = await accountService.findAccWithMail(mail);
-    if (acc) {
-        if (acc.googleID == '') {
-            await accountService.updateInfoForOneField('googleID', ggID, acc.id)
-        }
-        if (acc.name == '') {
-            await accountService.updateInfoForOneField('name', name, acc.id)
-        }
-        const result ={
-            user: acc,
-            token: jwt.sign({
-                id: acc.id,
-                username: acc.username,
-            }, 'secret', {
-                expiresIn: '1h'
-            })
-        };
+const { google } = require('googleapis');
+exports.googleSignIn = async (tokenID, accessToken) => {
+    //verify id token and get email, name
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: tokenID,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
         
-        return result
-    } else {
-        let newAccount = {
-            username: '',
-            password: '',
-            googleID: ggID,
-            facebookID: '',
-            email: mail
+        const mail = payload['email'];
+        
+        const ggID = payload['sub'];
+        const name = payload['name'];
+        const { OAuth2 } = google.auth
+        const oauth2Client = new OAuth2()
+        oauth2Client.setCredentials({ access_token: accessToken })
+    
+        const peopleAPI = google.people({
+            version: 'v1',
+            auth: oauth2Client
+        })
+        const  data = await peopleAPI.people.get({
+            resourceName: 'people/me',
+            personFields: 'birthdays,genders',
+            
+        })
+        const { birthdays, genders } = data.data;
+        // format birthday from Date to DD/MM/YYYY
+        
+        let date = birthdays[0].date;
+        
+        const bod = date.day + "/" + date.month + "/" + date.year;
+        let gender = genders.value;
+        const ObjData = {bod, gender,mail, name, ggID }
+        const acc = await accountService.findAccWithMail(ObjData.mail);
+        if (acc) {
+            if (acc.ggID == '') {
+                await accountService.updateInfoForOneField('ggID', ObjData.ggID, ObjData.mail)
+            }
+        } else {
+            let genderOfNewMember;
+            if (data.gender === 'male') genderOfNewMember = true;
+            else genderOfNewMember = false;
+            let newAccount = {
+                email: ObjData.mail,
+                password: '',
+                fullname: ObjData.name,
+                phone: '',
+                gender: genderOfNewMember,
+                DOB: ObjData.bod,
+                fbID: '',
+                ggID: ObjData.ggID
+            }
+            await accountService.createAccountWithSocialLogin(newAccount); 
         }
-        await accountService.create(newAccount);
-        const acc = await accountService.findAccWithMail(mail);
-        const result = {
-            user: acc,
+        
+        const accNew = await accountService.findAccWithMail(mail);  
+        const result ={
+            user: accNew,
             token: jwt.sign({
-                id: acc.id,
-                username: acc.username,
+                id: accNew.id,
+                username: accNew.username,
             }, 'secret', {
                 expiresIn: '1h'
             })
         };
         
         return result;
+    } catch {
+        return;
     }
+    
 }
 
 exports.facebookSignIn = async (tokenID, callback) => {
-    await axios.get(`https://graph.facebook.com/v12.0/me?access_token=${tokenID}&fields=id,name,email`)
+    try {
+
+        
+        axios.get(`https://graph.facebook.com/v12.0/me?access_token=${tokenID}&fields=id,name,email,gender,birthday`)
         .then(async response => {
+            
             const data = response.data;
-            if (data.error) return {}; 
+            if (data.error) callback(); 
             const acc = await accountService.findAccWithMail(data.email);
+            
             if (!acc) {
+                let genderOfNewMember;
+                if (data.gender === 'male') genderOfNewMember = true;
+                else genderOfNewMember = false;
                 newAccount = {
-                    username: '',
+                    email: data.email,
                     password: '',
-                    googleID: '',
-                    facebookID: data.id,
-                    email: data.email
+                    fullname: data.name,
+                    phone: '',
+                    gender: genderOfNewMember ,
+                    DOB: data.birthday,
+                    fbID: data.id,
+                    ggID: ''
                 }
-                await accountService.create(newAccount);
-            } else if (acc.facebookID == '' && acc != null) {
-                await accountService.updateInfoForOneField('facebookID', data.id, acc.id)
+                await accountService.createAccountWithSocialLogin(newAccount);
+                
+            } else if (acc.fbID == '' && acc != null) {
+                await accountService.updateInfoForOneField('fbID', data.id, acc.email)
             }
-            if (acc.name == '' && acc != null) {
-                await accountService.updateInfoForOneField('name', data.name, acc.id)
-            }
+            
+            const acc1 = await accountService.findAccWithMail(data.email);
             const result ={
-                user: acc,
+                user: acc1,
                 token: jwt.sign({
-                    id: acc.id,
-                    username: acc.username,
+                    id: acc1.id,
+                    username: acc1.username,
                 }, 'secret', {
                     expiresIn: '1h'
                 })
@@ -91,6 +122,11 @@ exports.facebookSignIn = async (tokenID, callback) => {
             callback(result);
         })
         .catch(error => {
-            return error;
+            console.log(error.response.data)
+            callback();
         });;
+    } catch {
+        callback();
+    }
+   
 }
