@@ -1,6 +1,16 @@
 const accountService = require('./accountService');
 
 exports.createAccount = async (req, res) => {
+    // check exist account
+    const is_existed = await accountService.getUserByEmail(req.body.email);
+    if (is_existed) {
+        res.status(409).json({
+            statusCode: 409,
+            message: "email was taken!"
+        })
+    }
+    
+    // create new acc
     const accountObj = {
         email: req.body.email,
         password: req.body.password,
@@ -28,10 +38,10 @@ exports.createAccount = async (req, res) => {
 }
 
 exports.getUserByEmail = async (req, res) => {
-    const result = await accountService.getUserByEmail('user1@gmail.com');
+    const result = await accountService.getUserByEmail('nvx.pnhatminh@gmail.com');
     if (result) {
         res.status(200).json({
-            statusCode: 201,
+            statusCode: 200,
             data: result,
             message: "get user successfully!"
         })

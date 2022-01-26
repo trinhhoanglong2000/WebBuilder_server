@@ -5,26 +5,27 @@ const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const accountService = require('../../api/accounts/accountService');
+const genSalt = require('../genSalt');
 
 passport.use(new LocalStrategy(
-  async function(username, password, done) {
-    const acc = await accountService.findAcc(username);
+  async function(email, password, done) {
+    const acc = await accountService.getUserByEmail(email);
     if (acc) {
-      if (acc.password == password) {
-          return done(null, {id: acc.id, username: username});
+      if (genSalt.compare(password, acc.password)) {
+          return done(null, {_id: acc._id, email: email});
       }
     }
-    return done(null, false, {message: 'incorrect'});
+    return done(null, false, {message: 'incorect usernanme or password!'});
   }
 ));
 
 const opts = {}
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = 'secret';
+opts.secretOrKey = process.env.JWT_SECRET;
 
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
     console.log(jwt_payload);
-    return done(null, {id: jwt_payload.id, username: jwt_payload.username}) // req.user
+    return done(null, {_id: jwt_payload._id, email: jwt_payload.email}) // req.user
 }));
 
 module.exports = passport;
