@@ -8,6 +8,7 @@ exports.createAccount = async (req, res) => {
             statusCode: 409,
             message: "email was taken!"
         })
+        return;
     }
     
     // create new acc
