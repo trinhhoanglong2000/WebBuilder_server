@@ -25,7 +25,13 @@ exports.createAccount = async (req, res) => {
     }
     const newAccount = await accountService.createAccount(accountObj);
     if (newAccount) {
-        res.status(http.Created).json({
+        if (newAccount.message) {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: newAccount.message
+            })
+        }
+        else res.status(http.Created).json({
             statusCode: http.Created,
             data: newAccount,
             message: "Register successfully!"

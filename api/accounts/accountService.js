@@ -2,20 +2,26 @@ const mongoose = require('mongoose');
 const Account = require('./accountModel');
 const validate = require('../../modules/validate');
 const genSalt = require('../../modules/genSalt');
+const http = require('../../const');
 
 exports.createAccount = (accountObj) => {
-
-    // check validate
-    const result = validate.validateAccount(accountObj);
-    if (result.error) return false;
+    try {
+        // check validate
+        const result = validate.validateAccount(accountObj);
+        if (result.error) return {message: result.error.details[0].message};
     
-    // hash pw
-    accountObj.password = genSalt.hashPassword(accountObj.password);
+        // hash pw
+        accountObj.password = genSalt.hashPassword(accountObj.password);
 
-    // create
-    accountObj._id = mongoose.Types.ObjectId();
-    const account = new Account(accountObj);
-    return account.save();
+        // create
+        accountObj._id = mongoose.Types.ObjectId();
+        const account = new Account(accountObj);
+        return account.save();
+    } catch (error) {
+        
+    }
+
+    
 }
 exports.createAccountWithSocialLogin = (accountObj) => {
     try {
@@ -28,21 +34,38 @@ exports.createAccountWithSocialLogin = (accountObj) => {
     }
 }
 exports.getUserByEmail = (email) => {
-    return Account.findOne({email: email}, '_id email password');
+    try {
+        return Account.findOne({email: email}, '_id email password');
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+    
 }
 
 exports.findAccWithMail = (emaila) => {
-    const account = Account.findOne({
-        email: emaila
-    })
-    return account;
+    try {
+        const account = Account.findOne({
+            email: emaila
+        })
+        return account;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+    
 }
 exports.updateInfoForOneField = (fieldNeedUpdate, data, emailSearch) => {
-    let fieldToUpdate = {
-        [fieldNeedUpdate]: data
+    try {
+        let fieldToUpdate = {
+            [fieldNeedUpdate]: data
+        }
+        const account = Account.findOneAndUpdate({
+            email: emailSearch
+        }, {$set: fieldToUpdate})
+        return account;
+    } catch (error) {
+        console.log(error);
+        return null;
     }
-    const account = Account.findOneAndUpdate({
-        email: emailSearch
-    }, {$set: fieldToUpdate})
-    return account;
 }
