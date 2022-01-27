@@ -40,7 +40,7 @@ exports.googleSignIn = async (tokenID, accessToken) => {
         const ObjData = {bod, gender,mail, name, ggID }
         const acc = await accountService.findAccWithMail(ObjData.mail);
         if (acc) {
-            if (acc.ggID == '') {
+            if (!acc.ggID) {
                 await accountService.updateInfoForOneField('ggID', ObjData.ggID, ObjData.mail)
             }
         } else {
@@ -49,12 +49,12 @@ exports.googleSignIn = async (tokenID, accessToken) => {
             else genderOfNewMember = false;
             let newAccount = {
                 email: ObjData.mail,
-                password: '',
+                password: null,
                 fullname: ObjData.name,
-                phone: '',
+                phone: null,
                 gender: genderOfNewMember,
                 DOB: ObjData.bod,
-                fbID: '',
+                fbID: null,
                 ggID: ObjData.ggID
             }
             await accountService.createAccountWithSocialLogin(newAccount); 
@@ -95,17 +95,17 @@ exports.facebookSignIn = async (tokenID, callback) => {
                 else genderOfNewMember = false;
                 newAccount = {
                     email: data.email,
-                    password: '',
+                    password: null,
                     fullname: data.name,
-                    phone: '',
+                    phone: null,
                     gender: genderOfNewMember ,
                     DOB: data.birthday,
                     fbID: data.id,
-                    ggID: ''
+                    ggID: null
                 }
                 await accountService.createAccountWithSocialLogin(newAccount);
                 
-            } else if (acc.fbID == '' && acc != null) {
+            } else if (!acc.fbID && acc != null) {
                 await accountService.updateInfoForOneField('fbID', data.id, acc.email)
             }
             

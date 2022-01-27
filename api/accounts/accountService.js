@@ -18,10 +18,14 @@ exports.createAccount = (accountObj) => {
     return account.save();
 }
 exports.createAccountWithSocialLogin = (accountObj) => {
-    accountObj._id = mongoose.Types.ObjectId();
-    console.log(accountObj);
-    const account = new Account(accountObj);
-    return account.save();
+    try {
+        accountObj._id = mongoose.Types.ObjectId();
+        console.log(accountObj);
+        const account = new Account(accountObj);
+        return account.save();
+    } catch {
+        return;
+    }
 }
 exports.getUserByEmail = (email) => {
     return Account.findOne({email: email}, '_id email password');
