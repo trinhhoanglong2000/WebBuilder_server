@@ -6,7 +6,7 @@ exports.googleSignIn = async (req,res,next) => {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: passport,
-            message: "get user successfully!"
+            message: "Login sucessfully!"
         })
     }
     else {
@@ -23,7 +23,7 @@ exports.facebookSignIn = async (req,res,next) => {
             res.status(http.Success).json({
                 statusCode: http.Success,
                 data: passport,
-                message: "get user successfully!"
+                message: "Login sucessfully!"
             })
         }
         else {
