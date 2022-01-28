@@ -16,7 +16,10 @@ const accountSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    phone: String,
+    phone: {
+        type: String,
+        default: null,
+    },
     gender: {
         type: Boolean,
         default: true
