@@ -19,7 +19,7 @@ const accountSchema = new mongoose.Schema({
     phone: String,
     gender: {
         type: Boolean,
-        required: true
+        default: true
     },
     DOB: {
         type: Date,
