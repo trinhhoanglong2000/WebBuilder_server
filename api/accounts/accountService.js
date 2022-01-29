@@ -18,10 +18,9 @@ exports.createAccount = (accountObj) => {
         const account = new Account(accountObj);
         return account.save();
     } catch (error) {
-        
+        console.log(error);
+        return null;
     }
-
-    
 }
 exports.createAccountWithSocialLogin = (accountObj) => {
     try {

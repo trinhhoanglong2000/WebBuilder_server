@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 
 const passport = require('./modules/passport');
 const accountsRouter = require('./api/accounts');
+const pageRouter = require('./api/page');
 const loginRouter = require('./modules/passport/loginRouter');
 const authRouter = require('./api/authenticator');
 const app = express();
@@ -26,16 +27,24 @@ mongoose.connect(process.env.DATABASE_URL,
  console.log("DB not connected " + err);
 })
 
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  optionsSuccessStatus: 200,
+  credentials: true,
+  methods: "GET, PUT, POST, DELETE"
+}
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(passport.initialize());
 
 app.use('/accounts',  accountsRouter);
 app.use('/login', loginRouter);
 app.use('/auth', authRouter);
+app.use('/pages', pageRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
