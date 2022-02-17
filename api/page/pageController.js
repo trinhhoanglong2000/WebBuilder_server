@@ -1,4 +1,7 @@
 const pageService = require('./pageService');
+const AWS = require('aws-sdk');
+
+const s3 = new AWS.S3();
 
 exports.create = async (req, res) => {
     const pageBody = req.body;
@@ -8,12 +11,19 @@ exports.create = async (req, res) => {
 
 exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
-    const pageContent = await pageService.savePageContent(pageId, req.body);
-    res.json(pageContent);
+    await s3.putObject({
+        Body: JSON.stringify(req.body),
+        Bucket: "ezmall-bucket",
+        Key: "page2.txt"
+    }).promise();
+    res.json({message: "OK"});
 };
 
 exports.loadContent = async (req, res) => {
-    const pageId = req.params.pageId;
-    const pageData = await pageService.findPageById(pageId);
-    res.json(pageData.content);
+    const data =  await s3.getObject({
+        Bucket: "ezmall-bucket",
+        Key: "page2.txt"
+    }).promise();
+    const content = JSON.parse(data.Body.toString('utf-8'));
+    res.json(content);
 }
