@@ -18,7 +18,7 @@ const accountSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        default: null,
+        default: '0123456789',
     },
     gender: {
         type: Boolean,
@@ -26,7 +26,7 @@ const accountSchema = new mongoose.Schema({
     },
     DOB: {
         type: Date,
-        default: null
+        default: new Date(2000,01,01)
     },
     fbID: {
         type: String,
@@ -38,7 +38,7 @@ const accountSchema = new mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        default: false
+        default: true
     }
 });
 
