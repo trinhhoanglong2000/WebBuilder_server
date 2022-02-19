@@ -7,12 +7,13 @@ const cors=require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const passport = require('./modules/passport');
+const passport = require('./helper/passport');
 const accountsRouter = require('./api/accounts');
 const pageRouter = require('./api/page');
 const productRouter = require('./api/products');
-const loginRouter = require('./modules/passport/loginRouter');
+// const loginRouter = require('./helper/passport/loginRouter');
 const authRouter = require('./api/authenticator');
+const authenticator = require('./middleware/authentication');
 const app = express();
 
 mongoose.connect(process.env.DATABASE_URL, 
@@ -42,11 +43,11 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
 
-app.use('/accounts',  accountsRouter);
-app.use('/login', loginRouter);
-app.use('/auth', authRouter);
-app.use('/pages', pageRouter);
-app.use('/products', productRouter);
+app.use('/accounts', authenticator.Authenticate, accountsRouter);
+// app.use('/login', loginRouter);
+app.use('/login', authRouter);
+app.use('/pages', authenticator.Authenticate, pageRouter);
+app.use('/products', authenticator.Authenticate, productRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

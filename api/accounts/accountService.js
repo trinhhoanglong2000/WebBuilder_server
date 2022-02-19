@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Account = require('./accountModel');
-const validate = require('../../modules/validate');
-const genSalt = require('../../modules/genSalt');
+const validate = require('../../helper/validate/accountValidate');
+const genSalt = require('../../helper/genSalt');
 const http = require('../../const');
 
 exports.createAccount = (accountObj) => {
@@ -29,7 +29,8 @@ exports.createAccountWithSocialLogin = (accountObj) => {
         const account = new Account(accountObj);
         return account.save();
     } catch {
-        return;
+        console.log(error);
+        return null;
     }
 }
 exports.getUserByEmail = (email) => {

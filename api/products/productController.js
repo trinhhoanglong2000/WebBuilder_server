@@ -3,14 +3,7 @@ const http = require('../../const');
 
 exports.createProduct = async (req, res) => {
     // create new product
-    const ProductObj = {
-        title: req.body.title,
-        description: req.body.description,
-        type: req.body.type,
-        status: req.body.status,
-        imageURL: req.body.imageURL,
-        price: req.body.price
-    }
+    const ProductObj = req.body;
     const newProduct = await productService.createProduct(ProductObj);
     if (newProduct) {
         res.status(http.Created).json({
@@ -34,6 +27,24 @@ exports.getAllProducts = async (req, res) => {
             statusCode: http.Success,
             data: result,
             message: "Get all products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getProductByPageId = async (req, res) => {
+    const pageId = req.params.pageId;
+    const result = await productService.findByPageId(pageId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get product successfully!"
         })
     }
     else {

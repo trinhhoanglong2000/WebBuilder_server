@@ -4,21 +4,18 @@ mongoose.Promise = global.Promise;
 
 const pageSchema = new mongoose.Schema(
     {
-        name: {
-          type: String,
-          required: true,
-          trim: true,
-          maxlength: 25,
-        },
-        slug: {
-          type: String,
-          required: true,
-        },
-        content: Object,
-    },
-    {
-        timestamps: true,
-    },
+      _id: mongoose.Schema.Types.ObjectId,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
+      contentURL: {
+        type: String,
+        default: ""
+      }
+    }, {
+      timestamps: { createdAt: 'createAt', updatedAt: 'updateAt' }
+    }
 );
 
 module.exports = mongoose.model('Page', pageSchema);

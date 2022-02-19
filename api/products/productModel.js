@@ -4,6 +4,10 @@ mongoose.Promise = global.Promise;
 
 const productSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
+    pageId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     title: {
         type: String,
         required: true,
@@ -28,7 +32,10 @@ const productSchema = new mongoose.Schema({
     price: {
         type: Number,
         default: 0
+    }}, 
+    {
+        timestamps: { createdAt: 'createAt', updatedAt: 'updateAt' }
     }
-});
+);
 
 module.exports = mongoose.model('Product', productSchema);
