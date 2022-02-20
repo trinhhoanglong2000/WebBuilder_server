@@ -24,10 +24,12 @@ exports.findAll = () => {
     }
 }
 
-exports.findByPageId = (pageId) => {
+exports.findByPageId = (pageId, filter) => {
     try {
-        console.log(typeof(pageId))
-        const products = Product.find({pageId: mongoose.Types.ObjectId(pageId)}).limit(20);
+        
+        filter.pageId = mongoose.Types.ObjectId(pageId)
+        console.log(filter)
+        const products = Product.find(filter).limit(20);
         return products;
     } catch (error) {
         console.log(error);

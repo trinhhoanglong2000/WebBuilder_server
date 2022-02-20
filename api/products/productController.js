@@ -39,7 +39,8 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductByPageId = async (req, res) => {
     const pageId = req.params.pageId;
-    const result = await productService.findByPageId(pageId);
+    const filter = req.query;
+    const result = await productService.findByPageId(pageId, filter);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
