@@ -25,7 +25,6 @@ exports.createAccount = (accountObj) => {
 exports.createAccountWithSocialLogin = (accountObj) => {
     try {
         accountObj._id = mongoose.Types.ObjectId();
-        console.log(accountObj);
         const account = new Account(accountObj);
         return account.save();
     } catch {
@@ -43,10 +42,10 @@ exports.getUserByEmail = (email) => {
     
 }
 
-exports.findAccWithMail = (emaila) => {
+exports.findAccWithMail = (email) => {
     try {
         const account = Account.findOne({
-            email: emaila
+            email: email
         })
         return account;
     } catch (error) {

@@ -43,9 +43,9 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
 
-app.use('/accounts', authenticator.Authenticate, accountsRouter);
+app.use('/account', authenticator.Authenticate, accountsRouter);
 // app.use('/login', loginRouter);
-app.use('/login', authRouter);
+app.use('/auth', authRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
 
