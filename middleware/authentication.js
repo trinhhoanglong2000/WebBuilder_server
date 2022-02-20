@@ -13,7 +13,7 @@ exports.Authenticate = (req, res, next) => {
         if (!user) {
           res.header({ "Access-Control-Allow-Origin": "*" });
           res.status(401);
-          res.send({message:info.message,success:false});
+          res.send({message:info.message,success:false,});
           return;
         }
         

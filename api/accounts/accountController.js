@@ -1,52 +1,10 @@
 const accountService = require('./accountService');
 const http = require('../../const');
 
-exports.createAccount = async (req, res) => {
-    // check exist account
-    const is_existed = await accountService.getUserByEmail(req.body.email);
-    if (is_existed) {
-        res.status(http.Conflict).json({
-            statusCode: http.Conflict,
-            message: "email was taken!"
-        })
-        return;
-    }
-    
-    // create new acc
-    const accountObj = {
-        email: req.body.email,
-        password: req.body.password,
-        fullname: req.body.fullname,
-        phone: req.body.phone,
-        gender: req.body.gender,
-        DOB: req.body.DOB,
-        fbID: req.body.fbID,
-        ggID: req.body.ggID
-    }
-    const newAccount = await accountService.createAccount(accountObj);
-    if (newAccount) {
-        if (newAccount.message) {
-            res.status(http.ServerError).json({
-                statusCode: http.ServerError,
-                message: newAccount.message
-            })
-        }
-        else res.status(http.Created).json({
-            statusCode: http.Created,
-            data: newAccount,
-            message: "Register successfully!"
-        })
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server error!"
-        })
-    }
-}
 
 exports.getUserByEmail = async (req, res) => {
-    const result = await accountService.getUserByEmail('nvx.pnhatminh@gmail.com');
+    //user: { _id: '6211f270291ae1981a20f75e', email: 'longem@gmail.com' },
+    const result = await accountService.findAccWithMail(req.user.email);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

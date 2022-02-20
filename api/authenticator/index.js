@@ -6,6 +6,9 @@ router.post('/google-sign-in', authController.googleSignIn)
 
 router.post('/facebook-sign-in', authController.facebookSignIn)
 
-router.post("/", authController.signIn);
+router.post("/login", authController.signIn);
+
+router.post('/register', authController.createAccount);
+
 
 module.exports = router;
