@@ -4,11 +4,16 @@ const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3();
 
-exports.createPage = (pageBody) => {
+exports.createPage = async (pageBody) => {
     try {
         pageBody._id = mongoose.Types.ObjectId();
-        pageBody.userId = mongoose.Types.ObjectId(pageBody.userId);
+        pageBody.storeId = mongoose.Types.ObjectId(pageBody.storeId);
         const page = new Pages(pageBody);
+        await s3.putObject({
+            Body: JSON.stringify("", null, '\t'),
+            Bucket: "ezmall-bucket",
+            Key: `pages/${pageBody._id}.txt`
+        }).promise();
         return page.save();
     } catch (error) {
         console.log(error);
@@ -17,9 +22,9 @@ exports.createPage = (pageBody) => {
     
 };
 
-exports.findPageByUserId = (userId) => {
+exports.findPageByStoreId = (storeId) => {
     try {
-        return Pages.find({userId: mongoose.Types.ObjectId(userId)});
+        return Pages.find({storeId: mongoose.Types.ObjectId(storeId)});
     } catch (error) {
         console.log(error);
         return null;
@@ -31,7 +36,7 @@ exports.savePageContent = async (pageId, content) => {
         await s3.putObject({
             Body: JSON.stringify(content, null, '\t'),
             Bucket: "ezmall-bucket",
-            Key: "page2.txt"
+            Key: `pages/${pageId}.txt`
         }).promise();
         return {message: "Update successfully!"};
     } catch (error) {
@@ -44,7 +49,7 @@ exports.findPageById = async (pageId) => {
     try {
         const data =  await s3.getObject({
             Bucket: "ezmall-bucket",
-            Key: "page2.txt"
+            Key: `pages/${pageId}.txt`
         }).promise();
         const content = JSON.parse(data.Body.toString('utf-8'));
         return content;

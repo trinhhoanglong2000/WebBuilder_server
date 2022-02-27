@@ -5,7 +5,7 @@ exports.createProduct = (productObj) => {
     try {
         // create
         productObj._id = mongoose.Types.ObjectId();
-        productObj.pageId = mongoose.Types.ObjectId(productObj.pageId);
+        productObj.storeId = mongoose.Types.ObjectId(productObj.storeId);
         const product = new Product(productObj);
         return product.save();
     } catch (error) {
@@ -28,7 +28,6 @@ exports.findByPageId = (pageId, filter) => {
     try {
         
         filter.pageId = mongoose.Types.ObjectId(pageId)
-        console.log(filter)
         const products = Product.find(filter).limit(20);
         return products;
     } catch (error) {
@@ -39,8 +38,8 @@ exports.findByPageId = (pageId, filter) => {
 
 exports.findById = (id) => {
     try {
-        const Product = Product.findById(id)
-        return Product;
+        const product = Product.findById(id)
+        return product;
     } catch (error) {
         console.log(error);
         return null;

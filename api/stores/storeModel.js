@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const productSchema = new mongoose.Schema({
+const storeSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    storeId: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    title: {
+    name: {
         type: String,
         required: true,
     },
@@ -16,26 +16,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: "",
         //required: true,
-    },
-    type: {
-        type: Number,
-        default: -1
-    },
-    status: {
-        type: Boolean,
-        default: false
-    },
-    imageURL: {
-        type: String,
-        default: "",
-    },
-    price: {
-        type: Number,
-        default: 0
     }}, 
     {
         timestamps: { createdAt: 'createAt', updatedAt: 'updateAt' }
     }
 );
 
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model('Store', storeSchema);

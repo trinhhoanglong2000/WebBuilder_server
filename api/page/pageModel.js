@@ -5,8 +5,12 @@ mongoose.Promise = global.Promise;
 const pageSchema = new mongoose.Schema(
     {
       _id: mongoose.Schema.Types.ObjectId,
-      userId: {
+      storeId: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
+      name: {
+        type: String,
         required: true
       },
       contentURL: {

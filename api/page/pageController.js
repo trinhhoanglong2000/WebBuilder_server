@@ -6,7 +6,6 @@ const s3 = new AWS.S3();
 
 exports.create = async (req, res) => {
     const pageBody = req.body;
-    pageBody.userId = req.user._id;
     const page = await pageService.createPage(pageBody);
     if (page) {
         res.status(http.Created).json({
@@ -23,9 +22,9 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.findPageByUserId = async (req, res) => {
-    const userId = req.user._id;
-    const result = await pageService.findPageByUserId(userId);
+exports.findPageByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    const result = await pageService.findPageByStoreId(storeId);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
