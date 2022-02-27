@@ -42,7 +42,8 @@ exports.findPageByStoreId = async (req, res) => {
 
 exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
-    const result = await pageService.savePageContent(pageId, req.body);
+    const storeId = req.params.storeId;
+    const result = await pageService.savePageContent(storeId, pageId, req.body);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -59,7 +60,8 @@ exports.changeContent = async (req, res) => {
 };
 
 exports.loadContent = async (req, res) => {
+    const storeId = req.params.storeId;
     const pageId = req.params.pageId;
-    const content = await pageService.findPageById(pageId)
+    const content = await pageService.findPageById(storeId, pageId)
     res.status(http.Success).json(content);
 }

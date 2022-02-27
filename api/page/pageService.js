@@ -12,7 +12,7 @@ exports.createPage = async (pageBody) => {
         await s3.putObject({
             Body: JSON.stringify("", null, '\t'),
             Bucket: "ezmall-bucket",
-            Key: `pages/${pageBody._id}.txt`
+            Key: `pages/${pageBody.storeId}/${pageBody._id}.txt`
         }).promise();
         return page.save();
     } catch (error) {
@@ -31,12 +31,12 @@ exports.findPageByStoreId = (storeId) => {
     }
 };
 
-exports.savePageContent = async (pageId, content) => {
+exports.savePageContent = async (storeId, pageId, content) => {
     try {
         await s3.putObject({
             Body: JSON.stringify(content, null, '\t'),
             Bucket: "ezmall-bucket",
-            Key: `pages/${pageId}.txt`
+            Key: `pages/${storeId}/${pageId}.txt`
         }).promise();
         return {message: "Update successfully!"};
     } catch (error) {
@@ -45,11 +45,11 @@ exports.savePageContent = async (pageId, content) => {
     }
 };
 
-exports.findPageById = async (pageId) => {
+exports.findPageById = async (storeId, pageId) => {
     try {
         const data =  await s3.getObject({
             Bucket: "ezmall-bucket",
-            Key: `pages/${pageId}.txt`
+            Key: `pages/${storeId}/${pageId}.txt`
         }).promise();
         const content = JSON.parse(data.Body.toString('utf-8'));
         return content;
