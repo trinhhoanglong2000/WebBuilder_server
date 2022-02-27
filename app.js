@@ -11,7 +11,7 @@ const passport = require('./helper/passport');
 const accountsRouter = require('./api/accounts');
 const pageRouter = require('./api/page');
 const productRouter = require('./api/products');
-// const loginRouter = require('./helper/passport/loginRouter');
+const fileRouter = require('./api/files')
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
 const app = express();
@@ -44,7 +44,7 @@ app.use(cors(corsOptions));
 app.use(passport.initialize());
 
 app.use('/account', authenticator.Authenticate, accountsRouter);
-// app.use('/login', loginRouter);
+app.use('/files', fileRouter);
 app.use('/auth', authRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
