@@ -6,6 +6,7 @@ exports.createStore = (storeObj) => {
         // create
         storeObj._id = mongoose.Types.ObjectId();
         storeObj.userId = mongoose.Types.ObjectId(storeObj.userId);
+        storeObj.storeLink = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
         const store = new Store(storeObj);
         return store.save();
     } catch (error) {
