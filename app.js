@@ -10,8 +10,8 @@ const mongoose = require('mongoose');
 const passport = require('./helper/passport');
 const accountsRouter = require('./api/accounts');
 const pageRouter = require('./api/page');
-const storeRouter = require('./api/stores');
 const productRouter = require('./api/products');
+const fileRouter = require('./api/files')
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
 const app = express();
@@ -44,9 +44,9 @@ app.use(cors(corsOptions));
 app.use(passport.initialize());
 
 app.use('/account', authenticator.Authenticate, accountsRouter);
+app.use('/files', fileRouter);
 app.use('/auth', authRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
-app.use('/stores', authenticator.Authenticate, storeRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
 
 // catch 404 and forward to error handler
