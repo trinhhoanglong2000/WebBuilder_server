@@ -67,7 +67,7 @@ exports.googleSignIn = async (tokenID, accessToken) => {
                 id: accNew.id,
                 username: accNew.username,
             }, 'secret', {
-                expiresIn: '1h'
+                expiresIn: '10h'
             })
         };
         
@@ -116,7 +116,7 @@ exports.facebookSignIn = async (tokenID, callback) => {
                     id: acc1.id,
                     username: acc1.username,
                 }, 'secret', {
-                    expiresIn: '1h'
+                    expiresIn: '10h'
                 })
             };
             callback(result);
