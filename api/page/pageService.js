@@ -58,3 +58,21 @@ exports.findPageById = async (storeId, pageId) => {
         return null;
     }
 };
+
+exports.getCssFiles = async (pageId) => {
+    try {
+        return Pages.findById(pageId, 'cssFiles');
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.updateCssFiles = async (pageId, list) => {
+    try {
+        return Pages.findByIdAndUpdate(pageId, { cssFiles: list });
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}

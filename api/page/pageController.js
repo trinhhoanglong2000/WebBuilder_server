@@ -65,3 +65,40 @@ exports.loadContent = async (req, res) => {
     const content = await pageService.findPageById(storeId, pageId)
     res.status(http.Success).json(content);
 }
+
+exports.getCssFiles = async (req, res) => {
+    const pageId = req.params.id;
+    const result = await pageService.getCssFiles(pageId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Css files successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.updateCssFiles = async (req, res) => {
+    const pageId = req.params.id;
+    const listCssFiles = req.body;
+    const result = await pageService.updateCssFiles(pageId, listCssFiles);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update Css files successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
