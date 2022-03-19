@@ -11,7 +11,8 @@ const passport = require('./helper/passport');
 const accountsRouter = require('./api/accounts');
 const pageRouter = require('./api/page');
 const productRouter = require('./api/products');
-const fileRouter = require('./api/files')
+const fileRouter = require('./api/files');
+const storeRouter = require('./api/stores');
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
 const app = express();
@@ -46,6 +47,7 @@ app.use(passport.initialize());
 app.use('/account', authenticator.Authenticate, accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
+app.use('/stores', authenticator.Authenticate, storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
 
