@@ -1,0 +1,25 @@
+.footer-section ul {
+    list-style-type: none;
+}
+
+.footer-section a {
+    color: black !important;
+}
+
+.footer-section a:link {
+    text-decoration: none !important;
+}
+
+.footer-section a:hover {
+    color: rgb(94, 94, 250) !important;
+}
+
+.footer-section {
+    padding: 1vh 3vw;
+}
+
+.footer-section i {
+    font-size: 35px;
+    padding: 0vh 1vw;
+    padding-left: 3vw;
+}
