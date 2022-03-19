@@ -10,8 +10,6 @@ router.post("/login", authController.signIn);
 
 router.post('/register', authController.createAccount);
 
-router.get('/:filename(*(\.css|\.js)$)',function (req, res){
-    res.sendFile("test.js",{root:'.'})
-})
+
 
 module.exports = router;

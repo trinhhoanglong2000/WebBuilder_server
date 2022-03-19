@@ -12,6 +12,10 @@ const storeSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    storeLink: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
         default: "",
