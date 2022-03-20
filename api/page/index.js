@@ -3,12 +3,11 @@ const router = express.Router();
 const pageController = require('./pageController');
 
 router.post('/create', pageController.create);
-router.post('/:storeId/:pageId/content', pageController.changeContent);
 
-router.put('/update-css/:id', pageController.updateCssFiles);
+router.put('/css/:id', pageController.updateCssFiles);
 
 router.get('/:id', pageController.findPageByStoreId);
-router.get('/get-css/:id', pageController.getCssFiles);
-router.get('/:storeId/:pageId/content', pageController.loadContent);
+router.get('/css/:id', pageController.getCssFiles);
+
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const storeService = require('./storeService');
+const pageService = require('../page/pageService');
 const http = require('../../const');
 
 exports.createStore = async (req, res) => {
@@ -75,15 +76,15 @@ exports.getStoreById = async (req, res) => {
     }
 }
 
-exports.uploadCssFile = async (req, res) => {
-    const id = req.params.id;
-    const css_body = req.body;
-    const result = await storeService.uploadCssFile(id, css_body);
+exports.changeContent = async (req, res) => {
+    const pageId = req.params.pageId;
+    const storeId = req.params.storeId;
+    const result = await pageService.savePageContent(storeId, pageId, req.body);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
-            message: "Upload file successfully!"
+            message: "Update page successfully!"
         })
     }
     else {
@@ -92,22 +93,11 @@ exports.uploadCssFile = async (req, res) => {
             message: "Server error!"
         })
     }
-}
+};
 
-exports.getCssFile = async (req, res) => {
-    const id = req.params.id;
-    const result = await storeService.getCssFile(id);
-    if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Get file successfully!"
-        })
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server error!"
-        })
-    }
+exports.loadContent = async (req, res) => {
+    const storeId = req.params.storeId;
+    const pageId = req.params.pageId;
+    const content = await pageService.findPageById(storeId, pageId)
+    res.status(http.Success).json(content);
 }

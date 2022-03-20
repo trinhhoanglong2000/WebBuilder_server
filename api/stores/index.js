@@ -4,9 +4,10 @@ const storeController = require('./storeController')
 
 router.get('/', storeController.getStoreByUserId);
 router.get('/:id', storeController.getStoreById);
-router.get('/get-css/:id', storeController.getCssFile);
+router.get('/:storeId/:pageId/content', storeController.loadContent);
 
 /* POST create account. */
 router.post('/create', storeController.createStore);
-router.post('/upload-css/:id', storeController.uploadCssFile);
+router.post('/:storeId/:pageId/content', storeController.changeContent);
+
 module.exports = router;

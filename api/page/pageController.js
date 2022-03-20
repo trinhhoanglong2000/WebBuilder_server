@@ -40,32 +40,6 @@ exports.findPageByStoreId = async (req, res) => {
     }
 };
 
-exports.changeContent = async (req, res) => {
-    const pageId = req.params.pageId;
-    const storeId = req.params.storeId;
-    const result = await pageService.savePageContent(storeId, pageId, req.body);
-    if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Update page successfully!"
-        })
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server error!"
-        })
-    }
-};
-
-exports.loadContent = async (req, res) => {
-    const storeId = req.params.storeId;
-    const pageId = req.params.pageId;
-    const content = await pageService.findPageById(storeId, pageId)
-    res.status(http.Success).json(content);
-}
-
 exports.getCssFiles = async (req, res) => {
     const pageId = req.params.id;
     const result = await pageService.getCssFiles(pageId);
