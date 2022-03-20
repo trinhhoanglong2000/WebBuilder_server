@@ -1,5 +1,4 @@
 const http = require('../../const');
-const fileService = require('./filesService');
 
 exports.getFileName = async (req, res) =>{
     console.log(req.params.filename);
