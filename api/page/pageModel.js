@@ -13,10 +13,6 @@ const pageSchema = new mongoose.Schema(
         type: String,
         required: true
       },
-      cssFiles: {
-        type: Array,
-        default: []
-      },
       contentURL: {
         type: String,
         default: ""
