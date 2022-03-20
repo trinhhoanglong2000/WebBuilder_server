@@ -21,22 +21,57 @@ $(document).ready(function () {
       img: "HEHE",
     },
   ];
+  const banners = [
+    {
+      name: "TEST1",
+      description: "Test1",
+    },
+    {
+      name: "TEST2",
+      description: "Test2",
+    },
+    {
+      name: "TEST3",
+      description: "Test3",
+    },
+  ];
+  //==============|Data Selector|============
+
+  function productData(e) {
+    $(e)
+      .find(".thumb-wrapper")
+      .each(function (index) {
+        $(this)
+          .find("h4")
+          .text(products[index % products.length].name);
+        $(this)
+          .find(".item-price strike")
+          .text(products[index % products.length].price);
+        $(this)
+          .find(".item-price span")
+          .text(products[index % products.length].price);
+      });
+  }
+  function bannerData(e) {
+    $(e)
+      .find(".carousel-item")
+      .each(function (index) {
+
+        $(this)
+          .find("h5")
+          .text(banners[index % banners.length].name);
+        $(this)
+          .find("p")
+          .text(banners[index % banners.length].description);
+      });
+  }
   //Init
   function init() {
-    $("div[name= 'products-collections'] ").each(function (i) {
-      $(this)
-        .find(".thumb-wrapper")
-        .each(function (index) {
-          $(this)
-            .find("h4")
-            .text(products[index % products.length].name);
-          $(this)
-            .find(".item-price strike")
-            .text(products[index % products.length].price);
-          $(this)
-            .find(".item-price span")
-            .text(products[index % products.length].price);
-        });
+    $("div[data-type= 'products-collections'] ").each(function (i) {
+      productData(this);
+    });
+    $("div[data-type= 'banners'] ").each(function (i) {
+      bannerData(this);
     });
   }
   init();
@@ -48,7 +83,10 @@ $(document).ready(function () {
       const str = $(e.target).attr("id").substring(1);
 
       if (regexExp.test(str)) {
-        init();
+        if ($(e.target).attr("data-type") == "products-collections")
+          productData(e.target);
+        else if ($(e.target).attr("data-type") == "banners")
+          bannerData(e.target);
       }
     }
   });
