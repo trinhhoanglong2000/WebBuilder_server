@@ -57,6 +57,7 @@ exports.uploadCssFileForStore = async (storeId, css_body) => {
             // Body: JSON.stringify(css_body, null, '\t'),
             Body: css_body.data,
             Bucket: "ezmall-bucket",
+            ContentType: "text/css",
             Key: `css/${storeId}.css`
         }).promise();
         return {message: "Update successfully!"};
@@ -72,6 +73,7 @@ exports.getCssFileForStore = async (storeId) => {
             Bucket: "ezmall-bucket",
             Key: `css/${storeId}.css`
         }).promise();
+        console.log(typeof(data))
         const content = data.Body.toString('utf-8');
         return content;
     } catch (error) {
