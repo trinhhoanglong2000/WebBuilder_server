@@ -56,7 +56,6 @@ $(document).ready(function () {
     $(e)
       .find(".carousel-item")
       .each(function (index) {
-
         $(this)
           .find("h5")
           .text(banners[index % banners.length].name);
@@ -67,6 +66,7 @@ $(document).ready(function () {
   }
   //Init
   function init() {
+    
     $("div[data-type= 'products-collections'] ").each(function (i) {
       productData(this);
     });
@@ -76,18 +76,19 @@ $(document).ready(function () {
   }
   init();
   // Handel event
-  $(document).bind("DOMNodeInserted", function (e) {
-    if ($(e.target).attr("id")) {
-      const regexExp =
-        /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
-      const str = $(e.target).attr("id").substring(1);
+  // $(document).bind("DOMNodeInserted", function (e) {
+  //   if ($(e.target).attr("id")) {
+  //     const regexExp =
+  //       /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+  //     const str = $(e.target).attr("id").substring(1);
 
-      if (regexExp.test(str)) {
-        if ($(e.target).attr("data-type") == "products-collections")
-          productData(e.target);
-        else if ($(e.target).attr("data-type") == "banners")
-          bannerData(e.target);
-      }
-    }
-  });
+  //     if (regexExp.test(str)) {
+  //       if ($(e.target).attr("data-type") == "products-collections")
+  //         productData(e.target);
+  //       else if ($(e.target).attr("data-type") == "banners")
+  //         bannerData(e.target);
+  //     }
+  //   }
+  // });
+ 
 });

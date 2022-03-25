@@ -31,7 +31,7 @@ mongoose.connect(process.env.DATABASE_URL,
 })
 
 const corsOptions = {
-  origin: process.env.CLIENT_URL,
+  origin: [process.env.CLIENT_URL,'http://localhost:3001'],
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"

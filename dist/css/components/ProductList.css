@@ -1,4 +1,4 @@
-h2 {
+[data-gjs-type="product-list"] h2 {
     color: #000;
     font-size: 26px;
     font-weight: 300;
@@ -8,11 +8,11 @@ h2 {
     margin: 30px 0 80px;
 }
 
-h2 b {
+[data-gjs-type="product-list"] h2 b {
     color: #ffc000;
 }
 
-h2::after {
+[data-gjs-type="product-list"] h2::after {
     content: "";
     width: 100px;
     position: absolute;
@@ -24,24 +24,24 @@ h2::after {
     bottom: -20px;
 }
 
-.carousel {
+[data-gjs-type="product-list"] .carousel {
     margin: 50px auto;
     padding: 0 70px;
 }
 
-.carousel .item {
+[data-gjs-type="product-list"] .carousel .item {
     min-height: 330px;
     text-align: center;
     overflow: hidden;
 }
 
-.carousel .item .img-box {
+[data-gjs-type="product-list"] .carousel .item .img-box {
     height: 160px;
     width: 100%;
     position: relative;
 }
 
-.carousel .item img {
+[data-gjs-type="product-list"] .carousel .item img {
     max-width: 100%;
     max-height: 100%;
     display: inline-block;
@@ -52,13 +52,13 @@ h2::after {
     right: 0;
 }
 
-.carousel .item h4 {
+[data-gjs-type="product-list"] .carousel .item h4 {
   font-size: 18px;
   margin: 10px 0;
   height: 40px!important;
 }
 
-.carousel .item .btn {
+[data-gjs-type="product-list"] .carousel .item .btn {
     color: #333;
     border-radius: 0;
     font-size: 11px;
@@ -71,30 +71,30 @@ h2::after {
     line-height: 16px;
 }
 
-.carousel .item .btn:hover,
-.carousel .item .btn:focus {
+[data-gjs-type="product-list"] .carousel .item .btn:hover,
+[data-gjs-type="product-list"] .carousel .item .btn:focus {
     color: #fff;
     background: #000;
     border-color: #000;
     box-shadow: none;
 }
 
-.carousel .item .btn i {
+[data-gjs-type="product-list"] .carousel .item .btn i {
     font-size: 14px;
     font-weight: bold;
     margin-left: 5px;
 }
 
-.carousel .thumb-wrapper {
+[data-gjs-type="product-list"] .carousel .thumb-wrapper {
   text-align: center;
   height: 100%;
 }
 
-.carousel .thumb-content {
+[data-gjs-type="product-list"] .carousel .thumb-content {
     padding: 15px;
 }
 
-.carousel .carousel-control {
+[data-gjs-type="product-list"] .carousel .carousel-control {
     height: 100px;
     width: 40px;
     background: none;
@@ -102,7 +102,7 @@ h2::after {
     background: rgba(0, 0, 0, 0.2);
 }
 
-.carousel .carousel-control i {
+[data-gjs-type="product-list"] .carousel .carousel-control i {
     font-size: 30px;
     position: absolute;
     top: 50%;
@@ -116,37 +116,37 @@ h2::after {
     font-weight: bold;
 }
 
-.carousel .item-price {
+[data-gjs-type="product-list"] .carousel .item-price {
     font-size: 13px;
     padding: 2px 0;
     margin: auto;
     width: 50px;
 }
 
-.carousel .item-price strike {
+[data-gjs-type="product-list"] .carousel .item-price strike {
     color: #999;
     margin-right: 5px;
 }
 
-.carousel .item-price span {
+[data-gjs-type="product-list"] .carousel .item-price span {
     color: #86bd57;
     font-size: 110%;
 }
 
-.carousel .carousel-control.left i {
+[data-gjs-type="product-list"] .carousel .carousel-control.left i {
     margin-left: -3px;
 }
 
-.carousel .carousel-control.left i {
+[data-gjs-type="product-list"] .carousel .carousel-control.left i {
     margin-right: -3px;
 }
 
-.carousel .carousel-indicators {
+[data-gjs-type="product-list"] .carousel .carousel-indicators {
     bottom: -50px;
 }
 
-.carousel-indicators li,
-.carousel-indicators li.active {
+[data-gjs-type="product-list"] .carousel-indicators li,
+[data-gjs-type="product-list"] .carousel-indicators li.active {
     width: 10px;
     height: 10px;
     margin: 4px;
@@ -154,19 +154,19 @@ h2::after {
     border-color: transparent;
 }
 
-.carousel-indicators li {
+[data-gjs-type="product-list"] .carousel-indicators li {
     background: rgba(0, 0, 0, 0.2);
 }
 
-.carousel-indicators li.active {
+[data-gjs-type="product-list"] .carousel-indicators li.active {
     background: rgba(0, 0, 0, 0.6);
 }
 
-.star-rating li {
+[data-gjs-type="product-list"] .star-rating li {
     padding: 0;
 }
 
-.star-rating i {
+[data-gjs-type="product-list"] .star-rating i {
     font-size: 14px;
     color: #ffc000;
 }
