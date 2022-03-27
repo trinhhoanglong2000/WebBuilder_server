@@ -6,5 +6,15 @@ exports.getFileName = async (req, res) =>{
 }
 
 exports.uploadAsset = async (req, res) => {
-    res.status(http.Success).json({message: 'Uploaded'});
+    const files = req.files;
+    const result = files.reduce((list, item) => {
+        list.push(item.location);
+        return list;
+    }, []);
+    
+    res.status(http.Success).json({
+        statusCode: http.Success,
+        data: result,
+        message: "Uploaded!"
+    });
 }

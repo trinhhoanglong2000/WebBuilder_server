@@ -17,13 +17,12 @@ var upload = multer({
             cb(null, file.mimetype);
         },
         key: function (req, file, cb) {
-            console.log(file);
             cb(null, `assets/${file.originalname}`); //use Date.now() for unique file keys
         }
     })
 });
 
-router.post('/asset', upload.array('file', 1), fileController.uploadAsset)
+router.post('/asset', upload.array('file'), fileController.uploadAsset)
 router.get('/:filename(*{1,}(\.css|\.js)$)',fileController.getFileName)
 
 module.exports = router;
