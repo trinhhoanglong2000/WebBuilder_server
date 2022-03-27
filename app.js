@@ -31,7 +31,7 @@ mongoose.connect(process.env.DATABASE_URL,
 })
 
 const corsOptions = {
-  origin: [process.env.CLIENT_URL,'http://localhost:3001'],
+  origin: ['http://localhost:3001', process.env.CLIENT_URL],
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
@@ -47,7 +47,7 @@ app.use(passport.initialize());
 app.use('/account', authenticator.Authenticate, accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
-app.use('/stores', authenticator.Authenticate, storeRouter);
+app.use('/stores', storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
 
