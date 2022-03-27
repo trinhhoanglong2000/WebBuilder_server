@@ -12,12 +12,14 @@ var upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: 'ezmall-bucket',
-        ACL:'public-read',
+        acl:'public-read',
+        contentType: function (req, file, cb) {
+            cb(null, file.mimetype);
+        },
         key: function (req, file, cb) {
             console.log(file);
             cb(null, `assets/${file.originalname}`); //use Date.now() for unique file keys
         }
-        //key: `assets/${file.originalname}`
     })
 });
 
