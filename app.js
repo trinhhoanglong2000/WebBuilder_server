@@ -15,6 +15,7 @@ const fileRouter = require('./api/files');
 const storeRouter = require('./api/stores');
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
+const collectionsRouter= require('./api/collections');
 const app = express();
 
 mongoose.connect(process.env.DATABASE_URL, 
@@ -31,7 +32,7 @@ mongoose.connect(process.env.DATABASE_URL,
 })
 
 const corsOptions = {
-  origin: ['http://localhost:3001', process.env.CLIENT_URL],
+  origin: [process.env.MANAGEMENT_CLIENT_URL,process.env.EDITOR_CLIENT_URL],
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
@@ -47,9 +48,10 @@ app.use(passport.initialize());
 app.use('/account', authenticator.Authenticate, accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
-app.use('/stores', storeRouter);
+app.use('/stores', authenticator.Authenticate, storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
+app.use('/collections', collectionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
