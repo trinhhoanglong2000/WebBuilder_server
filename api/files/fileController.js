@@ -28,7 +28,7 @@ exports.uploadBase64Asset = async (req, res) => {
     const buf = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ""),'base64');
     const type = base64Image.split(';')[0].split('/')[1];
 
-    await s3.putObject({
+    const result = await s3.upload({
         Body: buf,
         Bucket: "ezmall-bucket",
         ContentEncoding: 'base64',
@@ -39,7 +39,7 @@ exports.uploadBase64Asset = async (req, res) => {
 
     res.status(http.Success).json({
         statusCode: http.Success,
-        data: result,
+        data: result.Location,
         message: "Uploaded!"
     });
 }

@@ -48,7 +48,7 @@ app.use('/account', authenticator.Authenticate, accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
 app.use('/stores', storeRouter);
-app.use('/pages', authenticator.Authenticate, pageRouter);
+app.use('/pages', pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
 
 // catch 404 and forward to error handler
