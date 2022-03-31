@@ -23,15 +23,18 @@ exports.uploadAsset = async (req, res) => {
 }
 
 exports.uploadBase64Asset = async (req, res) => {
-    const img = new Image();
     const storeId = req.params.storeId;
-    img.src = req.body.base64Image;
-    console.log(img);
+    const base64Image = req.body.base64Image
+    const buf = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ""),'base64');
+    const type = base64Image.split(';')[0].split('/')[1];
 
     await s3.putObject({
-        Body: JSON.stringify(img.src, null, '\t'),
+        Body: buf,
         Bucket: "ezmall-bucket",
-        Key: `asset/${storeId}.txt`
+        ContentEncoding: 'base64',
+        ContentType: `image/${type}`,
+        ACL:'public-read',
+        Key: `assets/${storeId}.${type}`
     }).promise();
 
     res.status(http.Success).json({

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const fileController = require('./fileController')
 const aws = require('aws-sdk');
-const bodyParser = require('body-parser');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 
