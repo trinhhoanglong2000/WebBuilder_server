@@ -6,6 +6,7 @@ const logger = require('morgan');
 const cors=require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const db = require('./database');
 
 const passport = require('./helper/passport');
 const accountsRouter = require('./api/accounts');
@@ -17,18 +18,22 @@ const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
 const app = express();
 
-mongoose.connect(process.env.DATABASE_URL, 
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
-)
-.then(() => {
-  console.log("DB connected!")
-})
-.catch((err) => {
- console.log("DB not connected " + err);
-})
+// mongoose.connect(process.env.DATABASE_URL, 
+//   {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+//   }
+// )
+// .then(() => {
+//   console.log("DB connected!")
+// })
+// .catch((err) => {
+//  console.log("DB not connected " + err);
+// })
+
+// db.connect(() => {
+//   console.log("Connected to Database!");
+// })
 
 const corsOptions = {
   origin: ['http://localhost:3001', process.env.CLIENT_URL],

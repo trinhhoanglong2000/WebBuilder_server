@@ -73,14 +73,14 @@ exports.facebookSignIn = async (req,res,next) => {
 }
 exports.createAccount = async (req, res) => {
     // check exist account
-    const is_existed = await accountService.getUserByEmail(req.body.email);
-    if (is_existed) {
-        res.status(http.Conflict).json({
-            statusCode: http.Conflict,
-            message: "email was taken!"
-        })
-        return;
-    }
+    // const is_existed = await accountService.getUserByEmail(req.body.email);
+    // if (is_existed) {
+    //     res.status(http.Conflict).json({
+    //         statusCode: http.Conflict,
+    //         message: "email was taken!"
+    //     })
+    //     return;
+    // }
     
     // create new acc
     const accountObj = {

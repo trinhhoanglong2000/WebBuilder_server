@@ -3,20 +3,30 @@ const Account = require('./accountModel');
 const validate = require('../../helper/validate/accountValidate');
 const genSalt = require('../../helper/genSalt');
 const http = require('../../const');
+const db = require('../../database');
+const { v4: uuidv4 } = require('uuid');
 
-exports.createAccount = (accountObj) => {
+exports.createAccount = async (accountObj) => {
     try {
         // check validate
-        const result = validate.validateAccount(accountObj);
-        if (result.error) return {message: result.error.details[0].message};
+        const valid = validate.validateAccount(accountObj);
+        if (valid.error) return {message: result.error.details[0].message};
     
         // hash pw
         accountObj.password = genSalt.hashPassword(accountObj.password);
 
         // create
-        accountObj._id = mongoose.Types.ObjectId();
-        const account = new Account(accountObj);
-        return account.save();
+        // accountObj._id = mongoose.Types.ObjectId();
+        // const account = new Account(accountObj);
+        // return account.save();
+        
+        const result = await db.query(`
+            INSERT INTO account (id, email, password, fullname, phone, gender, "DOB") 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            returning id;
+            `, [uuidv4(), accountObj.email, accountObj.password, accountObj.fullname, accountObj.phone, accountObj.gender, accountObj.DOB])
+
+        return result;
     } catch (error) {
         console.log(error);
         return null;
