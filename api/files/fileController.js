@@ -39,13 +39,14 @@ exports.uploadBase64Asset = async (req, res) => {
     }).promise();
 
     if (resultS3) {
-        const resultMg = await storeService.updateInfoForOneField('logoUrl', resultS3.Location, storeId);
+        const resultMg = await storeService.updateInfoForOneField('logoURL', resultS3.Location, storeId);
         if (resultMg) {
             res.status(http.Success).json({
                 statusCode: http.Success,
                 data: resultS3.Location,
                 message: "Uploaded!"
             });
+            return;
         }
         else {
             res.status(http.ServerError).json({
@@ -53,6 +54,7 @@ exports.uploadBase64Asset = async (req, res) => {
                 message: "Server Error!"
             });
         }
+        return;
     }
 
     res.status(http.ServerError).json({

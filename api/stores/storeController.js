@@ -148,8 +148,8 @@ exports.getAllPages = async (req, res) => {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: {
-                listPage: pages,
-                logoUrl: logo
+                listPagesId: pages,
+                logoURL: logo
             },
             message: "Get file successfully!"
         })
