@@ -82,3 +82,16 @@ exports.getCssFileForStore = async (storeId) => {
         return null;
     }
 }
+
+exports.updateInfoForOneField = (fieldNeedUpdate, data, storeId) => {
+    try {
+        let fieldToUpdate = {
+            [fieldNeedUpdate]: data
+        }
+        const store = Store.findByIdAndUpdate(storeId, {$set: fieldToUpdate})
+        return store;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}

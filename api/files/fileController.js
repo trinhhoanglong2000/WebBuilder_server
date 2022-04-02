@@ -1,5 +1,6 @@
 const http = require('../../const');
 const AWS = require('aws-sdk');
+const storeService = require('../stores/storeService');
 
 const s3 = new AWS.S3();
 
@@ -28,7 +29,7 @@ exports.uploadBase64Asset = async (req, res) => {
     const buf = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ""),'base64');
     const type = base64Image.split(';')[0].split('/')[1];
 
-    const result = await s3.upload({
+    const resultS3 = await s3.upload({
         Body: buf,
         Bucket: "ezmall-bucket",
         ContentEncoding: 'base64',
@@ -37,9 +38,25 @@ exports.uploadBase64Asset = async (req, res) => {
         Key: `assets/${storeId}.${type}`
     }).promise();
 
-    res.status(http.Success).json({
-        statusCode: http.Success,
-        data: result.Location,
-        message: "Uploaded!"
+    if (resultS3) {
+        const resultMg = storeService.updateInfoForOneField('logoUrl', resultS3.Location, storeId);
+        if (resultMg) {
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data: resultS3.Location,
+                message: "Uploaded!"
+            });
+        }
+        else {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server Error!"
+            });
+        }
+    }
+
+    res.status(http.ServerError).json({
+        statusCode: http.ServerError,
+        message: "Server Error!"
     });
 }
