@@ -138,3 +138,26 @@ exports.getCssFile = async (req, res) => {
         })
     }
 }
+
+exports.getAllPages = async (req, res) => {
+    const id = req.params.storeId;
+    const pages = await pageService.findPageByStoreId(id);
+    const logo = await storeService.getLogo(id);
+
+    if (pages && logo) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: {
+                listPage: pages,
+                logoUrl: logo
+            },
+            message: "Get file successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}

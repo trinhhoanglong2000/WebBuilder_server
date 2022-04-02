@@ -95,3 +95,13 @@ exports.updateInfoForOneField = (fieldNeedUpdate, data, storeId) => {
         return null;
     }
 }
+
+exports.getLogo = (id) => {
+    try {
+        const logo = Store.findOne({_id: id}, 'logoUrl');
+        return logo;
+    } catch (error) {
+        console.log(error);
+        return null;
+    } 
+}

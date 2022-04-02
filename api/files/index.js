@@ -21,8 +21,8 @@ var upload = multer({
     })
 });
 
-router.post('/asset', upload.array('file'), fileController.uploadAsset)
-router.post('/asset/:storeId', fileController.uploadBase64Asset);
+router.post('/assets', upload.array('file'), fileController.uploadAsset)
+router.post('/assets/:storeId', fileController.uploadBase64Asset);
 
 router.get('/:filename(*{1,}(\.css|\.js)$)',fileController.getFileName)
 

@@ -39,7 +39,7 @@ exports.uploadBase64Asset = async (req, res) => {
     }).promise();
 
     if (resultS3) {
-        const resultMg = storeService.updateInfoForOneField('logoUrl', resultS3.Location, storeId);
+        const resultMg = await storeService.updateInfoForOneField('logoUrl', resultS3.Location, storeId);
         if (resultMg) {
             res.status(http.Success).json({
                 statusCode: http.Success,
