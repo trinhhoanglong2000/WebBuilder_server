@@ -16,9 +16,6 @@ exports.createAccount = async (accountObj) => {
         accountObj.password = genSalt.hashPassword(accountObj.password);
 
         // create
-        // accountObj._id = mongoose.Types.ObjectId();
-        // const account = new Account(accountObj);
-        // return account.save();
         
         const result = await db.query(`
             INSERT INTO account (id, email, password, fullname, phone, gender, "DOB") 
@@ -42,9 +39,15 @@ exports.createAccountWithSocialLogin = (accountObj) => {
         return null;
     }
 }
-exports.getUserByEmail = (email) => {
+exports.getUserByEmail = async (email) => {
     try {
-        return Account.findOne({email: email}, '_id email password');
+        const result = await db.query(`
+            SELECT id, email, password 
+            FROM account 
+            WHERE (email = '${email}')
+        `)
+        return result.rows[0];
+        //return Account.findOne({email: email}, '_id email password');
     } catch (error) {
         console.log(error);
         return null;
