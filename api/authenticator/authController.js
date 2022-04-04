@@ -25,7 +25,7 @@ exports.signIn = (req, res, next) => {
             data: {
               user: user,
               token: jwt.sign({
-                  _id: user._id,
+                  id: user.id,
                   email: user.email,
               }, process.env.JWT_SECRET, {
                   expiresIn: '10h'

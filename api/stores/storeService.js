@@ -3,48 +3,67 @@ const Store = require('./storeModel');
 const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3();
+const db = require('../../database');
+const { v4: uuidv4 } = require('uuid');
 
-exports.createStore = (storeObj) => {
+exports.createStore = async (storeObj) => {
     try {
         // create
-        storeObj._id = mongoose.Types.ObjectId();
-        storeObj.userId = mongoose.Types.ObjectId(storeObj.userId);
         storeObj.storeLink = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
-        const store = new Store(storeObj);
-        return store.save();
+
+        const result = await db.query(`
+            INSERT INTO stores (id, "userId", name, "storeLink", description) 
+            VALUES ($1, $2, $3, $4, $5)
+            returning id, "storeLink";
+            `, [uuidv4(), storeObj.userId, storeObj.name, storeObj.storeLink, storeObj.description]
+        );
+
+        return result;
+
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-exports.findAll = () => {
+exports.findAll = async () => {
     try {
-        const stores = Product.find({}).limit(20);
-        return stores;
+        const result = await db.query(`
+            SELECT * 
+            FROM stores
+        `)
+    
+        return result.rows;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-exports.findByUserId = (userId, filter) => {
+exports.findByUserId = async (userId, filter) => {
     try {
-        
-        filter.userId = mongoose.Types.ObjectId(userId)
-        console.log(filter);
-        const stores = Store.find(filter).limit(20);
-        return stores;
+        const result = await db.query(`
+            SELECT * 
+            FROM stores 
+            WHERE ("userId" = '${userId}')
+        `)
+    
+        return result.rows;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-exports.findById = (id) => {
+exports.findById = async (id) => {
     try {
-        const store = Store.findById(id)
-        return store;
+        const result = await db.query(`
+            SELECT * 
+            FROM stores 
+            WHERE (id = '${id}')
+        `)
+    
+        return result.rows[0];
     } catch (error) {
         console.log(error);
         return null;

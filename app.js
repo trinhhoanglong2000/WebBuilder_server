@@ -50,9 +50,9 @@ app.use(cors(corsOptions));
 app.use(passport.initialize());
 
 app.use('/account', authenticator.Authenticate, accountsRouter);
-app.use('/files', fileRouter);
+app.use('/files', authenticator.Authenticate, fileRouter);
 app.use('/auth', authRouter);
-app.use('/stores', storeRouter);
+app.use('/stores', authenticator.Authenticate, storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', authenticator.Authenticate, productRouter);
 

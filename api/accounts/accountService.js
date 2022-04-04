@@ -20,8 +20,9 @@ exports.createAccount = async (accountObj) => {
         const result = await db.query(`
             INSERT INTO account (id, email, password, fullname, phone, gender, "DOB") 
             VALUES ($1, $2, $3, $4, $5, $6, $7)
-            returning id;
-            `, [uuidv4(), accountObj.email, accountObj.password, accountObj.fullname, accountObj.phone, accountObj.gender, accountObj.DOB])
+            returning id; `, 
+            [uuidv4(), accountObj.email, accountObj.password, accountObj.fullname, accountObj.phone, accountObj.gender, accountObj.DOB]
+        );
 
         return result;
     } catch (error) {
