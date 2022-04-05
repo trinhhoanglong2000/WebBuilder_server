@@ -110,3 +110,11 @@ exports.getAllCarouselCollections = (storeId) => {
         return null;
     }
 };
+exports.getCategoryData = (categoryId) => {
+    try {
+        return Banners.filter((value)=> value.categoryId == categoryId);
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
