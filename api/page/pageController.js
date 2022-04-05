@@ -1,8 +1,5 @@
 const pageService = require('./pageService');
-const AWS = require('aws-sdk');
 const http = require('../../const')
-
-const s3 = new AWS.S3();
 
 exports.create = async (req, res) => {
     const pageBody = req.body;
@@ -22,14 +19,14 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.findPageByStoreId = async (req, res) => {
-    const storeId = req.params.id;
-    const result = await pageService.findPageByStoreId(storeId);
+exports.getPageContentURL = async (req, res) => {
+    const id = req.params.id;
+    const result = await pageService.getPageContentURL(id);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
-            message: "Get pages successfully!"
+            message: "Get page content url successfully!"
         })
     }
     else {

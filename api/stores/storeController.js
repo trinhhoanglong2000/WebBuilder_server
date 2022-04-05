@@ -5,7 +5,7 @@ const http = require('../../const');
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
-    storeObj.userId = req.user._id;
+    storeObj.userId = req.user.id;
     const newStore = await storeService.createStore(storeObj);
     if (newStore) {
         res.status(http.Created).json({
@@ -40,7 +40,7 @@ exports.getAllStores = async (req, res) => {
 }
 
 exports.getStoreByUserId = async (req, res) => {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const filter = req.query;
     const result = await storeService.findByUserId(userId, filter);
     if (result) {
@@ -138,3 +138,21 @@ exports.getCssFile = async (req, res) => {
         })
     }
 }
+
+exports.getPagesByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    const result = await pageService.findPageByStoreId(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get pages successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
