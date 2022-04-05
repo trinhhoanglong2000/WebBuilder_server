@@ -37,25 +37,6 @@ exports.getAllProducts = async (req, res) => {
     }
 }
 
-exports.getProductByPageId = async (req, res) => {
-    const pageId = req.params.pageId;
-    const filter = req.query;
-    const result = await productService.findByPageId(pageId, filter);
-    if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Get product successfully!"
-        })
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server error!"
-        })
-    }
-}
-
 exports.getProductById = async (req, res) => {
     const id = req.params.id;
     const result = await productService.findById(id);

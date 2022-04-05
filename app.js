@@ -50,11 +50,11 @@ app.use(cors(corsOptions));
 app.use(passport.initialize());
 
 app.use('/account', authenticator.Authenticate, accountsRouter);
-app.use('/files', authenticator.Authenticate, fileRouter);
+app.use('/files', fileRouter);
 app.use('/auth', authRouter);
 app.use('/stores', authenticator.Authenticate, storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
-app.use('/products', authenticator.Authenticate, productRouter);
+app.use('/products', productRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
