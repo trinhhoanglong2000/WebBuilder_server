@@ -1,45 +1,60 @@
-const mongoose = require('mongoose');
-const Product = require('./productModel');
+const db = require('../../database');
+const { v4: uuidv4 } = require('uuid');
 
-exports.createProduct = (productObj) => {
+exports.createProduct = async (productObj) => {
     try {
-        // create
-        productObj._id = mongoose.Types.ObjectId();
-        productObj.storeId = mongoose.Types.ObjectId(productObj.storeId);
-        const product = new Product(productObj);
-        return product.save();
+        const result = await db.query(`
+        INSERT INTO products (id, "storeId", title, type, status, thumbnail, price, inventory, images) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        returning id;
+        `, [uuidv4(), productObj.storeId, productObj.title, productObj.type, productObj.status, productObj.thumbnail, productObj.price, productObj.inventory, productObj.images]
+    );
+
+    return result;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-exports.findAll = () => {
+exports.findAll = async () => {
     try {
-        const products = Product.find({}).limit(20);
-        return products;
+        const result = await db.query(`
+            SELECT * 
+            FROM products
+        `)
+    
+        return result.rows;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-exports.findByPageId = (pageId, filter) => {
+exports.getProductsByStoreId = async (storeId, filter) => {
     try {
-        
-        filter.pageId = mongoose.Types.ObjectId(pageId)
-        const products = Product.find(filter).limit(20);
-        return products;
+        const result = await db.query(`
+            SELECT * 
+            FROM products 
+            WHERE ("storeId" = '${storeId}')
+        `)
+    
+        return result.rows;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-exports.findById = (id) => {
+exports.findById = async (id) => {
     try {
-        const product = Product.findById(id)
-        return product;
+        const result = await db.query(`
+            SELECT * 
+            FROM products 
+            WHERE (id = '${id}')
+        `)
+    
+        return result.rows[0];
     } catch (error) {
         console.log(error);
         return null;
