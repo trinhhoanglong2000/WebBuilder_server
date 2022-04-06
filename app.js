@@ -14,6 +14,8 @@ const pageRouter = require('./api/page');
 const productRouter = require('./api/products');
 const fileRouter = require('./api/files');
 const storeRouter = require('./api/stores');
+const collectionRouter = require('./api/collections');
+const bannerRouter = require('./api/banners');
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
 const app = express();
@@ -55,6 +57,8 @@ app.use('/auth', authRouter);
 app.use('/stores', authenticator.Authenticate, storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', productRouter);
+app.use('/collections', collectionRouter);
+app.use('/banners', bannerRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

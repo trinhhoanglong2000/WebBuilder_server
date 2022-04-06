@@ -12,6 +12,8 @@ exports.createPage = async (pageBody) => {
         const s3Result = await s3.upload({
             Body: JSON.stringify("", null, '\t'),
             Bucket: "ezmall-bucket",
+            ACL: 'public-read',
+            ContentType: 'text/txt',
             Key: `pages/${pageBody.storeId}/${pageBody.id}.txt`
         }).promise();
 
