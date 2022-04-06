@@ -1,5 +1,6 @@
 const storeService = require('./storeService');
 const pageService = require('../page/pageService');
+const productService = require('../products/productService');
 const http = require('../../const');
 
 exports.createStore = async (req, res) => {
@@ -147,6 +148,24 @@ exports.getPagesByStoreId = async (req, res) => {
             statusCode: http.Success,
             data: result,
             message: "Get pages successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getProductsByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    const result = await productService.getProductsByStoreId(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
         })
     }
     else {
