@@ -18,7 +18,7 @@ passport.use(
       const acc = await accountService.getUserByEmail(email);
       if (acc) {
         if (genSalt.compare(password, acc.password)) {
-          return done(null, { _id: acc._id, email: email });
+          return done(null, { id: acc.id, email: email });
         }
       }
       return done(null, false, { message: "incorect usernanme or password!" });
@@ -32,7 +32,7 @@ opts.secretOrKey = process.env.JWT_SECRET;
 
 passport.use(
   new JwtStrategy(opts, function (jwt_payload, done) {
-    return done(null, { _id: jwt_payload._id, email: jwt_payload.email }); // req.user
+    return done(null, { id: jwt_payload.id, email: jwt_payload.email }); // req.user
   })
 );
 

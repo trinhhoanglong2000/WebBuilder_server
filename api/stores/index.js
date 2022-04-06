@@ -6,6 +6,8 @@ router.get('/', storeController.getStoreByUserId);
 router.get('/:id', storeController.getStoreById);
 router.get('/:storeId/:pageId/content', storeController.loadContent);
 router.get('/css/:storeId', storeController.getCssFile);
+router.get('/:id/pages', storeController.getPagesByStoreId);
+router.get('/:id/products', storeController.getProductsByStoreId);
 
 /* POST create account. */
 router.post('/create', storeController.createStore);
