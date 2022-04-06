@@ -36,7 +36,7 @@ const app = express();
 // })
 
 const corsOptions = {
-  origin: ['http://localhost:3001', process.env.CLIENT_URL],
+  origin: [process.env.MANAGEMENT_CLIENT_URL, process.env.EDITOR_CLIENT_URL],
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
