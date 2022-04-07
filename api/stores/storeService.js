@@ -71,12 +71,10 @@ exports.findById = async (id) => {
 exports.uploadCssFileForStore = async (storeId, css_body) => {
     try {
         await s3.putObject({
-            // Body: JSON.stringify(css_body, null, '\t'),
-            Body: css_body.data,
+            Body: JSON.stringify(css_body.data),
             Bucket: "ezmall-bucket",
-            ContentType: "text/css",
             ACL:'public-read',
-            Key: `css/${storeId}.css`
+            Key: `css/${storeId}.json`
         }).promise();
         return {message: "Update successfully!"};
     } catch (error) {
@@ -91,7 +89,7 @@ exports.getCssFileForStore = async (storeId) => {
             Bucket: "ezmall-bucket",
             Key: `css/${storeId}.css`
         }).promise();
-        console.log(data)
+        
         const content = data.Body.toString('utf-8');
         return content;
     } catch (error) {
