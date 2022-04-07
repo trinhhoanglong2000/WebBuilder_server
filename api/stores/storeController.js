@@ -1,11 +1,14 @@
 const storeService = require('./storeService');
 const pageService = require('../page/pageService');
+const productService = require('../products/productService');
+const productcollectionService = require('../collections/productcollections/productcollectionService');
+const bannercollectionService = require('../collections/bannercollections/bannercollectionService');
 const http = require('../../const');
 
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
-    storeObj.userId = req.user._id;
+    storeObj.userId = req.user.id;
     const newStore = await storeService.createStore(storeObj);
     if (newStore) {
         res.status(http.Created).json({
@@ -40,7 +43,7 @@ exports.getAllStores = async (req, res) => {
 }
 
 exports.getStoreByUserId = async (req, res) => {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const filter = req.query;
     const result = await storeService.findByUserId(userId, filter);
     if (result) {
@@ -139,19 +142,14 @@ exports.getCssFile = async (req, res) => {
     }
 }
 
-exports.getAllPages = async (req, res) => {
-    const id = req.params.storeId;
-    const pages = await pageService.findPageByStoreId(id);
-    const logo = await storeService.getLogo(id);
-
-    if (pages && logo) {
+exports.getPagesByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    const result = await pageService.findPageByStoreId(storeId);
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
-            data: {
-                listPagesId: pages,
-                logoURL: logo
-            },
-            message: "Get file successfully!"
+            data: result,
+            message: "Get pages successfully!"
         })
     }
     else {
@@ -160,4 +158,60 @@ exports.getAllPages = async (req, res) => {
             message: "Server error!"
         })
     }
-}
+};
+
+exports.getProductsByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    const result = await productService.getProductsByStoreId(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getProductCollectionsByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    console.log(storeId)
+    const result = await productcollectionService.getCollectionsByStoreId(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getBannerCollectionsByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    console.log(storeId)
+    const result = await bannercollectionService.getCollectionsByStoreId(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};

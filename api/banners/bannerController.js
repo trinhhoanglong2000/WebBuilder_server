@@ -1,15 +1,15 @@
-const productService = require('./productService');
+const bannerService = require('./bannerService');
 const http = require('../../const');
 
-exports.createProduct = async (req, res) => {
-    // create new product
-    const ProductObj = req.body;
-    const newProduct = await productService.createProduct(ProductObj);
-    if (newProduct) {
+exports.createBanner = async (req, res) => {
+    // create new banner
+    const bannerObj = req.body;
+    const newBanner = await bannerService.createBanner(bannerObj);
+    if (newBanner) {
         res.status(http.Created).json({
             statusCode: http.Created,
-            data: newProduct,
-            message: "Create product successfully!"
+            data: newBanner,
+            message: "Create banner successfully!"
         })
     }
     else {
@@ -20,13 +20,13 @@ exports.createProduct = async (req, res) => {
     }
 }
 
-exports.getAllProducts = async (req, res) => {
-    const result = await productService.findAll();
+exports.getAllbanners = async (req, res) => {
+    const result = await bannerService.findAll();
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
-            message: "Get all products successfully!"
+            message: "Get all banners successfully!"
         })
     }
     else {
@@ -37,14 +37,15 @@ exports.getAllProducts = async (req, res) => {
     }
 }
 
-exports.getProductById = async (req, res) => {
+exports.getBannerById = async (req, res) => {
     const id = req.params.id;
-    const result = await productService.findById(id);
+    console.log(id);
+    const result = await bannerService.findById(id);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
-            message: "Get product successfully!"
+            message: "Get banner successfully!"
         })
     }
     else {
