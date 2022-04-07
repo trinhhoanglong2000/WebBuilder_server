@@ -18,7 +18,6 @@ const collectionRouter = require('./api/collections');
 const bannerRouter = require('./api/banners');
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
-const bodyParser = require('body-parser')
 const app = express();
 
 // mongoose.connect(process.env.DATABASE_URL, 
