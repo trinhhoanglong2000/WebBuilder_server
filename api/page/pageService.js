@@ -85,7 +85,7 @@ exports.findPageById = async (storeId, pageId) => {
     try {
         const data =  await s3.getObject({
             Bucket: "ezmall-bucket",
-            Key: `pages/${storeId}/${pageId}.txt`
+            Key: `pages/${storeId}/${pageId}.json`
         }).promise();
         const content = JSON.parse(data.Body.toString('utf-8'));
         return content;
