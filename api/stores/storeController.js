@@ -2,6 +2,7 @@ const storeService = require('./storeService');
 const pageService = require('../page/pageService');
 const productService = require('../products/productService');
 const productcollectionService = require('../collections/productcollections/productcollectionService');
+const bannercollectionService = require('../collections/bannercollections/bannercollectionService');
 const http = require('../../const');
 
 exports.createStore = async (req, res) => {
@@ -181,6 +182,25 @@ exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     console.log(storeId)
     const result = await productcollectionService.getCollectionsByStoreId(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getBannerCollectionsByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    console.log(storeId)
+    const result = await bannercollectionService.getCollectionsByStoreId(storeId);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
