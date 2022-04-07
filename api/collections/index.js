@@ -1,12 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const collectionController = require('./collectionController')
+const productcollectionController = require('./productcollections/productcollectionController')
+const bannercollectionController = require('./bannercollections/bannercollectionController')
 const authenticator = require('../../middleware/authentication')
 
-router.get('/', collectionController.getAllCollections);
-router.get('/:id', collectionController.getcollectionById);
-router.get('/:id/banners', collectionController.getBannersByCollectionId);
+router.get('/product', productcollectionController.getAllCollections);
+router.get('/product/:id', productcollectionController.getcollectionById);
+
+router.get('/banner', bannercollectionController.getAllCollections);
+router.get('/banner/:id', bannercollectionController.getcollectionById);
+// router.get('/:id/banners', collectionController.getBannersByCollectionId);
 
 /* POST create account. */
-router.post('/create', authenticator.Authenticate, collectionController.createcollection);
+router.post('/product/create', authenticator.Authenticate, productcollectionController.createCollection);
+router.post('/banner/create', authenticator.Authenticate, bannercollectionController.createCollection);
 module.exports = router;

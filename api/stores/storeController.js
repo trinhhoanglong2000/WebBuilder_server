@@ -1,7 +1,7 @@
 const storeService = require('./storeService');
 const pageService = require('../page/pageService');
 const productService = require('../products/productService');
-const collectionService = require('../collections/collectionService');
+const productcollectionService = require('../collections/productcollections/productcollectionService');
 const http = require('../../const');
 
 exports.createStore = async (req, res) => {
@@ -177,10 +177,10 @@ exports.getProductsByStoreId = async (req, res) => {
     }
 };
 
-exports.getCollectionsByStoreId = async (req, res) => {
+exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     console.log(storeId)
-    const result = await collectionService.getCollectionsByStoreId(storeId);
+    const result = await productcollectionService.getCollectionsByStoreId(storeId);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

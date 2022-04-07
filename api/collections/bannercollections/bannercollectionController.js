@@ -1,8 +1,8 @@
-const collectionService = require('./collectionService');
-const bannerService = require('../banners/bannerService');
-const http = require('../../const');
+const collectionService = require('./bannercollectionService');
+const bannerService = require('../../banners/bannerService');
+const http = require('../../../const');
 
-exports.createcollection = async (req, res) => {
+exports.createCollection = async (req, res) => {
     // create new collection
     const collectionObj = req.body;
     const newCollection = await collectionService.createCollection(collectionObj);
@@ -41,6 +41,8 @@ exports.getAllCollections = async (req, res) => {
 exports.getcollectionById = async (req, res) => {
     const id = req.params.id;
     const result = await collectionService.findById(id);
+    const listBanners = await bannerService.getBannersByCollectionId(id);
+    if (listBanners) result.listBanners = listBanners;
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
