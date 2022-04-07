@@ -10,17 +10,17 @@ exports.createAccount = async (accountObj) => {
     try {
         // check validate
         const valid = validate.validateAccount(accountObj);
-        if (valid.error) return {message: result.error.details[0].message};
-    
+        if (valid.error) return { message: result.error.details[0].message };
+
         // hash pw
         accountObj.password = genSalt.hashPassword(accountObj.password);
 
         // create
-        
+
         const result = await db.query(`
             INSERT INTO account (id, email, password, fullname, phone, gender, "DOB") 
             VALUES ($1, $2, $3, $4, $5, $6, $7)
-            returning id; `, 
+            returning id; `,
             [uuidv4(), accountObj.email, accountObj.password, accountObj.fullname, accountObj.phone, accountObj.gender, accountObj.DOB]
         );
 
@@ -53,7 +53,7 @@ exports.getUserByEmail = async (email) => {
         console.log(error);
         return null;
     }
-    
+
 }
 
 exports.findAccWithMail = (email) => {
@@ -66,7 +66,33 @@ exports.findAccWithMail = (email) => {
         console.log(error);
         return null;
     }
-    
+
+}
+exports.updateUser = async (data) => {
+    console.log(JSON.stringify(data))
+    try {
+        //         const result = await db.query(`
+        //         update account
+        // set (fullname) = (j.fullname)
+        // from jsonb_populate_record ( null::account,
+        //     '${JSON.stringify(data)}'::jsonb
+        // )j
+        // where account.id = j.id;
+        //             `);
+        const result = await db.query(`
+        with source as (SELECT * FROM jsonb_populate_record(NULL::account, 
+            '${JSON.stringify(data)}'::jsonb))
+        update account
+        set fullname = j.fullname
+        from source AS j
+        where account.id = j.id;
+            `);
+        return result;
+        //return Account.findOne({email: email}, '_id email password');
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 exports.updateInfoForOneField = (fieldNeedUpdate, data, emailSearch) => {
     try {
@@ -75,7 +101,7 @@ exports.updateInfoForOneField = (fieldNeedUpdate, data, emailSearch) => {
         }
         const account = Account.findOneAndUpdate({
             email: emailSearch
-        }, {$set: fieldToUpdate})
+        }, { $set: fieldToUpdate })
         return account;
     } catch (error) {
         console.log(error);

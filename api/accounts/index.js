@@ -6,4 +6,5 @@ const accountController = require('./accountController')
 
 /* POST create account. */
 router.get('/',accountController.getUserByEmail)
+router.post('/updateaccount',accountController.UpdateUser)
 module.exports = router;
