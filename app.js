@@ -18,6 +18,7 @@ const collectionRouter = require('./api/collections');
 const bannerRouter = require('./api/banners');
 const authRouter = require('./api/authenticator');
 const authenticator = require('./middleware/authentication');
+const bodyParser = require('body-parser')
 const app = express();
 
 // mongoose.connect(process.env.DATABASE_URL, 
@@ -43,10 +44,8 @@ const corsOptions = {
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
 }
-
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({limit:'50mb'}));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
