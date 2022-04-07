@@ -1,63 +1,69 @@
-.navbar .container {
+[data-gjs-type="navbar"].navbar .container {
     min-width: 100%;
     margin: 5px;
     padding: 1vh 4vw;
 }
 
-.navbar i {
+[data-gjs-type="navbar"].navbar i {
     font-size: 25px;
-    padding-left: 3vw;
+    padding-left: 1vw;
     padding-right: 1vw;
 }
 
-.navbar ul {
+[data-gjs-type="navbar"].navbar ul {
+    font-size: 20px;
     list-style-type: none;
 }
 
-.navbar a,
-.offcanvas a,
-.navbar a.navbar-brand:hover {
+[data-gjs-type="navbar"].navbar a,
+[data-gjs-type="navbar"] .offcanvas a,
+[data-gjs-type="navbar"].navbar a.navbar-brand:hover {
     color: black !important;
 }
 
-.navbar a:link {
+[data-gjs-type="navbar"].navbar a:link {
     text-decoration: none !important;
 }
 
-.navbar a:hover,
-.navbar i:hover {
+[data-gjs-type="navbar"].navbar a:hover,
+[data-gjs-type="navbar"].navbar i:hover {
     color: rgb(94, 94, 250) !important;
 }
 
-.navbar a h4 {
+[data-gjs-type="navbar"].navbar a h4 {
     margin: 0;
 }
 
-.navbar li {
+[data-gjs-type="navbar"].navbar li {
     width: auto; 
+    padding: 10px;
 }
 
-.offcanvas .nav-pills .nav-link {
+[data-gjs-type="navbar"] .offcanvas .nav-pills .nav-link {
     border-radius: 0;
 }
 
+[data-gjs-type="navbar"].navbar .navbar-brand img {
+    max-width: 100px;
+}
+
 @media only screen and (max-width: 767px) {
-    .offcanvas a:hover {
+    [data-gjs-type="navbar"] .offcanvas a:hover {
         color: black !important;
         background-color: #BBB;
     }
 
-    .offcanvas li {
+    [data-gjs-type="navbar"] .offcanvas li {
         width: 100%; 
     }
 
-    .navbar i {
+    [data-gjs-type="navbar"].navbar i {
         font-size: 15px;
         padding-left: 1vw;
         padding-right: 1vw;
     }
 
-    .navbar a:hover {
+    [data-gjs-type="navbar"].navbar a:hover {
         color: black !important;
         background-color: #BBB;
     }
