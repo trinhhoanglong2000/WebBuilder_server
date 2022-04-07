@@ -71,21 +71,24 @@ exports.findAccWithMail = (email) => {
 exports.updateUser = async (data) => {
     console.log(JSON.stringify(data))
     try {
-        //         const result = await db.query(`
-        //         update account
-        // set (fullname) = (j.fullname)
-        // from jsonb_populate_record ( null::account,
-        //     '${JSON.stringify(data)}'::jsonb
-        // )j
+        
+        // const result = await db.query(`
+        // with source as (SELECT * FROM jsonb_populate_record(NULL::account, 
+        //     '${JSON.stringify(data)}'::jsonb))
+        // update account
+        // set (fullname,phone) = (j.fullname,j.phone)
+        // from source AS j
         // where account.id = j.id;
-        //             `);
+        //     `);
         const result = await db.query(`
-        with source as (SELECT * FROM jsonb_populate_record(NULL::account, 
-            '${JSON.stringify(data)}'::jsonb))
+        with jsondata(jdata) as (
+            values ('${JSON.stringify(data)}'::jsonb)
+        )
         update account
-        set fullname = j.fullname
-        from source AS j
-        where account.id = j.id;
+        set (fullname,phone) = (select fullname, phone
+            from jsonb_populate_record(NULL::account, to_jsonb(account) || jdata))
+        from jsondata
+            where account.id = (jdata->>'id')::text;
             `);
         return result;
         //return Account.findOne({email: email}, '_id email password');
