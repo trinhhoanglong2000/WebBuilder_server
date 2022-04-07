@@ -60,3 +60,19 @@ exports.findById = async (id) => {
         return null;
     }    
 }
+
+exports.getProductsByCollectionId = async (collectionId, filter) => {
+    try {
+        const result = await db.query(`
+            SELECT * 
+            FROM products as a JOIN product_productcollection as b
+            ON a.id = b.product_id 
+            WHERE (b.productcollection_id = '${collectionId}')
+        `)
+    
+        return result.rows;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}

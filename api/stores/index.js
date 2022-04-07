@@ -8,7 +8,8 @@ router.get('/:storeId/:pageId/content', storeController.loadContent);
 router.get('/css/:storeId', storeController.getCssFile);
 router.get('/:id/pages', storeController.getPagesByStoreId);
 router.get('/:id/products', storeController.getProductsByStoreId);
-router.get('/:id/collections', storeController.getCollectionsByStoreId);
+router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
+router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
 
 /* POST create account. */
 router.post('/create', storeController.createStore);

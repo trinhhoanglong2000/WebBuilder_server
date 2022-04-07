@@ -1,32 +1,32 @@
-const db = require('../../database');
+const db = require('../../../database');
 const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3();
 
-exports.createBanner = async (bannerObj) => {
+exports.createCollection = async (collectionObj) => {
     try {
-        if (bannerObj.image) {
-            const buf = Buffer.from(bannerObj.image.replace(/^data:image\/\w+;base64,/, ""),'base64');
-            const type = bannerObj.image.split(';')[0].split('/')[1];
+        if (collectionObj.thumbnail) {
+            const buf = Buffer.from(collectionObj.thumbnail.replace(/^data:image\/\w+;base64,/, ""),'base64');
+            const type = collectionObj.thumbnail.split(';')[0].split('/')[1];
 
             const s3Result = await s3.upload({
                 Body: buf,
                 Bucket: "ezmall-bucket",
                 ACL: 'public-read',
                 ContentType: `image/${type}`,
-                Key: `assets/banners/${bannerObj.id}.${type}`
+                Key: `assets/collections/product/${collectionObj.id}.${type}`
             }).promise();
 
-            if (s3Result) bannerObj.image = s3Result.Location;
+            if (s3Result) collectionObj.thumbnail = s3Result.Location;
         }
         
 
         const result = await db.query(`
-            INSERT INTO banners (id, bannercollection_id, caption, image, type) 
+            INSERT INTO productcollections (id, "storeId", name, description, thumbnail) 
             VALUES ($1, $2, $3, $4, $5)
-            returning id, image;
-            `, [uuidv4(), bannerObj.collection_id, bannerObj.caption, bannerObj.image, bannerObj.type]
+            returning id, thumbnail;
+            `, [uuidv4(), collectionObj.storeId, collectionObj.name, collectionObj.description, collectionObj.thumbnail]
         );
 
         return result.rows[0];
@@ -40,7 +40,7 @@ exports.findAll = async () => {
     try {
         const result = await db.query(`
             SELECT * 
-            FROM banners
+            FROM productcollections
         `)
     
         return result.rows;
@@ -50,12 +50,12 @@ exports.findAll = async () => {
     }
 }
 
-exports.getBannersByCollectionId = async (collectionId, filter) => {
+exports.getCollectionsByStoreId = async (storeId, filter) => {
     try {
         const result = await db.query(`
             SELECT * 
-            FROM banners 
-            WHERE (bannercollection_id = '${collectionId}')
+            FROM productcollections 
+            WHERE ("storeId" = '${storeId}')
         `)
     
         return result.rows;
@@ -69,7 +69,7 @@ exports.findById = async (id) => {
     try {
         const result = await db.query(`
             SELECT * 
-            FROM banners 
+            FROM productcollections 
             WHERE (id = '${id}')
         `)
     

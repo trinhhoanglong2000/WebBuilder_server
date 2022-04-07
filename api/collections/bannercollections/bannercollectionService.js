@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../../../database');
 const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 
@@ -15,7 +15,7 @@ exports.createCollection = async (collectionObj) => {
                 Bucket: "ezmall-bucket",
                 ACL: 'public-read',
                 ContentType: `image/${type}`,
-                Key: `assets/collections/${collectionObj.id}.${type}`
+                Key: `assets/collections/banner/${collectionObj.id}.${type}`
             }).promise();
 
             if (s3Result) collectionObj.thumbnail = s3Result.Location;
@@ -23,13 +23,13 @@ exports.createCollection = async (collectionObj) => {
         
 
         const result = await db.query(`
-            INSERT INTO collections (id, "storeId", name, description, thumbnail) 
+            INSERT INTO bannercollections (id, "storeId", name, description, thumbnail) 
             VALUES ($1, $2, $3, $4, $5)
             returning id, thumbnail;
             `, [uuidv4(), collectionObj.storeId, collectionObj.name, collectionObj.description, collectionObj.thumbnail]
         );
 
-        return result;
+        return result.rows[0];
     } catch (error) {
         console.log(error);
         return null;
@@ -40,7 +40,7 @@ exports.findAll = async () => {
     try {
         const result = await db.query(`
             SELECT * 
-            FROM collections
+            FROM bannercollections
         `)
     
         return result.rows;
@@ -54,7 +54,7 @@ exports.getCollectionsByStoreId = async (storeId, filter) => {
     try {
         const result = await db.query(`
             SELECT * 
-            FROM collections 
+            FROM bannercollections 
             WHERE ("storeId" = '${storeId}')
         `)
     
@@ -69,7 +69,7 @@ exports.findById = async (id) => {
     try {
         const result = await db.query(`
             SELECT * 
-            FROM collections 
+            FROM bannercollections 
             WHERE (id = '${id}')
         `)
     
