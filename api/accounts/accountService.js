@@ -27,7 +27,7 @@ exports.createAccountWithSocialLogin = (accountObj) => {
 exports.getUserByEmail = async (email) => {
     try {
         const result = await db.query(`
-            SELECT id, email, password 
+            SELECT *
             FROM account 
             WHERE (email = '${email}')
         `)

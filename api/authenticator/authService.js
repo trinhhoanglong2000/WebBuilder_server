@@ -2,6 +2,7 @@ const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const axios = require('axios');
 const accountService = require('../accounts/accountService');
+const DBHelper = require("../../helper/DBHelper/DBHelper")
 const jwt = require('jsonwebtoken');
 const { google } = require('googleapis');
 exports.googleSignIn = async (tokenID, accessToken) => {
@@ -37,35 +38,42 @@ exports.googleSignIn = async (tokenID, accessToken) => {
         
         const bod = date.day + "/" + date.month + "/" + date.year;
         let gender = genders.value;
-        const ObjData = {bod, gender,mail, name, ggID }
-        const acc = await accountService.findAccWithMail(ObjData.mail);
+        const ObjData = {
+            dob: bod, 
+            gender: gender,
+            email: mail, 
+            fullname : name, 
+            gg_id : ggID 
+        }
+        const acc = await accountService.getUserByEmail(ObjData.email)
         if (acc) {
-            if (!acc.ggID) {
-                await accountService.updateInfoForOneField('gg_id', ObjData.ggID, ObjData.mail)
+            if (!acc.gg_id) {
+                let obj = {
+                    gg_id : ObjData.gg_id,
+                    email : ObjData.email
+                }
+                await DBHelper.updateData(obj,"account","email")
             }
         } else {
             let genderOfNewMember;
-            if (data.gender === 'male') genderOfNewMember = true;
+            if (data.gender === 'male' ) genderOfNewMember = true;
             else genderOfNewMember = false;
             let newAccount = {
-                email: ObjData.mail,
-                password: null,
-                fullname: ObjData.name,
-                phone: null,
+                email: ObjData.email,
+                fullname: ObjData.fullname,
                 gender: genderOfNewMember,
-                DOB: ObjData.bod,
-                fbID: null,
-                ggID: ObjData.ggID
+                dob: ObjData.dob,
+                gg_id: ObjData.gg_id
             }
-            await accountService.createAccountWithSocialLogin(newAccount); 
+            await accountService.createAccount(newAccount)
         }
-        
-        const accNew = await accountService.findAccWithMail(mail);  
+
+        const accNew = await accountService.getUserByEmail(mail)
         const result ={
             user: accNew,
             token: jwt.sign({
                 id: accNew.id,
-                username: accNew.username,
+                email: accNew.email,
             }, 'secret', {
                 expiresIn: '10h'
             })
@@ -87,7 +95,7 @@ exports.facebookSignIn = async (tokenID, callback) => {
             
             const data = response.data;
             if (data.error) callback(); 
-            const acc = await accountService.findAccWithMail(data.email);
+            const acc = await accountService.getUserByEmail(data.email);
             
             if (!acc) {
                 let genderOfNewMember;
@@ -99,22 +107,26 @@ exports.facebookSignIn = async (tokenID, callback) => {
                     fullname: data.name,
                     phone: null,
                     gender: genderOfNewMember ,
-                    DOB: data.birthday,
-                    fbID: data.id,
-                    ggID: null
+                    dob: data.birday,
+                    fb_id: data.id,
+                    gg_id: null
                 }
-                await accountService.createAccountWithSocialLogin(newAccount);
+                await accountService.createAccount(newAccount)
                 
-            } else if (!acc.fbID && acc != null) {
-                await accountService.updateInfoForOneField('fb_id', data.id, acc.email)
+            } else if (!acc.fb_id && acc != null) {
+                let obj = {
+                    fb_id : data.id,
+                    email : acc.email
+                }
+                await DBHelper.updateData(obj,"account","email")
             }
             
-            const acc1 = await accountService.findAccWithMail(data.email);
+            const acc1 = await accountService.getUserByEmail(data.email)
             const result ={
                 user: acc1,
                 token: jwt.sign({
                     id: acc1.id,
-                    username: acc1.username,
+                    email: acc1.email,
                 }, 'secret', {
                     expiresIn: '10h'
                 })
