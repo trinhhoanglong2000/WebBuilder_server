@@ -41,7 +41,7 @@ exports.googleSignIn = async (tokenID, accessToken) => {
         const acc = await accountService.findAccWithMail(ObjData.mail);
         if (acc) {
             if (!acc.ggID) {
-                await accountService.updateInfoForOneField('gg_id', ObjData.ggID, ObjData.mail)
+                await accountService.updateInfoForOneField('ggID', ObjData.ggID, ObjData.mail)
             }
         } else {
             let genderOfNewMember;
@@ -106,7 +106,7 @@ exports.facebookSignIn = async (tokenID, callback) => {
                 await accountService.createAccountWithSocialLogin(newAccount);
                 
             } else if (!acc.fbID && acc != null) {
-                await accountService.updateInfoForOneField('fb_id', data.id, acc.email)
+                await accountService.updateInfoForOneField('fbID', data.id, acc.email)
             }
             
             const acc1 = await accountService.findAccWithMail(data.email);

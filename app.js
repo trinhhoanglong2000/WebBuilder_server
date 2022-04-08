@@ -49,7 +49,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
 
-app.use('/account', accountsRouter);
+app.use('/account', authenticator.Authenticate, accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
 app.use('/stores', authenticator.Authenticate, storeRouter);

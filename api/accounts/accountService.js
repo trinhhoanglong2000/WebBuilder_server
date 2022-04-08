@@ -5,7 +5,7 @@ const genSalt = require('../../helper/genSalt');
 const http = require('../../const');
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
-const readData = require('../../helper/updateValue/updateValue')
+
 exports.createAccount = async (accountObj) => {
     try {
         // check validate
@@ -18,7 +18,7 @@ exports.createAccount = async (accountObj) => {
         // create
 
         const result = await db.query(`
-            INSERT INTO account (id, email, password, fullname, phone, gender, dob) 
+            INSERT INTO account (id, email, password, fullname, phone, gender, "DOB") 
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             returning id; `,
             [uuidv4(), accountObj.email, accountObj.password, accountObj.fullname, accountObj.phone, accountObj.gender, accountObj.DOB]
@@ -69,7 +69,33 @@ exports.findAccWithMail = (email) => {
 
 }
 exports.updateUser = async (data) => {
-    return readData.readData(data, "account","id")
+    console.log(JSON.stringify(data))
+    try {
+        
+        // const result = await db.query(`
+        // with source as (SELECT * FROM jsonb_populate_record(NULL::account, 
+        //     '${JSON.stringify(data)}'::jsonb))
+        // update account
+        // set (fullname,phone) = (j.fullname,j.phone)
+        // from source AS j
+        // where account.id = j.id;
+        //     `);
+        const result = await db.query(`
+        with jsondata(jdata) as (
+            values (jsonb_strip_nulls('${JSON.stringify(data)}')::jsonb)
+        )
+        update account
+        set (fullname,phone) = (select fullname, phone
+            from jsonb_populate_record(NULL::account, to_jsonb(account) || jdata))
+        from jsondata
+            where account.id = (jdata->>'id')::text;
+            `);
+        return result;
+        //return Account.findOne({email: email}, '_id email password');
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 exports.updateInfoForOneField = (fieldNeedUpdate, data, emailSearch) => {
     try {
