@@ -23,7 +23,7 @@ exports.createCollection = async (collectionObj) => {
         
 
         const result = await db.query(`
-            INSERT INTO productcollections (id, "storeId", name, description, thumbnail) 
+            INSERT INTO productcollections (id, store_Id, name, description, thumbnail) 
             VALUES ($1, $2, $3, $4, $5)
             returning id, thumbnail;
             `, [uuidv4(), collectionObj.storeId, collectionObj.name, collectionObj.description, collectionObj.thumbnail]
