@@ -82,7 +82,7 @@ exports.updateUser = async (data) => {
         //     `);
         const result = await db.query(`
         with jsondata(jdata) as (
-            values ('${JSON.stringify(data)}'::jsonb)
+            values (jsonb_strip_nulls('${JSON.stringify(data)}')::jsonb)
         )
         update account
         set (fullname,phone) = (select fullname, phone
