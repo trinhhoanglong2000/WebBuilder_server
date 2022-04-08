@@ -4,31 +4,15 @@ const validate = require('../../helper/validate/accountValidate');
 const genSalt = require('../../helper/genSalt');
 const http = require('../../const');
 const db = require('../../database');
-const { v4: uuidv4 } = require('uuid');
-const readData = require('../../helper/updateValue/updateValue')
+
+const DBHelper = require('../../helper/DBHelper/DBHelper')
+
 exports.createAccount = async (accountObj) => {
-    try {
-        // check validate
-        const valid = validate.validateAccount(accountObj);
-        if (valid.error) return { message: result.error.details[0].message };
-
-        // hash pw
-        accountObj.password = genSalt.hashPassword(accountObj.password);
-
-        // create
-
-        const result = await db.query(`
-            INSERT INTO account (id, email, password, fullname, phone, gender, dob) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            returning id; `,
-            [uuidv4(), accountObj.email, accountObj.password, accountObj.fullname, accountObj.phone, accountObj.gender, accountObj.DOB]
-        );
-
-        return result;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+    const valid = validate.validateAccount(accountObj);
+    if (valid.error) return { message: result.error.details[0].message };
+    // hash pw
+    accountObj.password = genSalt.hashPassword(accountObj.password);
+    return DBHelper.insertData(accountObj,"account",true)
 }
 exports.createAccountWithSocialLogin = (accountObj) => {
     try {
@@ -69,7 +53,7 @@ exports.findAccWithMail = (email) => {
 
 }
 exports.updateUser = async (data) => {
-    return readData.readData(data, "account","id")
+    return DBHelper.updateData(data, "account", "id")
 }
 exports.updateInfoForOneField = (fieldNeedUpdate, data, emailSearch) => {
     try {

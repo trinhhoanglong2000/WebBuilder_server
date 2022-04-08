@@ -72,27 +72,7 @@ exports.facebookSignIn = async (req,res,next) => {
     });
 }
 exports.createAccount = async (req, res) => {
-    // check exist account
-    // const is_existed = await accountService.getUserByEmail(req.body.email);
-    // if (is_existed) {
-    //     res.status(http.Conflict).json({
-    //         statusCode: http.Conflict,
-    //         message: "email was taken!"
-    //     })
-    //     return;
-    // }
-    
-    // create new acc
-    const accountObj = {
-        email: req.body.email,
-        password: req.body.password,
-        fullname: req.body.fullname,
-        phone: req.body.phone,
-        gender: req.body.gender,
-        DOB: req.body.dob,
-        fbID: req.body.fb_id,
-        ggID: req.body.gg_id
-    }
+    const accountObj = req.body
     const newAccount = await accountService.createAccount(accountObj);
     if (newAccount) {
         if (newAccount.message) {

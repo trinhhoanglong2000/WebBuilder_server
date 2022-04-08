@@ -1,21 +1,18 @@
 const passport = require('passport')
 const db = require("../../database/index");
-exports.readData = async (data,name,condition) => {
-    // console.log(JSON.stringify(data))
-    // console.log(name)
-   let arr = Object.keys(data)
-   let conditionArr 
-    for( var i = 0; i < arr.length; i++){ 
-    
-        if ( arr[i] === condition) { 
-    
-            conditionArr = arr.splice(i, 1); 
+const { v4: uuidv4 } = require('uuid');
+
+exports.updateData = async (data, name, condition) => {
+    let arr = Object.keys(data)
+    let conditionArr
+    for (var i = 0; i < arr.length; i++) {
+
+        if (arr[i] === condition) {
+            conditionArr = arr.splice(i, 1);
         }
-    
     }
-    console.log(conditionArr)
     try {
-        
+
         // const result = await db.query(`
         // with source as (SELECT * FROM jsonb_populate_record(NULL::account, 
         //     '${JSON.stringify(data)}'::jsonb))
@@ -34,6 +31,29 @@ exports.readData = async (data,name,condition) => {
         from jsondata
             where ${name}.${conditionArr[0]} = (jdata->>'${conditionArr[0]}')::text;
             `);
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+exports.insertData = async (data, name, needId) => {
+    try {
+        // create
+        if (needId){
+            data.id = uuidv4()
+        }
+      
+        let arr = Object.keys(data)
+        let arr1 = Object.values(data)
+        for (var i = 0; i < arr1.length; i++) {
+            arr1[i] = "'" + arr1[i] + "'"
+        }
+        const result = await db.query(`
+        INSERT INTO ${name} (${arr})
+        VALUES (${arr1})
+        RETURNING id
+        `,);
         return result;
     } catch (error) {
         console.log(error);
