@@ -10,7 +10,7 @@ exports.createStore = async (storeObj) => {
         storeObj.storeLink = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
 
         const result = await db.query(`
-            INSERT INTO stores (id, "userId", name, "storeLink", description) 
+            INSERT INTO stores (id, user_id, name, "storeLink", description) 
             VALUES ($1, $2, $3, $4, $5)
             returning id, "storeLink";
             `, [uuidv4(), storeObj.userId, storeObj.name, storeObj.storeLink, storeObj.description]
@@ -43,7 +43,7 @@ exports.findByUserId = async (userId, filter) => {
         const result = await db.query(`
             SELECT * 
             FROM stores 
-            WHERE ("userId" = '${userId}')
+            WHERE (user_id = '${userId}')
         `)
     
         return result.rows;
