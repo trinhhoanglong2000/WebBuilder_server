@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const fileController = require('./fileController')
 const aws = require('aws-sdk');
-const bodyParser = require('body-parser');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 
@@ -22,7 +21,9 @@ var upload = multer({
     })
 });
 
-router.post('/asset', upload.array('file'), fileController.uploadAsset)
+router.post('/assets', upload.array('file'), fileController.uploadAsset)
+router.post('/assets/:storeId', fileController.uploadBase64Asset);
+
 router.get('/:filename(*{1,}(\.css|\.js)$)',fileController.getFileName)
 
 module.exports = router;

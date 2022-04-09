@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 exports.createProduct = async (productObj) => {
     try {
         const result = await db.query(`
-        INSERT INTO products (id, "storeId", title, type, status, thumbnail, price, inventory, images) 
+        INSERT INTO products (id, store_id, title, type, status, thumbnail, price, inventory, images) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         returning id;
         `, [uuidv4(), productObj.storeId, productObj.title, productObj.type, productObj.status, productObj.thumbnail, productObj.price, productObj.inventory, productObj.images]
@@ -36,7 +36,7 @@ exports.getProductsByStoreId = async (storeId, filter) => {
         const result = await db.query(`
             SELECT * 
             FROM products 
-            WHERE ("storeId" = '${storeId}')
+            WHERE store_id = '${storeId}')
         `)
     
         return result.rows;

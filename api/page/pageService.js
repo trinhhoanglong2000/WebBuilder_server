@@ -18,7 +18,7 @@ exports.createPage = async (pageBody) => {
         }).promise();
 
         const result = await db.query(`
-            INSERT INTO pages (id, "storeId", name, "contentURL") 
+            INSERT INTO pages (id, store_id, name, content_URL) 
             VALUES ($1, $2, $3, $4)
             returning id, "contentURL";
             `, [pageBody.id, pageBody.storeId, pageBody.name, s3Result? s3Result.Location : ""]);
@@ -36,7 +36,7 @@ exports.findPageByStoreId = async (storeId) => {
         const result = await db.query(`
             SELECT * 
             FROM pages 
-            WHERE ("storeId" = '${storeId}')
+            WHERE (store_Id = '${storeId}')
         `)
     
         return result.rows;
@@ -47,6 +47,10 @@ exports.findPageByStoreId = async (storeId) => {
 };
 
 exports.savePageContent = async (storeId, pageId, content) => {
+    console.log(storeId)
+    console.log(pageId)
+    console.log(content)
+
     try {
         await s3.putObject({
             Body: JSON.stringify(content, null, '\t'),
@@ -65,7 +69,7 @@ exports.savePageContent = async (storeId, pageId, content) => {
 exports.getPageContentURL = async (pageId) => {
     try {
         const result = await db.query(`
-            SELECT "contentURL" 
+            SELECT content_url 
             FROM pages 
             WHERE (id = '${pageId}')
         `)
@@ -81,7 +85,7 @@ exports.findPageById = async (storeId, pageId) => {
     try {
         const data =  await s3.getObject({
             Bucket: "ezmall-bucket",
-            Key: `pages/${storeId}/${pageId}.txt`
+            Key: `pages/${storeId}/${pageId}.json`
         }).promise();
         const content = JSON.parse(data.Body.toString('utf-8'));
         return content;

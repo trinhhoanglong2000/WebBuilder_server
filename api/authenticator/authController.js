@@ -28,7 +28,7 @@ exports.signIn = (req, res, next) => {
                   id: user.id,
                   email: user.email,
               }, process.env.JWT_SECRET, {
-                  expiresIn: '10h'
+                  expiresIn: '365d'
               })
             },
             message: "Login sucessfully!"
@@ -72,27 +72,7 @@ exports.facebookSignIn = async (req,res,next) => {
     });
 }
 exports.createAccount = async (req, res) => {
-    // check exist account
-    // const is_existed = await accountService.getUserByEmail(req.body.email);
-    // if (is_existed) {
-    //     res.status(http.Conflict).json({
-    //         statusCode: http.Conflict,
-    //         message: "email was taken!"
-    //     })
-    //     return;
-    // }
-    
-    // create new acc
-    const accountObj = {
-        email: req.body.email,
-        password: req.body.password,
-        fullname: req.body.fullname,
-        phone: req.body.phone,
-        gender: req.body.gender,
-        DOB: req.body.DOB,
-        fbID: req.body.fbID,
-        ggID: req.body.ggID
-    }
+    const accountObj = req.body
     const newAccount = await accountService.createAccount(accountObj);
     if (newAccount) {
         if (newAccount.message) {
