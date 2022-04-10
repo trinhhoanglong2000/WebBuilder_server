@@ -124,24 +124,6 @@ exports.uploadCssFile = async (req, res) => {
     }
 }
 
-exports.getCssFile = async (req, res) => {
-    const id = req.params.storeId;
-    const result = await storeService.getCssFileForStore(id);
-    if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Get file successfully!"
-        })
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server error!"
-        })
-    }
-}
-
 exports.getProductsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     const result = await productService.getProductsByStoreId(storeId);
@@ -203,14 +185,14 @@ exports.getInitDataStore = async (req, res) => {
     const listPagesId = pageService.getPagesByStoreId(storeId);
     const storeCssData = storeService.getCssFileForStore(storeId);
     const result = await Promise.all([logoURL, listPagesId, storeCssData]);
-
+    console.log(result[0])
+    console.log(result[1])
     console.log(result[2])
-
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: {
-                logoURL: result[0],
+                logoURL: result[0].logo_url,
                 listPagesId: result[1],
                 storeCssData: result[2]
             },

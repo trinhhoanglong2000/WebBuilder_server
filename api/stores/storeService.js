@@ -91,7 +91,7 @@ exports.getCssFileForStore = async (storeId) => {
             Key: `css/${storeId}.json`
         }).promise();
         
-        const content = data.Body.toString('utf-8');
+        const content = JSON.parse(data.Body);
         return content;
     } catch (error) {
         console.log(error);

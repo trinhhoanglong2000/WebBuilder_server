@@ -5,7 +5,6 @@ const storeController = require('./storeController')
 router.get('/', storeController.getStoreByUserId);
 router.get('/:id', storeController.getStoreById);
 router.get('/:storeId/:pageId/content', storeController.loadContent);
-router.get('/css/:storeId', storeController.getCssFile);
 router.get('/:id/products', storeController.getProductsByStoreId);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
