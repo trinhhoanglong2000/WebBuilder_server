@@ -107,7 +107,7 @@ exports.facebookSignIn = async (tokenID, callback) => {
                     fullname: data.name,
                     phone: null,
                     gender: genderOfNewMember ,
-                    dob: data.birday,
+                    dob: data.birthday,
                     fb_id: data.id,
                     gg_id: null
                 }
