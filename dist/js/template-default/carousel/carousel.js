@@ -1,5 +1,5 @@
 carousel_block_js = true;
-//alert('Carousel are loaded');
+//('Carousel are loaded');
 console.log(document)
 function callback(mutationList) {
   mutationList.forEach(function (mutation) {
@@ -15,7 +15,7 @@ function callback(mutationList) {
             break
         }
         break;
-    }
+    }alert
   });
 }
 
@@ -70,6 +70,8 @@ function CarouselsGenerateCodeStart() {
     CarouselsGenerateCodeItem(categoryId,itemID)
   }
 }
-CarouselsGenerateCodeStart();
-//SetListenOnChangeAtrribute();
 
+//SetListenOnChangeAtrribute();
+$(document).ready(function () {
+  CarouselsGenerateCodeStart();
+})

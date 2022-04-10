@@ -25,7 +25,6 @@ function loadScripts(array, callback) {
 }
 
 function getAllComponetScript() {
-    debugger;
     let ArrScript = [];
     if ($("div[ez-mall-type='carousel']").length !=  0 && carousel_block_js ){
         ArrScript.push( `http://localhost:5000/files/dist/js/template-default/carousel/carousel.js`)
@@ -33,7 +32,6 @@ function getAllComponetScript() {
     loadScripts(
         ArrScript
       , function () {
-        alert('All things are loaded');
     });
 }
 $(document).ready(function () {
