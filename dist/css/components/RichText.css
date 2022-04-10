@@ -1,0 +1,5 @@
+[data-gjs-type="RichText"]{
+    text-align: center;
+    width: calc(100% - 15rem);
+    margin: auto;
+}

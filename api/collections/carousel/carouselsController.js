@@ -18,3 +18,20 @@ exports.getAllCollections = (req, res) => {
         })
     }
 }
+
+exports.getCategoryData= (req, res) => {
+    const categoryId = req.params.id;
+    console.log(req.params)
+    let result =service.getCategoryData(categoryId)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+        })
+    } else {
+        res.status(http.NotFound).json({
+            statusCode: http.ServerError,
+            message: "Server error"
+        })
+    }
+}
