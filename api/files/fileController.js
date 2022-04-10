@@ -1,6 +1,7 @@
 const http = require('../../const');
 const AWS = require('aws-sdk');
 const storeService = require('../stores/storeService');
+const DBHelper = require('../../helper/DBHelper/DBHelper');
 
 const s3 = new AWS.S3();
 
@@ -38,8 +39,13 @@ exports.uploadBase64Asset = async (req, res) => {
         Key: `assets/${storeId}.${type}`
     }).promise();
 
+    const data = {
+        id: storeId,
+        logo_url: resultS3.Location
+    }
+
     if (resultS3) {
-        const resultMg = await storeService.updateInfoForOneField('logoURL', resultS3.Location, storeId);
+        const resultMg = await DBHelper.updateData(data, "stores", "id");
         if (resultMg) {
             res.status(http.Success).json({
                 statusCode: http.Success,

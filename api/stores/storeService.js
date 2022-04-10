@@ -98,23 +98,15 @@ exports.getCssFileForStore = async (storeId) => {
     }
 }
 
-exports.updateInfoForOneField = (fieldNeedUpdate, data, storeId) => {
-    try {
-        let fieldToUpdate = {
-            [fieldNeedUpdate]: data
-        }
-        const store = Store.findByIdAndUpdate(storeId, {$set: fieldToUpdate})
-        return store;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
 
 exports.getLogo = (id) => {
     try {
-        const logo = Store.findOne({_id: id}, 'logoUrl');
-        return logo;
+        const result = db.query(`
+            SELECT logo_url 
+            FROM stores
+            WHERE (id = ${id})
+        `)
+        return result.rows[0];
     } catch (error) {
         console.log(error);
         return null;
