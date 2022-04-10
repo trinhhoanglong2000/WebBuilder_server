@@ -47,9 +47,6 @@ exports.findPageByStoreId = async (storeId) => {
 };
 
 exports.savePageContent = async (storeId, pageId, content) => {
-    console.log(storeId)
-    console.log(pageId)
-    console.log(content)
 
     try {
         await s3.putObject({
