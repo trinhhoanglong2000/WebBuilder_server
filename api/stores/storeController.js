@@ -142,24 +142,6 @@ exports.getCssFile = async (req, res) => {
     }
 }
 
-exports.getPagesByStoreId = async (req, res) => {
-    const storeId = req.params.id;
-    const result = await pageService.findPageByStoreId(storeId);
-    if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Get pages successfully!"
-        })
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server error!"
-        })
-    }
-};
-
 exports.getProductsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     const result = await productService.getProductsByStoreId(storeId);
@@ -199,12 +181,39 @@ exports.getProductCollectionsByStoreId = async (req, res) => {
 
 exports.getBannerCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
-    console.log(storeId)
     const result = await bannercollectionService.getCollectionsByStoreId(storeId);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getInitDataStore = async (req, res) => {
+    const storeId = req.params.id;
+    const logoURL = storeService.getLogo(storeId);
+    const listPagesId = pageService.getPagesByStoreId(storeId);
+    const storeCssData = storeService.getCssFileForStore(storeId);
+    const result = await Promise.all([logoURL, listPagesId, storeCssData]);
+
+    console.log(result[2])
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: {
+                logoURL: result[0],
+                listPagesId: result[1],
+                storeCssData: result[2]
+            },
             message: "Get products successfully!"
         })
     }

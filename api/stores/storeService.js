@@ -74,6 +74,7 @@ exports.uploadCssFileForStore = async (storeId, css_body) => {
             Body: JSON.stringify(css_body.data),
             Bucket: "ezmall-bucket",
             ACL:'public-read',
+            ContentType: 'text/json',
             Key: `css/${storeId}.json`
         }).promise();
         return {message: "Update successfully!"};
@@ -87,7 +88,7 @@ exports.getCssFileForStore = async (storeId) => {
     try {
         const data =  await s3.getObject({
             Bucket: "ezmall-bucket",
-            Key: `css/${storeId}.css`
+            Key: `css/${storeId}.json`
         }).promise();
         
         const content = data.Body.toString('utf-8');
@@ -99,12 +100,12 @@ exports.getCssFileForStore = async (storeId) => {
 }
 
 
-exports.getLogo = (id) => {
+exports.getLogo = async (id) => {
     try {
-        const result = db.query(`
+        const result = await db.query(`
             SELECT logo_url 
-            FROM stores
-            WHERE (id = ${id})
+            FROM stores 
+            WHERE (id = '${id}')
         `)
         return result.rows[0];
     } catch (error) {

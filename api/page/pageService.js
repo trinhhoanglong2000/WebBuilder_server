@@ -31,10 +31,10 @@ exports.createPage = async (pageBody) => {
     
 };
 
-exports.findPageByStoreId = async (storeId) => {
+exports.getPagesByStoreId = async (storeId) => {
     try {
         const result = await db.query(`
-            SELECT * 
+            SELECT id, name 
             FROM pages 
             WHERE (store_Id = '${storeId}')
         `)

@@ -4,7 +4,6 @@ const pageController = require('./pageController');
 
 router.post('/create', pageController.create);
 
-// router.get('/:id', pageController.findPageByStoreId);
 router.get('/:id/content-url', pageController.getPageContentURL);
 
 
