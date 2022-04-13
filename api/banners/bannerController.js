@@ -39,7 +39,6 @@ exports.getAllbanners = async (req, res) => {
 
 exports.getBannerById = async (req, res) => {
     const id = req.params.id;
-    console.log(id);
     const result = await bannerService.findById(id);
     if (result) {
         res.status(http.Success).json({

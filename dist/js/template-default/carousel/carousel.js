@@ -73,5 +73,13 @@ function CarouselsGenerateCodeStart() {
 
 //SetListenOnChangeAtrribute();
 $(document).ready(function () {
-  CarouselsGenerateCodeStart();
+  if ($('[data-gjs-type="wrapper"]').length){
+    $('[data-gjs-type="wrapper"]').ready(function(){
+      CarouselsGenerateCodeStart();  
+    })
+  }
+  else{
+    CarouselsGenerateCodeStart();
+  }
+  
 })

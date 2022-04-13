@@ -144,7 +144,6 @@ exports.getProductsByStoreId = async (req, res) => {
 
 exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
-    console.log(storeId)
     const result = await productcollectionService.getCollectionsByStoreId(storeId);
     if (result) {
         res.status(http.Success).json({
@@ -185,9 +184,7 @@ exports.getInitDataStore = async (req, res) => {
     const listPagesId = pageService.getPagesByStoreId(storeId);
     const storeCssData = storeService.getCssFileForStore(storeId);
     const result = await Promise.all([logoURL, listPagesId, storeCssData]);
-    console.log(result[0])
-    console.log(result[1])
-    console.log(result[2])
+
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

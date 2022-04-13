@@ -102,7 +102,6 @@ const Banners= [
 
 
 exports.getAllCarouselCollections = (storeId) => {
-    console.log(storeId)
     try {
         return Collections.filter((value)=> value.storeID == storeId);
     } catch (error) {

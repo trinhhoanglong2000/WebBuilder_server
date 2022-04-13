@@ -6,7 +6,6 @@ const DBHelper = require('../../helper/DBHelper/DBHelper');
 const s3 = new AWS.S3();
 
 exports.getFileName = async (req, res) =>{
-    console.log(req.params.filename);
     res.status(http.Success).sendFile(`${req.params.filename}`,{root:'.'})
 }
 
