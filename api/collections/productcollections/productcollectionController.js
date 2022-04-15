@@ -58,6 +58,31 @@ exports.getcollectionById = async (req, res) => {
     }
 }
 
+exports.getcollection = async (req, res) => {
+    const query = req.query
+    console.log(query)
+    const result = await collectionService.getData(query)
+    for (let i = 0; i < result.length; i++) {
+        const listProducts = await productService.getProductsByCollectionId(result[i].id);
+        if (listProducts) {
+            result[i].listProducts = listProducts
+        }
+    }
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get collection successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
 exports.getProductsByCollectionId = async (req, res) => {
     const collectionId = req.params.id;
     const result = await productService.getProductsByCollectionId(collectionId);

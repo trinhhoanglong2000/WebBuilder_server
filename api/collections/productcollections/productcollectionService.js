@@ -1,7 +1,8 @@
 const db = require('../../../database');
 const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
-
+const DBHelper = require('../../../helper/DBHelper/DBHelper');
+const { collection } = require('../../accounts/accountModel');
 const s3 = new AWS.S3();
 
 exports.createCollection = async (collectionObj) => {
@@ -21,15 +22,7 @@ exports.createCollection = async (collectionObj) => {
             if (s3Result) collectionObj.thumbnail = s3Result.Location;
         }
         
-
-        const result = await db.query(`
-            INSERT INTO productcollections (id, store_Id, name, description, thumbnail) 
-            VALUES ($1, $2, $3, $4, $5)
-            returning id, thumbnail;
-            `, [uuidv4(), collectionObj.storeId, collectionObj.name, collectionObj.description, collectionObj.thumbnail]
-        );
-
-        return result.rows[0];
+        return DBHelper.insertData(collectionObj,"productcollections",true)
     } catch (error) {
         console.log(error);
         return null;
@@ -37,17 +30,7 @@ exports.createCollection = async (collectionObj) => {
 }
 
 exports.findAll = async () => {
-    try {
-        const result = await db.query(`
-            SELECT * 
-            FROM productcollections
-        `)
-    
-        return result.rows;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+    return DBHelper.getData(null,"productcollections")
 }
 
 exports.getCollectionsByStoreId = async (storeId, filter) => {
@@ -78,4 +61,7 @@ exports.findById = async (id) => {
         console.log(error);
         return null;
     }    
+}
+exports.getData = async (data) =>{
+    return DBHelper.getData(data,"productcollections")
 }

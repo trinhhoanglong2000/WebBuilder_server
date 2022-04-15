@@ -20,7 +20,6 @@ exports.getUserByEmail = async (req, res) => {
     }
 }
 exports.UpdateUser = async (req, res) => {
-    //user: { _id: '6211f270291ae1981a20f75e', email: 'longem@gmail.com' },
     const result = await accountService.updateUser(req.body);
     if (result) {
         res.status(http.Success).json({

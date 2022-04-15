@@ -1,20 +1,9 @@
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
-
+const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createProduct = async (productObj) => {
-    try {
-        const result = await db.query(`
-        INSERT INTO products (id, store_id, title, type, status, thumbnail, price, inventory, images) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        returning id;
-        `, [uuidv4(), productObj.storeId, productObj.title, productObj.type, productObj.status, productObj.thumbnail, productObj.price, productObj.inventory, productObj.images]
-    );
-
-    return result;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+    console.log(productObj)
+    return DBHelper.insertData(productObj,"products",true)
 }
 
 exports.findAll = async () => {
@@ -61,7 +50,7 @@ exports.findById = async (id) => {
     }    
 }
 
-exports.getProductsByCollectionId = async (collectionId, filter) => {
+exports.getProductsByCollectionId = async (collectionId) => {
     try {
         const result = await db.query(`
             SELECT * 

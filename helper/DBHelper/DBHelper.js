@@ -3,6 +3,7 @@ const db = require("../../database/index");
 const { v4: uuidv4 } = require('uuid');
 
 exports.updateData = async (data, name, condition) => {
+    console.log(uuidv4())
     let arr = Object.keys(data)
     let conditionArr
     for (var i = 0; i < arr.length; i++) {
@@ -40,10 +41,10 @@ exports.updateData = async (data, name, condition) => {
 exports.insertData = async (data, name, needId) => {
     try {
         // create
-        if (needId){
+        if (needId) {
             data.id = uuidv4()
         }
-      
+
         let arr = Object.keys(data)
         let arr1 = Object.values(data)
         for (var i = 0; i < arr1.length; i++) {
@@ -55,6 +56,38 @@ exports.insertData = async (data, name, needId) => {
         RETURNING id
         `,);
         return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+exports.getData = async (data, name) => {
+    try {
+        
+        if (data === null) {
+            const result = await db.query(`
+        SELECT *
+        FROM ${name}
+        `,);
+            return result.rows;
+        }
+        else {
+            console.log("Going here")
+            let arr = Object.keys(data)
+            let arr1 = Object.values(data)
+            console.log(arr)
+            console.log(arr1)
+            for (var i = 0; i < arr1.length; i++) {
+                arr1[i] = "'" + arr1[i] + "'"
+            }
+
+            const result = await db.query(`
+        SELECT *
+        FROM ${name}
+        WHERE (${arr}) = (${arr1})
+        `,);
+            return result.rows;
+        }
     } catch (error) {
         console.log(error);
         return null;
