@@ -10,8 +10,6 @@ router.get('/category/:id',carouselsController.getCategoryData)
 //#endregion
 
 router.get('/product', productcollectionController.getAllCollections);
-router.get('/product/get', productcollectionController.getcollection)
-router.get('/product/getproduct', productcollectionController.getProductCollection)
 router.get('/product/:id', productcollectionController.getcollectionById);
 
 

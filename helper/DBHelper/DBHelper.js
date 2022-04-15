@@ -63,8 +63,10 @@ exports.insertData = async (data, name, needId) => {
 }
 exports.getData = async (data, name) => {
     try {
-        
-        if (data === null) {
+        let arr = Object.keys(data)
+        let arr1 = Object.values(data)
+
+        if (data === null || arr.length === 0) {
             const result = await db.query(`
         SELECT *
         FROM ${name}
@@ -72,11 +74,6 @@ exports.getData = async (data, name) => {
             return result.rows;
         }
         else {
-            console.log("Going here")
-            let arr = Object.keys(data)
-            let arr1 = Object.values(data)
-            console.log(arr)
-            console.log(arr1)
             for (var i = 0; i < arr1.length; i++) {
                 arr1[i] = "'" + arr1[i] + "'"
             }

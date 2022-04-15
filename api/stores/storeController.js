@@ -144,7 +144,9 @@ exports.getProductsByStoreId = async (req, res) => {
 
 exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
-    const result = await productcollectionService.getCollectionsByStoreId(storeId);
+    const query = req.query
+    query.store_id = req.params.id
+    const result = await productcollectionService.getData(query)
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

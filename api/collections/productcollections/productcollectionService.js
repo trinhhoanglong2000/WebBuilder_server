@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 const DBHelper = require('../../../helper/DBHelper/DBHelper');
 const { collection } = require('../../accounts/accountModel');
+const { query } = require('express');
 const s3 = new AWS.S3();
 
 exports.createCollection = async (collectionObj) => {
@@ -48,19 +49,8 @@ exports.getCollectionsByStoreId = async (storeId, filter) => {
     }
 }
 
-exports.findById = async (id) => {
-    try {
-        const result = await db.query(`
-            SELECT * 
-            FROM productcollections 
-            WHERE (id = '${id}')
-        `)
-    
-        return result.rows[0];
-    } catch (error) {
-        console.log(error);
-        return null;
-    }    
+exports.findById = async (query) => {
+    return DBHelper.getData(query,"productcollections")  
 }
 exports.getData = async (data) =>{
     return DBHelper.getData(data,"productcollections")
