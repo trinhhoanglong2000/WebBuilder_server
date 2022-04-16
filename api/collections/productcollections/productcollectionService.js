@@ -9,7 +9,7 @@ const s3 = new AWS.S3();
 exports.createCollection = async (collectionObj) => {
     try {
         if (collectionObj.thumbnail) {
-            const buf = Buffer.from(collectionObj.thumbnail.replace(/^data:image\/\w+;base64,/, ""),'base64');
+            const buf = Buffer.from(collectionObj.thumbnail.replace(/^data:image\/\w+;base64,/, ""), 'base64');
             const type = collectionObj.thumbnail.split(';')[0].split('/')[1];
 
             const s3Result = await s3.upload({
@@ -22,8 +22,8 @@ exports.createCollection = async (collectionObj) => {
 
             if (s3Result) collectionObj.thumbnail = s3Result.Location;
         }
-        
-        return DBHelper.insertData(collectionObj,"productcollections",true)
+
+        return DBHelper.insertData(collectionObj, "productcollections", true)
     } catch (error) {
         console.log(error);
         return null;
@@ -31,7 +31,7 @@ exports.createCollection = async (collectionObj) => {
 }
 
 exports.findAll = async () => {
-    return DBHelper.getData(null,"productcollections")
+    return DBHelper.getData("productcollections")
 }
 
 exports.getCollectionsByStoreId = async (storeId, filter) => {
@@ -41,7 +41,7 @@ exports.getCollectionsByStoreId = async (storeId, filter) => {
             FROM productcollections 
             WHERE ("storeId" = '${storeId}')
         `)
-    
+
         return result.rows;
     } catch (error) {
         console.log(error);
@@ -50,8 +50,28 @@ exports.getCollectionsByStoreId = async (storeId, filter) => {
 }
 
 exports.findById = async (query) => {
-    return DBHelper.getData(query,"productcollections")  
+    
+    let config = {
+        where: {
+            id: query.id
+        }
+    }
+    // return DBHelper.getData("productcollections",query)  
+    return DBHelper.FindAll("productcollections",config)
 }
-exports.getData = async (data) =>{
-    return DBHelper.getData(data,"productcollections")
+exports.getData = async (query) => {
+    //name
+
+    let condition =[];
+    condition.push({store_id : query.store_id})
+    if (query.name)
+        condition.push({name:{"OP.LIKE" : "%" + query.name + "%"}})
+    console.log(condition)
+    let config = {
+        where: {
+            "OP.AND" : condition,
+        }
+    }
+    // return DBHelper.getData("productcollections",query)  
+    return DBHelper.FindAll("productcollections",config)
 }

@@ -145,7 +145,7 @@ exports.getProductsByStoreId = async (req, res) => {
 exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     const query = req.query
-    query.store_id = req.params.id
+    query.store_id = storeId
     const result = await productcollectionService.getData(query)
     if (result) {
         res.status(http.Success).json({

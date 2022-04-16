@@ -4,7 +4,9 @@ const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createProduct = async (productObj) => {
     return DBHelper.insertData(productObj, "products", true)
 }
-
+exports.updateProduct = async (productObj) => {
+    return DBHelper.updateData(productObj,"products","id")
+}
 exports.findAll = async () => {
     try {
         const result = await db.query(`
@@ -51,7 +53,6 @@ exports.findById = async (id) => {
 
 exports.getProductsByCollectionId = async (collectionId, data) => {
     try {
-        console.log(data)
         let arr = Object.keys(data)
         let arr1 = Object.values(data)
         for (var i = 0; i < arr1.length; i++) {

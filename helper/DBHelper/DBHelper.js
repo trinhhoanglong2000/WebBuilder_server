@@ -49,11 +49,11 @@ exports.insertData = async (data, name, needId) => {
         let arr1 = Object.values(data)
         for (var i = 0; i < arr1.length; i++) {
             if (Array.isArray(arr1[i])) {
-                
+
                 for (let j = 0; j < arr1[i].length; j++) {
                     arr1[i][j] = "\"" + arr1[i][j] + "\""
                 }
-               
+
                 arr1[i] = "'{" + arr1[i] + "}'"
             }
             else {
@@ -72,7 +72,7 @@ exports.insertData = async (data, name, needId) => {
         return null;
     }
 }
-exports.getData = async (data, name) => {
+exports.getData = async (name, data = null) => {
     try {
         let arr = Object.keys(data)
         let arr1 = Object.values(data)
@@ -86,7 +86,7 @@ exports.getData = async (data, name) => {
         }
         else {
             for (var i = 0; i < arr1.length; i++) {
-                arr1[i] = "" + arr1[i] + "'"
+                arr1[i] = "'" + arr1[i] + "'"
             }
 
             const result = await db.query(`
@@ -100,4 +100,85 @@ exports.getData = async (data, name) => {
         console.log(error);
         return null;
     }
+}
+function LoopForOP(data) {
+    if (isObject(data) === false) {
+        return data
+    }
+    let OP = [
+        "OP.OR",
+        "OP.AND",
+        "OP.LIKE",
+        "OP.ILIKE",
+        "OP.GTE",
+        "OP.GT",
+        "OP.LT",
+        "OP.LTE"
+    ]
+    let arr = Object.keys(data)
+    let arr1 = Object.values(data)
+    let query = ""
+    if (arr[0] == "OP.OR") {
+        query += "("
+        query = query + LoopForOP(arr1[0][0])
+        for (let i = 1; i < arr1[0].length; i++) {
+            query = query + " OR " + LoopForOP(arr1[0][i])
+        }
+        query += ")"
+    }
+    else if (arr[0] == "OP.AND") {
+        query += "("
+        query = query + LoopForOP(arr1[0][0])
+        for (let i = 1; i < arr1[0].length; i++) {
+            query = query + " AND " + LoopForOP(arr1[0][i])
+        }
+        query += ")"
+    }
+    else if (arr[0] == "OP.LIKE") {
+        query += ` LIKE '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.ILIKE") {
+        query += ` ILIKE '${arr1[0]}'`
+    }
+    else {
+
+        if (isObject(arr1[0])) {
+            query = query + arr[0] + LoopForOP(arr1[0])
+        }
+        else {
+            query +=`${arr[0]} = '${arr1[0]}'`
+        }
+    }
+    // query = query + ")"
+    return query
+}
+exports.FindAll = async (name, data = null) => {
+    try {
+        let where = ""
+        console.log(data)
+        if (data.where){
+            where = `WHERE ${LoopForOP(data.where)}`;
+        }
+        // newdata = {
+        //     where: {
+        //         a: { "OP.LIKE": "%" + "123" + "%" }
+        //     }
+        // }
+        let query = `
+        SELECT *
+        FROM ${name}
+        ${where}
+        `
+        console.log(query)
+        const result = await db.query(query);
+        return result.rows;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+function isObject(val) {
+    return val instanceof Object;
 }

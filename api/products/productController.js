@@ -23,6 +23,30 @@ exports.createProduct = async (req, res) => {
     }
 }
 
+exports.updateProduct = async (req, res) => {
+    // create new product
+    const ProductObj = req.body;
+    const id  = req.params.id
+  
+    let productQuery = req.body.product
+    productQuery.id = id
+    
+    const newProduct = await productService.updateProduct(productQuery)
+    if (newProduct) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newProduct,
+            message: "Create product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
 exports.getAllProducts = async (req, res) => {
     const result = await productService.findAll();
     if (result) {
