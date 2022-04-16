@@ -2,7 +2,6 @@ const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createProduct = async (productObj) => {
-    console.log(productObj)
     return DBHelper.insertData(productObj, "products", true)
 }
 

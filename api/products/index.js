@@ -9,5 +9,5 @@ router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
 
 /* POST create account. */
-router.post('/create', authenticator.Authenticate, productController.createProduct);
+router.post('/:id/create', productController.createProduct);
 module.exports = router;

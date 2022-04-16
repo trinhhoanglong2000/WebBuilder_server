@@ -4,7 +4,10 @@ const http = require('../../const');
 exports.createProduct = async (req, res) => {
     // create new product
     const ProductObj = req.body;
-    const newProduct = await productService.createProduct(ProductObj);
+    const id  = req.params.id
+    let productQuery = req.body.product
+    productQuery.store_id = id
+    const newProduct = await productService.createProduct(productQuery);
     if (newProduct) {
         res.status(http.Created).json({
             statusCode: http.Created,

@@ -48,8 +48,19 @@ exports.insertData = async (data, name, needId) => {
         let arr = Object.keys(data)
         let arr1 = Object.values(data)
         for (var i = 0; i < arr1.length; i++) {
-            arr1[i] = "'" + arr1[i] + "'"
+            if (Array.isArray(arr1[i])) {
+                
+                for (let j = 0; j < arr1[i].length; j++) {
+                    arr1[i][j] = "\"" + arr1[i][j] + "\""
+                }
+               
+                arr1[i] = "'{" + arr1[i] + "}'"
+            }
+            else {
+                arr1[i] = "'" + arr1[i] + "'"
+            }
         }
+        // console.log(data)
         const result = await db.query(`
         INSERT INTO ${name} (${arr})
         VALUES (${arr1})
@@ -75,7 +86,7 @@ exports.getData = async (data, name) => {
         }
         else {
             for (var i = 0; i < arr1.length; i++) {
-                arr1[i] = "'" + arr1[i] + "'"
+                arr1[i] = "" + arr1[i] + "'"
             }
 
             const result = await db.query(`
