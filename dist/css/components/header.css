@@ -1,69 +1,69 @@
-[data-gjs-type="navbar"].navbar .container {
+[name="header-navigation"].navbar .container {
     min-width: 100%;
     margin: 5px;
     padding: 1vh 4vw;
 }
 
-[data-gjs-type="navbar"].navbar i {
+[name="header-navigation"].navbar i {
     font-size: 25px;
     padding-left: 1vw;
     padding-right: 1vw;
 }
 
-[data-gjs-type="navbar"].navbar ul {
+[name="header-navigation"].navbar ul {
     font-size: 20px;
     list-style-type: none;
 }
 
-[data-gjs-type="navbar"].navbar a,
-[data-gjs-type="navbar"] .offcanvas a,
-[data-gjs-type="navbar"].navbar a.navbar-brand:hover {
+[name="header-navigation"].navbar a,
+[name="header-navigation"] .offcanvas a,
+[name="header-navigation"].navbar a.navbar-brand:hover {
     color: black !important;
 }
 
-[data-gjs-type="navbar"].navbar a:link {
+[name="header-navigation"].navbar a:link {
     text-decoration: none !important;
 }
 
-[data-gjs-type="navbar"].navbar a:hover,
-[data-gjs-type="navbar"].navbar i:hover {
+[name="header-navigation"].navbar a:hover,
+[name="header-navigation"].navbar i:hover {
     color: rgb(94, 94, 250) !important;
 }
 
-[data-gjs-type="navbar"].navbar a h4 {
+[name="header-navigation"].navbar a h4 {
     margin: 0;
 }
 
-[data-gjs-type="navbar"].navbar li {
+[name="header-navigation"].navbar li {
     width: auto; 
     padding: 10px;
 }
 
-[data-gjs-type="navbar"] .offcanvas .nav-pills .nav-link {
+[name="header-navigation"] .offcanvas .nav-pills .nav-link {
     border-radius: 0;
 }
 
-[data-gjs-type="navbar"].navbar .navbar-brand img {
+[name="header-navigation"].navbar .navbar-brand img {
     max-width: 100px;
 }
 
 @media only screen and (max-width: 767px) {
-    [data-gjs-type="navbar"] .offcanvas a:hover {
+    [name="header-navigation"] .offcanvas a:hover {
         color: black !important;
         background-color: #BBB;
     }
 
-    [data-gjs-type="navbar"] .offcanvas li {
+    [name="header-navigation"] .offcanvas li {
         width: 100%; 
     }
 
-    [data-gjs-type="navbar"].navbar i {
+    [name="header-navigation"].navbar i {
         font-size: 15px;
         padding-left: 1vw;
         padding-right: 1vw;
     }
 
-    [data-gjs-type="navbar"].navbar a:hover {
+    [name="header-navigation"].navbar a:hover {
         color: black !important;
         background-color: #BBB;
     }

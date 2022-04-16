@@ -1,21 +1,21 @@
-[name="imageWithText"] {
+[name="contactForm"] {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-[name="imageWithText"] .text-part {
+[name="contactForm"] .text-part {
     border: 2px solid lightgray;
     padding: 2%;
 } 
 
-[name="imageWithText"] .text-part button{
+[name="contactForm"] button{
     background-color: rgb(216, 247, 166);
     padding: 10px;
     border-radius: 5px;
     border: 1px solid grey;
+    width: 10%;
 } 
 
-[name="imageWithText"] h1,
-[name="imageWithText"] p {
+[name="contactForm"] h1 {
     padding: 5px;
 }
