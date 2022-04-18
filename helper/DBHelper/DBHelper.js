@@ -110,6 +110,8 @@ function LoopForOP(data) {
         "OP.AND",
         "OP.LIKE",
         "OP.ILIKE",
+        "OP.NLIKE",
+        "OP.NILIKE",
         "OP.GTE",
         "OP.GT",
         "OP.LT",
@@ -140,6 +142,24 @@ function LoopForOP(data) {
     else if (arr[0] == "OP.ILIKE") {
         query += ` ILIKE '${arr1[0]}'`
     }
+    else if (arr[0] == "OP.NILIKE") {
+        query += ` NOT ILIKE '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.NLIKE") {
+        query += ` NOT LIKE '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.GT") {
+        query += ` > '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.GTE") {
+        query += ` >= '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.LT") {
+        query += ` < '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.LTE") {
+        query += ` <= '${arr1[0]}'`
+    }
     else {
 
         if (isObject(arr1[0])) {
@@ -152,10 +172,9 @@ function LoopForOP(data) {
     // query = query + ")"
     return query
 }
-exports.FindAll = async (name, data = null) => {
+exports.FindAll = async (name, data = null, select = "*") => {
     try {
         let where = ""
-        console.log(data)
         if (data.where){
             where = `WHERE ${LoopForOP(data.where)}`;
         }
@@ -165,7 +184,7 @@ exports.FindAll = async (name, data = null) => {
         //     }
         // }
         let query = `
-        SELECT *
+        SELECT ${select}
         FROM ${name}
         ${where}
         `
