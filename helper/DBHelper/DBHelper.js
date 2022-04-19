@@ -117,6 +117,13 @@ function LoopForOP(data) {
         "OP.LT",
         "OP.LTE"
     ]
+    
+    // a = {
+    // where:{ "OP.AND": [
+    //     {"OP.OR" : [{a : {"OP.GT" : 123}}, {b : "456"}]},
+    //     {c : {"OP.LIKE" : }}
+    // ]}
+
     let arr = Object.keys(data)
     let arr1 = Object.values(data)
     let query = ""
@@ -172,21 +179,41 @@ function LoopForOP(data) {
     // query = query + ")"
     return query
 }
-exports.FindAll = async (name, data = null, select = "*") => {
+exports.FindAll = async (name, data = null) => {
     try {
         let where = ""
+        let select = "*"
+        let limit = ""
+        let ofset = ""
         if (data.where){
             where = `WHERE ${LoopForOP(data.where)}`;
         }
+        if (data.select){
+            select = data.select
+        }
+        if (data.limit){
+            limit = `LIMIT ${data.limit}`
+        }
+        if (data.offset){
+            ofset = `OFFSET ${data.offset}`
+        }
+        // id = "123"
+        // price > 123
         // newdata = {
+            // select:"",   
         //     where: {
-        //         a: { "OP.LIKE": "%" + "123" + "%" }
-        //     }
+        //         "OP.AND" : [{price : {"OP.GT" : 123}}, "OP:OR : [{b:"123"},{ c:"1234"}]]
+        //     },
+        //     off:
+        //      limit
+
         // }
         let query = `
         SELECT ${select}
         FROM ${name}
         ${where}
+        ${limit}
+        ${ofset}
         `
         console.log(query)
         const result = await db.query(query);

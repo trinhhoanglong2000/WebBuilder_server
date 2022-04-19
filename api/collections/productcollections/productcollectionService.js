@@ -63,14 +63,18 @@ exports.getData = async (query) => {
     //name
 
     let condition =[];
+    
     condition.push({store_id : query.store_id})
+    if (query.limit){}
     if (query.name)
         condition.push({name:{"OP.ILIKE" : "%" + query.name + "%"}})
     console.log(condition)
     let config = {
         where: {
             "OP.AND" : condition,
-        }
+        },
+        limit : query.limit,
+        offset: query.offset
     }
     // return DBHelper.getData("productcollections",query)  
     return DBHelper.FindAll("productcollections",config)
