@@ -74,10 +74,7 @@ exports.insertData = async (data, name, needId) => {
 }
 exports.getData = async (name, data = null) => {
     try {
-        let arr = Object.keys(data)
-        let arr1 = Object.values(data)
-
-        if (data === null || arr.length === 0) {
+        if (data === null) {
             const result = await db.query(`
         SELECT *
         FROM ${name}
@@ -85,6 +82,8 @@ exports.getData = async (name, data = null) => {
             return result.rows;
         }
         else {
+            let arr = Object.keys(data)
+            let arr1 = Object.values(data)
             for (var i = 0; i < arr1.length; i++) {
                 arr1[i] = "'" + arr1[i] + "'"
             }
@@ -117,7 +116,7 @@ function LoopForOP(data) {
         "OP.LT",
         "OP.LTE"
     ]
-    
+
     // a = {
     // where:{ "OP.AND": [
     //     {"OP.OR" : [{a : {"OP.GT" : 123}}, {b : "456"}]},
@@ -173,7 +172,7 @@ function LoopForOP(data) {
             query = query + arr[0] + LoopForOP(arr1[0])
         }
         else {
-            query +=`${arr[0]} = '${arr1[0]}'`
+            query += `${arr[0]} = '${arr1[0]}'`
         }
     }
     // query = query + ")"
@@ -185,22 +184,22 @@ exports.FindAll = async (name, data = null) => {
         let select = "*"
         let limit = ""
         let ofset = ""
-        if (data.where){
+        if (data.where) {
             where = `WHERE ${LoopForOP(data.where)}`;
         }
-        if (data.select){
+        if (data.select) {
             select = data.select
         }
-        if (data.limit){
+        if (data.limit) {
             limit = `LIMIT ${data.limit}`
         }
-        if (data.offset){
+        if (data.offset) {
             ofset = `OFFSET ${data.offset}`
         }
         // id = "123"
         // price > 123
         // newdata = {
-            // select:"",   
+        // select:"",   
         //     where: {
         //         "OP.AND" : [{price : {"OP.GT" : 123}}, "OP:OR : [{b:"123"},{ c:"1234"}]]
         //     },
