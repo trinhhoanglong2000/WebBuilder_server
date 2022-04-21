@@ -61,11 +61,20 @@ exports.insertData = async (data, name, needId) => {
             }
         }
         // console.log(data)
-        const result = await db.query(`
-        INSERT INTO ${name} (${arr})
-        VALUES (${arr1})
-        RETURNING id
-        `,);
+        let result
+        if (needId){
+            result = await db.query(`
+            INSERT INTO ${name} (${arr})
+            VALUES (${arr1})
+            RETURNING id
+            `,);
+        }else {
+            result = await db.query(`
+            INSERT INTO ${name} (${arr})
+            VALUES (${arr1})
+            `,);
+        }
+      
         return result;
     } catch (error) {
         console.log(error);
