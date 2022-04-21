@@ -17,5 +17,5 @@ router.post('/css/:storeId', storeController.uploadCssFile);
 
 
 // POST CREATE PRODUCT
-router.post('/:id/products/create', storeController.createProduct)
+router.post('/:id/products', storeController.createProduct)
 module.exports = router;
