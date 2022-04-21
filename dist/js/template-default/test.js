@@ -1,63 +1,52 @@
 
-const products = [
-  {
-    name: "TEST1",
-    price: "$100.00",
-    img: "HEHE",
-  },
-  {
-    name: "TEST2",
-    price: "$200.00",
-    img: "HEHE",
-  },
-  {
-    name: "TEST3",
-    price: "$300.00",
-    img: "HEHE",
-  },
-  {
-    name: "TEST4",
-    price: "$400.00",
-    img: "HEHE",
-  },
-];
 
 //==============|Data Selector|============
 
 function productData(e) {
-  $(e)
+  let products_data = [
+    {
+      title: "Product Title",
+      price: "$100.00",
+      img: "HEHE",
+    },
+  ];
+  const id = $(e).data('ez-mall-collection') || " ";
+
+  fetch(`http://localhost:5000/collections/product/${id}`)
+  .then((response) => response.json())
+  .then((data) => {
+    products_data = data.data[0].listProducts;
+    $(e)
     .find(".thumb-wrapper")
     .each(function (index) {
       $(this)
         .find("h4")
-        .text(products[index % products.length].name);
+        .text(products_data[index % products_data.length].title);
       $(this)
         .find(".item-price strike")
-        .text(products[index % products.length].price);
+        .text(products_data[index % products_data.length].price);
       $(this)
         .find(".item-price span")
-        .text(products[index % products.length].price);
+        .text(products_data[index % products_data.length].price);
     });
+  });
+  
 }
 
 //Init
 function init() {
+
 
   $("div[data-gjs-type= 'product-list'] ").each(function (i) {
     productData(this);
   });
 }
 $(document).ready(function () {
-
-  if ($('[data-gjs-type="wrapper"]').length){
-    $('[data-gjs-type="wrapper"]').ready(function(){
+  if ($('[data-gjs-type="wrapper"]').length) {
+    $('[data-gjs-type="wrapper"]').ready(function () {
       init();
-  
-    })
-  }
-  else{
+    });
+  } else {
     init();
-
   }
-  
-})
+});
