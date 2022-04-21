@@ -65,10 +65,8 @@ exports.getData = async (query) => {
     let condition =[];
     
     condition.push({store_id : query.store_id})
-    if (query.limit){}
     if (query.name)
         condition.push({name:{"OP.ILIKE" : "%" + query.name + "%"}})
-    console.log(condition)
     let config = {
         where: {
             "OP.AND" : condition,

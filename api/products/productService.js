@@ -21,19 +21,15 @@ exports.findAll = async () => {
     }
 }
 
-exports.getProductsByStoreId = async (storeId, filter) => {
-    try {
-        const result = await db.query(`
-            SELECT * 
-            FROM products 
-            WHERE store_id = '${storeId}')
-        `)
-
-        return result.rows;
-    } catch (error) {
-        console.log(error);
-        return null;
+exports.getProductsByStoreId = async (query) => {
+    let config = {
+        where: {
+            store_id : query.store_id
+        },
+        limit : query.limit,
+        offset: query.offset
     }
+    return DBHelper.FindAll("products",config)
 }
 
 exports.findById = async (id) => {

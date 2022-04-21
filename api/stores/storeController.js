@@ -128,7 +128,9 @@ exports.uploadCssFile = async (req, res) => {
 
 exports.getProductsByStoreId = async (req, res) => {
     const storeId = req.params.id;
-    const result = await productService.getProductsByStoreId(storeId);
+    const query = req.query
+    query.store_id = storeId
+    const result = await productService.getProductsByStoreId(query);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
