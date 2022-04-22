@@ -45,8 +45,10 @@ exports.getcollectionById = async (req, res) => {
     //console.log(result)
     let productQuery = req.query
     //console.log(productQuery)
-    const listProducts = await productService.getProductsByCollectionId(result[0].id,productQuery);
-    if (listProducts) result[0].listProducts = listProducts;
+    if (result[0].id) {
+        const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);
+        if (listProducts) result[0].listProducts = listProducts;
+    }
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -60,6 +62,7 @@ exports.getcollectionById = async (req, res) => {
             message: "Server error!"
         })
     }
+
 }
 
 exports.getProductsByCollectionId = async (req, res) => {
