@@ -11,7 +11,7 @@ router.get('/:id/collections/banner', storeController.getBannerCollectionsByStor
 router.get('/:id/init-data', storeController.getInitDataStore);
 
 /* POST create account. */
-router.post('/create', storeController.createStore);
+router.post('/', storeController.createStore);
 router.post('/:storeId/:pageId/content', storeController.changeContent);
 router.post('/css/:storeId', storeController.uploadCssFile);
 

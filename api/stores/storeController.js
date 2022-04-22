@@ -10,7 +10,7 @@ const http = require('../../const');
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
-    storeObj.userId = req.user.id;
+    storeObj.user_id = req.user.id;
     const newStore = await storeService.createStore(storeObj);
     if (newStore) {
         res.status(http.Created).json({
@@ -46,8 +46,9 @@ exports.getAllStores = async (req, res) => {
 
 exports.getStoreByUserId = async (req, res) => {
     const userId = req.user.id;
-    const filter = req.query;
-    const result = await storeService.findByUserId(userId, filter);
+    let query = req.query;
+    query.user_id = userId
+    const result = await storeService.findByUserId(query);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

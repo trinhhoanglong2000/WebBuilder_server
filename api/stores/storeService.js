@@ -3,25 +3,13 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
-
+const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createStore = async (storeObj) => {
-    try {
-        // create
-        storeObj.storeLink = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
-
-        const result = await db.query(`
-            INSERT INTO stores (id, user_id, name, "storeLink", description) 
-            VALUES ($1, $2, $3, $4, $5)
-            returning id, "storeLink";
-            `, [uuidv4(), storeObj.userId, storeObj.name, storeObj.storeLink, storeObj.description]
-        );
-
-        return result;
-
-    } catch (error) {
-        console.log(error);
-        return null;
+    if (storeObj.name) {
+        storeObj.store_link = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
     }
+    return DBHelper.insertData(storeObj,"stores",true)
+
 }
 
 exports.findAll = async () => {
@@ -30,7 +18,7 @@ exports.findAll = async () => {
             SELECT * 
             FROM stores
         `)
-    
+
         return result.rows;
     } catch (error) {
         console.log(error);
@@ -38,19 +26,15 @@ exports.findAll = async () => {
     }
 }
 
-exports.findByUserId = async (userId, filter) => {
-    try {
-        const result = await db.query(`
-            SELECT * 
-            FROM stores 
-            WHERE (user_id = '${userId}')
-        `)
-    
-        return result.rows;
-    } catch (error) {
-        console.log(error);
-        return null;
+exports.findByUserId = async (query) => {
+    let config = {
+        where: {
+            user_id: query.user_id
+        },
+        limit: query.limit,
+        offset: query.offset
     }
+    return DBHelper.FindAll("stores", config)
 }
 
 exports.findById = async (id) => {
@@ -60,12 +44,12 @@ exports.findById = async (id) => {
             FROM stores 
             WHERE (id = '${id}')
         `)
-    
+
         return result.rows[0];
     } catch (error) {
         console.log(error);
         return null;
-    }    
+    }
 }
 
 exports.uploadCssFileForStore = async (storeId, css_body) => {
@@ -73,11 +57,11 @@ exports.uploadCssFileForStore = async (storeId, css_body) => {
         await s3.putObject({
             Body: JSON.stringify(css_body.data),
             Bucket: "ezmall-bucket",
-            ACL:'public-read',
+            ACL: 'public-read',
             ContentType: 'text/json',
             Key: `css/${storeId}.json`
         }).promise();
-        return {message: "Update successfully!"};
+        return { message: "Update successfully!" };
     } catch (error) {
         console.log(error);
         return null;
@@ -86,11 +70,11 @@ exports.uploadCssFileForStore = async (storeId, css_body) => {
 
 exports.getCssFileForStore = async (storeId) => {
     try {
-        const data =  await s3.getObject({
+        const data = await s3.getObject({
             Bucket: "ezmall-bucket",
             Key: `css/${storeId}.json`
         }).promise();
-        
+
         const content = JSON.parse(data.Body);
         return content;
     } catch (error) {
@@ -111,5 +95,5 @@ exports.getLogo = async (id) => {
     } catch (error) {
         console.log(error);
         return null;
-    } 
+    }
 }
