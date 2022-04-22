@@ -15,7 +15,8 @@ function productData(e) {
   fetch(`http://localhost:5000/collections/product/${id}`)
   .then((response) => response.json())
   .then((data) => {
-    products_data = data.data[0].listProducts;
+    if (data.data[0].listProducts) 
+      products_data = data.data[0].listProducts;
     $(e)
     .find(".thumb-wrapper")
     .each(function (index) {

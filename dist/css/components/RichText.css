@@ -1,5 +1,12 @@
-[name="rich-text"]{
-    text-align: center;
-    width: calc(100% - 15rem);
-    margin: auto;
+[name="rich-text"] {
+  text-align: center;
+  width: calc(100% - 15rem);
+  margin: auto;
+}
+@media only screen and (max-width: 600px) {
+  [name="rich-text"] {
+    width: 100%;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
 }
