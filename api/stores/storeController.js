@@ -214,6 +214,7 @@ exports.getInitDataStore = async (req, res) => {
 exports.createProduct = async (req, res) => {
     // create new product
     const ProductObj = req.body;
+    let quantity = 0
     const id = req.params.id
     let productQuery = req.body.product
     productQuery.store_id = id
@@ -221,12 +222,25 @@ exports.createProduct = async (req, res) => {
 
     let productOptionQuery = req.body.option
     let variantQuery = req.body.variant
+    let collectionQuery = req.body.collection
 
+    
     //Create Product
     const newProduct = await productService.createProduct(productQuery);
-
-    //Create Option
     let productId = newProduct.rows[0].id
+
+    //Create Collection
+    if (collectionQuery){
+        for (let i = 0 ; i <collectionQuery.length; i ++){
+            let query = {
+                "product_id" : productId,
+                "productcollection_id": collectionQuery[i]
+            }
+            const newCollection = await productcollectionService.createProductandCollectionLink(query)
+        }
+    }
+    //Create Option
+    
     if (productOptionQuery) {
         for (let i = 0; i < productOptionQuery.length; i++) {
             let query = {
@@ -256,14 +270,21 @@ exports.createProduct = async (req, res) => {
             let createVariantQuery = variantQuery[i]
             for (let j = 0; j < createVariantQuery.option_value.length; j++){
                 let query = createVariantQuery.option_value[j]
+              
                 query.product_id = productId
                 const findOptionValue = await productOptionService.findDataOptionValue(query)
                 option_value_id.push(findOptionValue[0].id)
             }
+            quantity += createVariantQuery.quantity
             delete createVariantQuery.option_value
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
+            let updateQuery = {
+                "id" : productId,
+                "inventory" : quantity
+            }
+            const updateValue = await productService.updateProduct(updateQuery)
         }
        
     }
