@@ -1,14 +1,86 @@
-.carousel-text-white *{
-    color:white;
+.ezMall-carousel .carousel-item {
+    max-height: 800px;
 }
-.carousel-text-black *{
-    color:black;
+
+.ezMall-carousel .carousel-item *{
+    max-height: 800px;
 }
-.carousel-control-next-icon, .carousel-control-prev-icon{
-    background-color: black;
-    opacity: 0.5 ;
-    border-radius: 50%;
+  
+.carousel-text-white h2, .carousel-text-white p{
+    color:white ;
 }
+.carousel-text-black h2, .carousel-text-black p{
+    color:black ;
+}
+.carousel-text-white .ezMall-btn, .carousel-text-black .ezMall-btn:hover {
+    color: black ;
+    border-color: black ;
+    background-color: white;
+    padding: 15px 35px;
+}
+
+.ezMall-carousel-contents{
+    width: 100%;
+    padding: 15px 0px;
+}
+
+.carousel-text-white .ezMall-carousel-contents{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.carousel-text-black .ezMall-carousel-contents{
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.carousel-text-black .ezMall-btn, .carousel-text-white .ezMall-btn:hover {
+    color: white ;
+    border-color: white ;
+    background-color: black ;
+    padding: 15px 35px;
+}
+
 .carousel-display-off .carousel-caption *{
     display: none !important;
 }
+
+.carousel-display-top .carousel-caption{
+    justify-content: start !important;
+}
+
+.carousel-display-middle .carousel-caption{
+    justify-content: center !important;
+}
+
+.carousel-display-bottom .carousel-caption{
+    justify-content: end !important;
+    margin-bottom: 30px;
+}
+
+.ezMall-carousel .carousel-caption{
+    position: absolute;
+    height: 100%;
+    text-align: center;
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.ezMall-carousel h2{
+    font-weight: bold;
+    font-size: 3rem;
+}
+.ezMall-carousel a{
+    font-weight: 600;
+}
+
+
+.ezMall-carousel p{
+    font-weight: 600;
+    font-size: 1rem;
+}
+

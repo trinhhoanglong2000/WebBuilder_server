@@ -46,16 +46,18 @@ async function CarouselsGenerateCodeItem(categoryId, itemID) {
   let carouselInner = $(`#${itemID} .carousel-inner`)[0];
   data.forEach((item, index) => {
     let htmlButtonInsert = `
-  <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="${index}" class = "${index == 0 ? "active" : ""}" aria-label="Slide ${index}"></button>
+  <button type="button" data-bs-target="#${itemID}" data-bs-slide-to="${index}" class = "${index == 0 ? "active" : ""}" aria-label="Slide ${index}"></button>
   `
     carouselIndicators.insertAdjacentHTML("beforeend", htmlButtonInsert);
-
     let htmlCarouselItemInsert = `
   <div class="carousel-item ${index == 0 ? "active" : ""}">
     <img src="${item.image}" class="d-block w-100" alt="${item.image}">
     <div class="carousel-caption d-none d-md-block">
-      <h5>${item.caption}</h5>
-      <p>${item.description}</p>
+      <div class = "ezMall-carousel-contents">
+        <h2 class="bolder">${item.caption}</h2>
+        <p>${item.description}</p>
+        <a class="btn ezMall-btn bolder" href=${item.link} role="button">Shop Now</a>
+      </div>
     </div>
   </div>
 `
