@@ -97,3 +97,15 @@ exports.getLogo = async (id) => {
         return null;
     }
 }
+exports.getTemplate = async (id) => {
+    let config = {
+        select : "template_id",
+        where: {
+            "id" : id
+        },
+        limit : query.limit,
+        offset: query.offset
+    }
+    // return DBHelper.getData("productcollections",query)  
+    return DBHelper.FindAll("stores",config)[0].template_id
+}

@@ -190,7 +190,8 @@ exports.getInitDataStore = async (req, res) => {
     const logoURL = storeService.getLogo(storeId);
     const listPagesId = pageService.getPagesByStoreId(storeId);
     const storeCssData = storeService.getCssFileForStore(storeId);
-    const result = await Promise.all([logoURL, listPagesId, storeCssData]);
+    const storeTemplate = storeService.getTemplate(storeId)
+    const result = await Promise.all([logoURL, listPagesId, storeCssData,storeTemplate]);
 
     if (result) {
         res.status(http.Success).json({
@@ -198,7 +199,8 @@ exports.getInitDataStore = async (req, res) => {
             data: {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
-                storeCssData: result[2]
+                storeCssData: result[2],
+                template : result[3]
             },
             message: "Get products successfully!"
         })
@@ -288,6 +290,25 @@ exports.createProduct = async (req, res) => {
         }
        
     }
+    if (newProduct) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newProduct,
+            message: "Create product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+exports.createCollection = async (req, res) => {
+    // create new product
+    let productQuery = {}
+    //Create Product
+    const newProduct = await productService.createProduct(productQuery);
     if (newProduct) {
         res.status(http.Created).json({
             statusCode: http.Created,
