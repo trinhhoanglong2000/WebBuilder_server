@@ -1,4 +1,4 @@
-const config = {};
+let config = {};
 config.logoURL = "https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/621b5a807ea079a0f7351fb8.jpeg"
 
 // Example Data
@@ -40,7 +40,6 @@ function embeData(e) {
     $(e).find(".navbar-nav").html(getHeaderNavigationButton(config.headerNavigation))
 }
 
-
 $(document).ready(function () {
 
     if ($('[data-gjs-type="wrapper"]').length) {
@@ -51,5 +50,4 @@ $(document).ready(function () {
     else {
         embeData(this);
     }
-
 })

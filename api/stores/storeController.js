@@ -6,6 +6,7 @@ const bannercollectionService = require('../collections/bannercollections/banner
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const http = require('../../const');
+const DBHelper = require('../../helper/DBHelper/DBHelper');
 
 exports.createStore = async (req, res) => {
     // create new store
@@ -322,4 +323,30 @@ exports.createCollection = async (req, res) => {
             message: "Server error!"
         })
     }
+}
+
+exports.updateLogoUrl = async (req, res) => {
+    const storeId = req.params.storeId;
+    const logoUrl = req.body.logoUrl;
+
+    const data = {
+        id: storeId,
+        logo_url: logoUrl
+    }
+
+    const result = await DBHelper.updateData(data, "stores", "id");
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            message: "Save logo URL success!"
+        });
+        return;
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server Error!"
+        });
+    }
+    return;
 }

@@ -23,7 +23,6 @@ var upload = multer({
 
 router.post('/assets', upload.array('file'), fileController.uploadAsset)
 router.post('/upload-image-to-s3', fileController.uploadImageToS3);
-router.post('/assets/:storeId', fileController.uploadBase64Asset);
 
 router.get('/:filename(*{1,}(\.css|\.js)$)',fileController.getFileName)
 
