@@ -188,6 +188,7 @@ function LoopForOP(data) {
     return query
 }
 exports.FindAll = async (name, data = null) => {
+    
     try {
         let where = ""
         let select = "*"
@@ -195,10 +196,18 @@ exports.FindAll = async (name, data = null) => {
         let ofset = ""
         let from  = `FROM ${name}`
         if (data.join){
-            let arr = Object.keys(data.join.condition)
-            let arr1 = Object.values(data.join.condition)
-            from = `FROM ${name} as a JOIN ${data.join.name} as b
-            ON ${arr[0]} = ${arr1[0]}`
+            let subFrom = `FROM ${name} `
+            let arr = Object.keys(data.join)
+            let arr1 = Object.values(data.join)
+            for (let i = 0 ; i < arr.length; i++){
+                let arr2 = Object.keys(arr1[i].condition)
+                subFrom += `${arr1[i].type?arr1[i].type.toUpperCase():""}JOIN ${arr[i]}
+                ON  ${arr2[0]} = ${arr1[i].condition[arr2[0]]} 
+                `
+            }
+            from = subFrom
+            // from = `FROM ${name} as a JOIN ${data.join.name} as b
+            // ON ${arr[0]} = ${arr1[0]}`
         }
         if (data.where) {
             where = `WHERE ${LoopForOP(data.where)}`;
