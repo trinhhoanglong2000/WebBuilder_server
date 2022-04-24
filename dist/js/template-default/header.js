@@ -1,5 +1,5 @@
 const config = {};
-config.logoURL = "https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/621b5a807ea079a0f7351fb8"
+config.logoURL = "https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/621b5a807ea079a0f7351fb8.jpeg"
 
 // Example Data
 config.storeName = "Store nameee";
@@ -18,21 +18,11 @@ const getHeaderNavigationButton = (mNavigation) => {
 
     if (mNavigation) {
         mNavigation.forEach((element) => {
-            navbar.push({
-                layerable: false,
-                draggable: false,
-                hoverable: false,
-                selectable: false,
-                tagName: "li",
-                attributes: { class: "nav-item" },
-                content: `<a href="${element.link}" class="nav-link p-1"> ${element.name}</a>`,
-            });
+            navbar.push(`<li data-highlightable="1" class="nav-item"><a href="#" class="nav-link p-1"> ${element.name} </a></li>`)
         })
 
         return navbar;
-
     };
-
     return navbar;
 }
 
@@ -40,14 +30,14 @@ const getHeaderNavigationButton = (mNavigation) => {
 
 function embeData(e) {
    
-    if ($(e).find(".navbar-brand img").length) {
+    if (config.logoURL) {
         $(e).find(".navbar-brand").html(`<img src=${config.logoURL}></img>`)
         
     } else {
         $(e).find(".navbar-brand").html(`<h4>${config.storeName}</h4>`)
     }
 
-    $(e).find("navbar-nav").html(getHeaderNavigationButton(config.headerNavigation))
+    $(e).find(".navbar-nav").html(getHeaderNavigationButton(config.headerNavigation))
 }
 
 
