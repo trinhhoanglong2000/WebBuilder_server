@@ -109,7 +109,8 @@ exports.getTemplate = async (id) => {
         select: "template.name",
         where: {
             "stores.id": id
-        }
+        },
+        
     }
     const data = await DBHelper.FindAll("stores", config);
     return data[0].name;
