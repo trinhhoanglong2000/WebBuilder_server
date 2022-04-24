@@ -193,6 +193,13 @@ exports.FindAll = async (name, data = null) => {
         let select = "*"
         let limit = ""
         let ofset = ""
+        let from  = `FROM ${name}`
+        if (data.join){
+            let arr = Object.keys(data.join.condition)
+            let arr1 = Object.values(data.join.condition)
+            from = `FROM ${name} as a JOIN ${data.join.name} as b
+            ON ${arr[0]} = ${arr1[0]}`
+        }
         if (data.where) {
             where = `WHERE ${LoopForOP(data.where)}`;
         }
@@ -218,7 +225,7 @@ exports.FindAll = async (name, data = null) => {
         // }
         let query = `
         SELECT ${select}
-        FROM ${name}
+        ${from}
         ${where}
         ${limit}
         ${ofset}

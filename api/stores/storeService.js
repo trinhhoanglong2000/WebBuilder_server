@@ -99,13 +99,17 @@ exports.getLogo = async (id) => {
 }
 exports.getTemplate = async (id) => {
     let config = {
-        select : "template_id",
-        where: {
-            "id" : id
+        join : {
+            name: "template",
+            condition : {
+                "a.template_id" : "b.id",
+            }
         },
-        limit : query.limit,
-        offset: query.offset
+        select : "b.name",
+        where: {
+            "a.id" : id
+        }
     }
-    // return DBHelper.getData("productcollections",query)  
-    return DBHelper.FindAll("stores",config)[0].template_id
+    const data = await DBHelper.FindAll("stores",config);
+    return data[0].name;
 }
