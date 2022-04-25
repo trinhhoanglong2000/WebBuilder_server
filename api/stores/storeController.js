@@ -207,8 +207,10 @@ exports.getBannerCollectionsByStoreId = async (req, res) => {
 
 exports.getInitDataStore = async (req, res) => {
     const storeId = req.params.id;
+    const query = req.query;
+    query.store_id = storeId;
     const logoURL = storeService.getLogo(storeId);
-    const listPagesId = pageService.getPagesByStoreId(storeId);
+    const listPagesId = pageService.getPagesByStoreId(query);
     const storeCssData = storeService.getCssFileForStore(storeId);
     const storeTemplate = storeService.getTemplate(storeId)
     const result = await Promise.all([logoURL, listPagesId, storeCssData,storeTemplate]);
