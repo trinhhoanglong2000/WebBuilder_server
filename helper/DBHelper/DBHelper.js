@@ -184,7 +184,6 @@ function LoopForOP(data) {
             query += `${arr[0]} = '${arr1[0]}'`
         }
     }
-    // query = query + ")"
     return query
 }
 exports.FindAll = async (name, data = null) => {

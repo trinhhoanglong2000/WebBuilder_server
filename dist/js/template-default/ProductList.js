@@ -17,7 +17,6 @@ function productData(e) {
     .then((data) => {
       if (data.data[0].listProducts) 
         products_data = data.data[0].listProducts;
-      console.log(products_data)
       $(e)
       .find(".thumb-wrapper")
       .each(function (index) {
