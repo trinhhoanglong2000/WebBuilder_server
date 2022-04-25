@@ -1,3 +1,4 @@
+const DBHelper = require('../../helper/DBHelper/DBHelper');
 const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3();
@@ -21,29 +22,26 @@ exports.createPage = async (pageBody) => {
             INSERT INTO pages (id, store_id, name, content_URL) 
             VALUES ($1, $2, $3, $4)
             returning id, "contentURL";
-            `, [pageBody.id, pageBody.storeId, pageBody.name, s3Result? s3Result.Location : ""]);
+            `, [pageBody.id, pageBody.storeId, pageBody.name, s3Result ? s3Result.Location : ""]);
 
         return result;
     } catch (error) {
         console.log(error);
         return null;
     }
-    
+
 };
 
-exports.getPagesByStoreId = async (storeId) => {
-    try {
-        const result = await db.query(`
-            SELECT id, name 
-            FROM pages 
-            WHERE (store_Id = '${storeId}')
-        `)
-    
-        return result.rows;
-    } catch (error) {
-        console.log(error);
-        return null;
+exports.getPagesByStoreId = async (query) => {
+    let config = {
+        where: {
+            "OP.AND": [
+                { store_id: query.store_id },
+                { name: query.name }
+            ]
+        }
     }
+    return DBHelper.FindAll("pages", config)
 };
 
 exports.savePageContent = async (storeId, pageId, content) => {
@@ -56,7 +54,7 @@ exports.savePageContent = async (storeId, pageId, content) => {
             ACL: 'public-read',
             Key: `pages/${storeId}/${pageId}.json`
         }).promise();
-        return {message: "Update successfully!"};
+        return { message: "Update successfully!" };
     } catch (error) {
         console.log(error);
         return null;
@@ -80,7 +78,7 @@ exports.getPageContentURL = async (pageId) => {
 
 exports.findPageById = async (storeId, pageId) => {
     try {
-        const data =  await s3.getObject({
+        const data = await s3.getObject({
             Bucket: "ezmall-bucket",
             Key: `pages/${storeId}/${pageId}.json`
         }).promise();

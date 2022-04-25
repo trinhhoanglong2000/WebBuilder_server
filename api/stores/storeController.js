@@ -148,6 +148,25 @@ exports.getProductsByStoreId = async (req, res) => {
     }
 };
 
+exports.getPagesByStoreId = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await pageService.getPagesByStoreId(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get pages successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     const query = req.query

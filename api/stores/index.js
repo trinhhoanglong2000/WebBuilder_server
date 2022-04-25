@@ -6,6 +6,7 @@ router.get('/', storeController.getStoreByUserId);
 router.get('/:id', storeController.getStoreById);
 router.get('/:storeId/:pageId/content', storeController.loadContent);
 router.get('/:id/products', storeController.getProductsByStoreId);
+router.get('/:id/pages', storeController.getPagesByStoreId);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
 router.get('/:id/init-data', storeController.getInitDataStore);
