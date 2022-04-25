@@ -7,7 +7,7 @@ function productData(e) {
       {
         title: "Product Title",
         price: "$100.00",
-        img: "HEHE",
+        thumbnail: "https://dummyimage.com/600x400/55595c/fff",
       },
     ];
     const id = $(e).data('ez-mall-collection') || " ";
@@ -17,6 +17,7 @@ function productData(e) {
     .then((data) => {
       if (data.data[0].listProducts) 
         products_data = data.data[0].listProducts;
+      console.log(products_data)
       $(e)
       .find(".thumb-wrapper")
       .each(function (index) {
@@ -29,6 +30,8 @@ function productData(e) {
         $(this)
           .find(".item-price span")
           .text(products_data[index % products_data.length].price);
+        $(this)
+          .find("img").attr("src",products_data[index % products_data.length].thumbnail);
       });
     });
     
