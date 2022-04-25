@@ -125,3 +125,6 @@ exports.getTemplate = async (id) => {
 
 //   }
 // }
+exports.FindUserAndStore = async (query) => {
+    return DBHelper.getData("stores",query)
+}

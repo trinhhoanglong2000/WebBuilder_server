@@ -236,6 +236,14 @@ exports.getInitDataStore = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
+    let check = {
+        id : req.params.id,
+        user_id : req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req,res,check)
+    if (!authen){
+        return
+    }
     // create new product
     const ProductObj = req.body;
     let quantity = 0
@@ -370,4 +378,23 @@ exports.updateLogoUrl = async (req, res) => {
         });
     }
     return;
+}
+exports.AuthenticateUserAndStore = async (req,res,check) => {
+    if (req.user){
+        let query = {
+            id : check.id,
+            user_id : check.user_id
+        }
+        const authenticateUser = await storeService.FindUserAndStore(query)
+        if (!authenticateUser[0]){
+            res.status(http.Created).json({
+                statusCode: 403,
+                message: "Forbiden!"
+            })
+            return
+        }
+        else {
+            return authenticateUser
+        }
+    }
 }
