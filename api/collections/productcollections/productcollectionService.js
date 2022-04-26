@@ -77,3 +77,7 @@ exports.getData = async (query) => {
     // return DBHelper.getData("productcollections",query)  
     return DBHelper.FindAll("productcollections",config)
 }
+
+exports.createProductandCollectionLink = async (query) => {
+    return DBHelper.insertData(query,"product_productcollection",false)
+}

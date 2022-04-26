@@ -3,7 +3,7 @@ const http = require('../../const');
 const passport = require('../../helper/passport');
 const jwt = require('jsonwebtoken');
 const accountService = require('../accounts/accountService');
-
+const templateService = require('../template/templateService')
 exports.signIn = (req, res, next) => {
     passport.authenticate(
         "local",
@@ -74,6 +74,15 @@ exports.facebookSignIn = async (req,res,next) => {
 exports.createAccount = async (req, res) => {
     const accountObj = req.body
     const newAccount = await accountService.createAccount(accountObj);
+    let query = {
+        name : "template-default"
+    }
+    const getTemplate = await templateService.getTemplate(query)
+    let addQuery = {
+        user_id : newAccount.rows[0].id,
+        template_id : getTemplate[0].id
+    }
+    const addTemplate = await templateService.insertTemplateUser(addQuery)
     if (newAccount) {
         if (newAccount.message) {
             res.status(http.ServerError).json({

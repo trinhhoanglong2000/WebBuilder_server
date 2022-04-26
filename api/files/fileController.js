@@ -1,7 +1,5 @@
 const http = require('../../const');
 const AWS = require('aws-sdk');
-const storeService = require('../stores/storeService');
-const DBHelper = require('../../helper/DBHelper/DBHelper');
 
 const s3 = new AWS.S3();
 
@@ -23,47 +21,38 @@ exports.uploadAsset = async (req, res) => {
     });
 }
 
-exports.uploadBase64Asset = async (req, res) => {
-    const storeId = req.params.storeId;
-    const base64Image = req.body.base64Image
-    const buf = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ""),'base64');
-    const type = base64Image.split(';')[0].split('/')[1];
+exports.uploadImageToS3 = async (req, res) => {
+    const data = req.body.data;
+    let result = [];
 
-    const resultS3 = await s3.upload({
-        Body: buf,
-        Bucket: "ezmall-bucket",
-        ContentEncoding: 'base64',
-        ContentType: `image/${type}`,
-        ACL:'public-read',
-        Key: `assets/${storeId}.${type}`
-    }).promise();
+    for (let item of data) {
+        const base64Image = item.base64Image;
+        const buf = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ""),'base64');
+        const type = base64Image.split(';')[0].split('/')[1];
 
-    const data = {
-        id: storeId,
-        logo_url: resultS3.Location
+        result.push(await s3.upload({
+            Body: buf,
+            Bucket: "ezmall-bucket",
+            ContentEncoding: 'base64',
+            ContentType: `image/${type}`,
+            ACL:'public-read',
+            Key: `assets/${item.name}.${type}`
+        }).promise());
+    };
+
+    result = result.map( (element) => { return element.Location })
+
+    if (result && result.length > 0) {
+        return res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Uploaded!"
+        });
     }
 
-    if (resultS3) {
-        const resultMg = await DBHelper.updateData(data, "stores", "id");
-        if (resultMg) {
-            res.status(http.Success).json({
-                statusCode: http.Success,
-                data: resultS3.Location,
-                message: "Uploaded!"
-            });
-            return;
-        }
-        else {
-            res.status(http.ServerError).json({
-                statusCode: http.ServerError,
-                message: "Server Error!"
-            });
-        }
-        return;
-    }
-
-    res.status(http.ServerError).json({
+    return res.status(http.ServerError).json({
         statusCode: http.ServerError,
         message: "Server Error!"
     });
+    
 }

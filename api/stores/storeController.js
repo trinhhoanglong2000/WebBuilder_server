@@ -6,6 +6,7 @@ const bannercollectionService = require('../collections/bannercollections/banner
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const http = require('../../const');
+const DBHelper = require('../../helper/DBHelper/DBHelper');
 
 exports.createStore = async (req, res) => {
     // create new store
@@ -147,6 +148,25 @@ exports.getProductsByStoreId = async (req, res) => {
     }
 };
 
+exports.getPagesByStoreId = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await pageService.getPagesByStoreId(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get pages successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     const query = req.query
@@ -187,10 +207,13 @@ exports.getBannerCollectionsByStoreId = async (req, res) => {
 
 exports.getInitDataStore = async (req, res) => {
     const storeId = req.params.id;
+    const query = req.query;
+    query.store_id = storeId;
     const logoURL = storeService.getLogo(storeId);
-    const listPagesId = pageService.getPagesByStoreId(storeId);
+    const listPagesId = pageService.getPagesByStoreId(query);
     const storeCssData = storeService.getCssFileForStore(storeId);
-    const result = await Promise.all([logoURL, listPagesId, storeCssData]);
+    const storeTemplate = storeService.getTemplate(storeId)
+    const result = await Promise.all([logoURL, listPagesId, storeCssData,storeTemplate]);
 
     if (result) {
         res.status(http.Success).json({
@@ -198,7 +221,8 @@ exports.getInitDataStore = async (req, res) => {
             data: {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
-                storeCssData: result[2]
+                storeCssData: result[2],
+                template : result[3]
             },
             message: "Get products successfully!"
         })
@@ -212,8 +236,17 @@ exports.getInitDataStore = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
+    let check = {
+        id : req.params.id,
+        user_id : req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req,res,check)
+    if (!authen){
+        return
+    }
     // create new product
     const ProductObj = req.body;
+    let quantity = 0
     const id = req.params.id
     let productQuery = req.body.product
     productQuery.store_id = id
@@ -221,12 +254,25 @@ exports.createProduct = async (req, res) => {
 
     let productOptionQuery = req.body.option
     let variantQuery = req.body.variant
+    let collectionQuery = req.body.collection
 
+    
     //Create Product
     const newProduct = await productService.createProduct(productQuery);
-
-    //Create Option
     let productId = newProduct.rows[0].id
+
+    //Create Collection
+    if (collectionQuery){
+        for (let i = 0 ; i <collectionQuery.length; i ++){
+            let query = {
+                "product_id" : productId,
+                "productcollection_id": collectionQuery[i]
+            }
+            const newCollection = await productcollectionService.createProductandCollectionLink(query)
+        }
+    }
+    //Create Option
+    
     if (productOptionQuery) {
         for (let i = 0; i < productOptionQuery.length; i++) {
             let query = {
@@ -256,14 +302,21 @@ exports.createProduct = async (req, res) => {
             let createVariantQuery = variantQuery[i]
             for (let j = 0; j < createVariantQuery.option_value.length; j++){
                 let query = createVariantQuery.option_value[j]
+              
                 query.product_id = productId
                 const findOptionValue = await productOptionService.findDataOptionValue(query)
                 option_value_id.push(findOptionValue[0].id)
             }
+            quantity += createVariantQuery.quantity
             delete createVariantQuery.option_value
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
+            let updateQuery = {
+                "id" : productId,
+                "inventory" : quantity
+            }
+            const updateValue = await productService.updateProduct(updateQuery)
         }
        
     }
@@ -279,5 +332,69 @@ exports.createProduct = async (req, res) => {
             statusCode: http.ServerError,
             message: "Server error!"
         })
+    }
+}
+exports.createCollection = async (req, res) => {
+    // create new product
+    let productQuery = {}
+    //Create Product
+    const newProduct = await productService.createProduct(productQuery);
+    if (newProduct) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newProduct,
+            message: "Create product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.updateLogoUrl = async (req, res) => {
+    const storeId = req.params.storeId;
+    const logoUrl = req.body.logoUrl;
+
+    const data = {
+        id: storeId,
+        logo_url: logoUrl
+    }
+
+    const result = await DBHelper.updateData(data, "stores", "id");
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            message: "Save logo URL success!"
+        });
+        return;
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server Error!"
+        });
+    }
+    return;
+}
+exports.AuthenticateUserAndStore = async (req,res,check) => {
+    if (req.user){
+        let query = {
+            id : check.id,
+            user_id : check.user_id
+        }
+        const authenticateUser = await storeService.FindUserAndStore(query)
+        if (!authenticateUser[0]){
+            res.status(http.Created).json({
+                statusCode: 403,
+                message: "Forbiden!"
+            })
+            return
+        }
+        else {
+            return authenticateUser
+        }
     }
 }

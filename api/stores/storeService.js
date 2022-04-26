@@ -8,7 +8,7 @@ exports.createStore = async (storeObj) => {
     if (storeObj.name) {
         storeObj.store_link = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
     }
-    return DBHelper.insertData(storeObj,"stores",true)
+    return DBHelper.insertData(storeObj, "stores", true)
 
 }
 
@@ -96,4 +96,35 @@ exports.getLogo = async (id) => {
         console.log(error);
         return null;
     }
+}
+exports.getTemplate = async (id) => {
+    let config = {
+        join: {
+            "template": {
+                condition: {
+                    "stores.template_id": "template.id",
+                }   
+            }
+        },
+        select: "template.name",
+        where: {
+            "stores.id": id
+        },
+        
+    }
+    const data = await DBHelper.FindAll("stores", config);
+    return data[0].name;
+}
+// join:{
+//   template:{
+//       condition : {},
+//       type:'LEFT'
+
+//   },
+//   template1:{
+
+//   }
+// }
+exports.FindUserAndStore = async (query) => {
+    return DBHelper.getData("stores",query)
 }

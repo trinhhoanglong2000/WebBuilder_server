@@ -33,20 +33,11 @@ exports.getProductsByStoreId = async (query) => {
 }
 
 exports.findById = async (id) => {
-    try {
-        const result = await db.query(`
-            SELECT * 
-            FROM products 
-            WHERE (id = '${id}')
-        `)
-
-        return result.rows[0];
-    } catch (error) {
-        console.log(error);
-        return null;
+    let query = {
+        id : id
     }
+    return DBHelper.getData("products",query)
 }
-
 exports.getProductsByCollectionId = async (collectionId, data) => {
     try {
         let arr = Object.keys(data)
