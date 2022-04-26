@@ -1,6 +1,4 @@
-
-
-//==============|Data Selector|============
+let url = null;
 
 function productData(e) {
     let products_data = [
@@ -12,7 +10,7 @@ function productData(e) {
     ];
     const id = $(e).data('ez-mall-collection') || " ";
   
-    fetch(`http://localhost:5000/collections/product/${id}`)
+    fetch(`${url}/collections/product/${id}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.data[0].listProducts) 
@@ -38,9 +36,11 @@ function productData(e) {
   
   //Init
   function init() {
+    if (!url){
+      url = $('script.scriptClass').attr('src').match(/^.*?(?=\/files)/gm)[0]
+    }
   
-  
-    $("div[data-gjs-type= 'product-list'] ").each(function (i) {
+    $("div[name='products-collections'] ").each(function (i) {
       productData(this);
     });
   }
