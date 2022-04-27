@@ -1,23 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const storeController = require('./storeController')
+const authenticator = require('../../middleware/authentication');
 
-router.get('/', storeController.getStoreByUserId);
-router.get('/:id', storeController.getStoreById);
-router.get('/:storeId/:pageId/content', storeController.loadContent);
+router.get('/', authenticator.Authenticate, storeController.getStoreByUserId);
+router.get('/:id', authenticator.Authenticate, storeController.getStoreById);
+router.get('/:storeId/:pageId/content', authenticator.Authenticate, storeController.loadContent);
 router.get('/:id/products', storeController.getProductsByStoreId);
-router.get('/:id/pages', storeController.getPagesByStoreId);
+router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
-router.get('/:id/init-data', storeController.getInitDataStore);
+router.get('/:id/init-data', authenticator.Authenticate, storeController.getInitDataStore);
 
 /* POST create account. */
-router.post('/', storeController.createStore);
-router.post('/:storeId/:pageId/content', storeController.changeContent);
-router.post('/css/:storeId', storeController.uploadCssFile);
-router.post('/logoUrl/:storeId', storeController.updateLogoUrl);
+router.post('/', authenticator.Authenticate, storeController.createStore);
+router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);
+router.post('/css/:storeId', authenticator.Authenticate, storeController.uploadCssFile);
+router.post('/logoUrl/:storeId', authenticator.Authenticate, storeController.updateLogoUrl);
 
 // POST CREATE PRODUCT
-router.post('/:id/products', storeController.createProduct)
-router.post('/:id/collections', storeController.createCollection)
+router.post('/:id/products', authenticator.Authenticate, storeController.createProduct)
+router.post('/:id/collections', authenticator.Authenticate, storeController.createCollection)
 module.exports = router;

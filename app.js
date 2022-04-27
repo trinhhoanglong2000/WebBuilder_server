@@ -54,7 +54,7 @@ app.use(passport.initialize());
 app.use('/account', accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
-app.use('/stores', authenticator.Authenticate, storeRouter);
+app.use('/stores', storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', productRouter);
 app.use('/collections', collectionRouter);
