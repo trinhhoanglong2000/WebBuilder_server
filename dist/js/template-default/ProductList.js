@@ -1,4 +1,4 @@
-let url = null;
+let urlProductList = null;
 
 function productData(e) {
     let products_data = [
@@ -10,7 +10,7 @@ function productData(e) {
     ];
     const id = $(e).data('ez-mall-collection') || " ";
   
-    fetch(`${url}/collections/product/${id}`)
+    fetch(`${urlProductList}/collections/product/${id}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.data[0].listProducts) 
@@ -36,8 +36,8 @@ function productData(e) {
   
   //Init
   function init() {
-    if (!url){
-      url = $('script.scriptClass').attr('src').match(/^.*?(?=\/files)/gm)[0]
+    if (!urlProductList){
+      urlProductList = $('script.scriptClass').attr('src').match(/^.*?(?=\/files)/gm)[0]
     }
   
     $("div[name='products-collections'] ").each(function (i) {
