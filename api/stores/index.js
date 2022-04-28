@@ -15,7 +15,7 @@ router.get('/:id/init-data', authenticator.Authenticate, storeController.getInit
 /* POST create account. */
 router.post('/', authenticator.Authenticate, storeController.createStore);
 router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);
-router.post('/css/:storeId', authenticator.Authenticate, storeController.uploadCssFile);
+router.post('/trait/:storeId', authenticator.Authenticate, storeController.uploadTraitFile);
 router.post('/logoUrl/:storeId', authenticator.Authenticate, storeController.updateLogoUrl);
 
 // POST CREATE PRODUCT

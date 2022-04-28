@@ -109,10 +109,11 @@ exports.loadContent = async (req, res) => {
     res.status(http.Success).json(content);
 }
 
-exports.uploadCssFile = async (req, res) => {
+exports.uploadTraitFile = async (req, res) => {
     const id = req.params.storeId;
-    const css_body = req.body;
-    const result = await storeService.uploadCssFileForStore(id, css_body);
+    const data = req.body.traitData;
+
+    const result = await storeService.uploadTraitFile(id, data);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -211,9 +212,9 @@ exports.getInitDataStore = async (req, res) => {
     query.store_id = storeId;
     const logoURL = storeService.getLogo(storeId);
     const listPagesId = pageService.getPagesByStoreId(query);
-    const storeCssData = storeService.getCssFileForStore(storeId);
+    const storeTraitData = storeService.getTraitFileForStore(storeId);
     const storeTemplate = storeService.getTemplate(storeId)
-    const result = await Promise.all([logoURL, listPagesId, storeCssData,storeTemplate]);
+    const result = await Promise.all([logoURL, listPagesId, storeTraitData, storeTemplate]);
 
     if (result) {
         res.status(http.Success).json({
@@ -221,7 +222,7 @@ exports.getInitDataStore = async (req, res) => {
             data: {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
-                storeCssData: result[2],
+                storeTraitData: result[2],
                 template : result[3]
             },
             message: "Get products successfully!"
