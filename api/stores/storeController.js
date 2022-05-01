@@ -7,6 +7,7 @@ const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const http = require('../../const');
 const DBHelper = require('../../helper/DBHelper/DBHelper');
+const { createAccountWithSocialLogin } = require('../accounts/accountService');
 
 exports.createStore = async (req, res) => {
     // create new store
@@ -336,14 +337,35 @@ exports.createProduct = async (req, res) => {
     }
 }
 exports.createCollection = async (req, res) => {
-    // create new product
-    let productQuery = {}
-    //Create Product
-    const newProduct = await productService.createProduct(productQuery);
-    if (newProduct) {
+    let check = {
+        id : req.params.id,
+        user_id : req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req,res,check)
+    if (!authen){
+        return
+    }
+
+    // create collection
+    let collectionQuery = req.body.collection
+    let productQuery = req.body.products
+    const newCollection = await productcollectionService.createProductCollection(collectionQuery)
+
+    let collectionId = newCollection.rows[0].id
+    //Create Collection
+    if (productQuery){
+        for (let i = 0 ; i <productQuery.length; i ++){
+            let query = {
+                "product_id" : productQuery[i],
+                "productcollection_id": collectionId
+            }
+            const newProduct = await productcollectionService.createProductandCollectionLink(query)
+        }
+    }
+    if (newCollection) {
         res.status(http.Created).json({
             statusCode: http.Created,
-            data: newProduct,
+            data: newCollection,
             message: "Create product successfully!"
         })
     }
