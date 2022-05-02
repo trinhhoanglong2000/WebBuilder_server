@@ -20,24 +20,10 @@ const authRouter = require('./api/authenticator');
 const variantsRouter = require('./api/variants')
 const productOptionRouter = require('./api/products_option')
 const authenticator = require('./middleware/authentication');
+const userStoreRouter = require('./stores')
 const app = express();
-const subdomain = require('express-subdomain')
-// mongoose.connect(process.env.DATABASE_URL, 
-//   {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-//   }
-// )
-// .then(() => {
-//   console.log("DB connected!")
-// })
-// .catch((err) => {
-//  console.log("DB not connected " + err);
-// })
 
-// db.connect(() => {
-//   console.log("Connected to Database!");
-// })
+const subdomain = require('express-subdomain')
 
 const corsOptions = {
   origin: false,
@@ -51,27 +37,8 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
 
-app.use('*', function (req, res, next) {
+app.use('*',userStoreRouter)
 
-  let a = req.subdomains
-  console.log(req.subdomains)
-  if (a.length == 1) {
-    const newRouter = require(`./stores/${a[0]}`)
-    //const newRouter = require(`./${a[0]}`)
-    app.use(subdomain(`${a[0]}`, newRouter))
-  }
-  if (a.length == 0) {
-    next()
-  }
-  else {
-    res.status(http.NotFound).json({
-      statusCode: http.NotFound,
-      message: "Not Found"
-    })
-  }
-
-
-})
 app.use('/account', accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
@@ -83,21 +50,9 @@ app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
 
-function getSubdomain(hostname) {
-  var regexParse = new RegExp('[a-z\-0-9]{2,63}\.[a-z\.]{2,5}$');
-  var urlParts = regexParse.exec(hostname);
-  return hostname.replace(urlParts[0], '').slice(0, -1);
-}
-//console.log(getSubdomain(window.location.hostname));)
-
-// app.use(subdomain('*',userStoreRouter))
-// catch 404 and forward to error handler
-
-
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
-  console.log(req.hostname)
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
@@ -108,13 +63,13 @@ app.use(function (err, req, res, next) {
     error: err
   });
 });
-if (!fse.existsSync(`stores/mystore/test.js`)) {
-  fse.outputFile('stores/mystore/test.js', 'It you')
-    .then(() => {
-      console.log('The file has been saved!');
-    })
-    .catch(err => {
-      console.error(err)
-    });
-}
+// if (!fse.existsSync(`stores/mystore/test.js`)) {
+//   fse.outputFile('stores/mystore/test.js', 'It you')
+//     .then(() => {
+//       console.log('The file has been saved!');
+//     })
+//     .catch(err => {
+//       console.error(err)
+//     });
+// }
 module.exports = app;
