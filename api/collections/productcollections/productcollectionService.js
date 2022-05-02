@@ -81,3 +81,6 @@ exports.getData = async (query) => {
 exports.createProductandCollectionLink = async (query) => {
     return DBHelper.insertData(query,"product_productcollection",false)
 }
+exports.createProductCollection = async (query) => {
+    return DBHelper.insertData(query,"productcollections",true)
+}
