@@ -1,36 +1,44 @@
 
 let urlProductSection = null;
-let isAddScript= false
 let isScrollable = true;
 let startProductSection = 0;
+let canLoadProductSection = true
+let productHTML = "";
+
 function productData(e) {
     const limit = $(e).data('ez-mall-numproducts') || "8";
     fetch(`${urlProductSection}/stores/${'621b5a807ea079a0f7351fb8'}/products?limit=${limit}&offset=${startProductSection}`)
     .then((response) => response.json())
     .then((data) => {
-        console.log(data)
-        startProductSection+= limit;
-        let productHTML = "";
+        $(".dots ").addClass("d-none")
+        startProductSection+= parseInt(limit);
+        if (data.data.length<limit) canLoadProductSection = false
         data.data.forEach(element => {
-            
+            productHTML += ` <div class="col-md-3 col-sm-4">
+            <div class="single-new-arrival">
+                <div class="single-new-arrival-bg">
+                    <img src=${element.thumbnail}
+                        alt="new-arrivals images">
+                    <div class="single-new-arrival-bg-overlay"></div>
+
+                    <div class="new-arrival-cart">
+                        <p>
+                            <span class="lnr lnr-cart"></span>
+                            <a href="#"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Add <span>to
+                                </span> cart</a>
+                        </p>
+
+                    </div>
+                </div>
+                <h4><a href="#">${element.title}</a></h4>
+                <p class="arrival-product-price">${element.price}</p>
+            </div>
+            </div>
+
+            `
         });
-    //   if (data.data[0].listProducts) 
-    //     products_data = data.data[0].listProducts;
-    //   $(e)
-    //   .find(".thumb-wrapper")
-    //   .each(function (index) {
-    //     $(this)
-    //       .find("h4")
-    //       .text(products_data[index % products_data.length].title);
-    //     $(this)
-    //       .find(".item-price strike")
-    //       .text(products_data[index % products_data.length].price);
-    //     $(this)
-    //       .find(".item-price span")
-    //       .text(products_data[index % products_data.length].price);
-    //     $(this)
-    //       .find("img").attr("src",products_data[index % products_data.length].thumbnail);
-    //   });
+        $(e).find(".row").html(productHTML)
+
     });
 }
 
@@ -38,24 +46,21 @@ function init() {
     if (!urlProductSection) {
         urlProductSection = $('script.scriptClass').attr('src').match(/^.*?(?=\/files)/gm)[0]
     }
-    if (!isAddScript){
-        isAddScript = true;
-        let script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"; // use this for linked script
-        $("head").append(script);
-    }
+   
     // 
     const height = $('.footer-section').height()
     $(window).scroll(function () { 
         if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10-height) {
-           if (isScrollable){
+           if (isScrollable && canLoadProductSection){
                isScrollable = false;
                setTimeout(function(){
                    isScrollable = true
-               },2000)
-               console.log("HEHE")
 
+               },1000)
+                $(".dots ").removeClass("d-none")
+                $("div[name='products-section']").each(function (i) {
+                    productData(this);
+                });
            }
         }
      });
