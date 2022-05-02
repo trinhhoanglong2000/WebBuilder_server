@@ -18,6 +18,7 @@
     "dotenv": "^14.3.0",
     "ejs": "^3.1.6",
     "express": "~4.16.1",
+    "express-subdomain": "^1.0.5",
     "fs-extra": "^10.1.0",
     "google-auth-library": "^7.10.2",
     "googleapis": "^92.0.0",
