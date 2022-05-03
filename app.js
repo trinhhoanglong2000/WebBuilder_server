@@ -3,10 +3,10 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const cors=require('cors');
+const cors = require('cors');
 require('dotenv').config();
-const mongoose = require('mongoose');
-const db = require('./database');
+const http = require('./const')
+const fse = require('fs-extra')
 
 const passport = require('./helper/passport');
 const accountsRouter = require('./api/accounts');
@@ -20,36 +20,24 @@ const authRouter = require('./api/authenticator');
 const variantsRouter = require('./api/variants')
 const productOptionRouter = require('./api/products_option')
 const authenticator = require('./middleware/authentication');
+const userStoreRouter = require('./stores')
 const app = express();
 
-// mongoose.connect(process.env.DATABASE_URL, 
-//   {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-//   }
-// )
-// .then(() => {
-//   console.log("DB connected!")
-// })
-// .catch((err) => {
-//  console.log("DB not connected " + err);
-// })
-
-// db.connect(() => {
-//   console.log("Connected to Database!");
-// })
+const subdomain = require('express-subdomain')
 
 const corsOptions = {
-  origin: [process.env.MANAGEMENT_CLIENT_URL, process.env.EDITOR_CLIENT_URL],
+  origin: false,
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
 }
 app.use(logger('dev'));
-app.use(express.json({limit:'50mb'}));
+app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
+
+app.use('*',userStoreRouter)
 
 app.use('/account', accountsRouter);
 app.use('/files', fileRouter);
@@ -60,24 +48,28 @@ app.use('/products', productRouter);
 app.use('/collections', collectionRouter);
 app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
-app.use('/productoption',productOptionRouter)
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use('/productoption', productOptionRouter)
 
 // error handler
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
-    res.status(err.status || 500);
-    res.json({
-      message: err.message,
-      error: err
-    });
+  // render the error page
+  res.status(err.status || 500);
+  res.json({
+    message: err.message,
+    error: err
+  });
 });
-
+// if (!fse.existsSync(`stores/mystore/test.js`)) {
+//   fse.outputFile('stores/mystore/test.js', 'It you')
+//     .then(() => {
+//       console.log('The file has been saved!');
+//     })
+//     .catch(err => {
+//       console.error(err)
+//     });
+// }
 module.exports = app;
