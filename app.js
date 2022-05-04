@@ -37,7 +37,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
 
-app.use('*',userStoreRouter)
+// app.use('*',userStoreRouter)
 
 app.use('/account', accountsRouter);
 app.use('/files', fileRouter);
