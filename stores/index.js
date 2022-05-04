@@ -5,6 +5,7 @@ const http = require('../const')
 router.get('/', function (req, res, next) {
     {
         let a = req.subdomains
+        console.log(req.subdomains)
         if (a.length == 1) {
             if (!fse.existsSync(`stores/${a[0]}`)) {
                 res.status(http.NotFound).json({

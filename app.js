@@ -26,7 +26,7 @@ const app = express();
 const subdomain = require('express-subdomain')
 
 const corsOptions = {
-  origin: false,
+  origin: true,
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
@@ -37,7 +37,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(passport.initialize());
 
-// app.use('*',userStoreRouter)
+app.use('*',userStoreRouter)
 
 app.use('/account', accountsRouter);
 app.use('/files', fileRouter);
@@ -50,7 +50,7 @@ app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
 app.get('/',function (req,res) {
-  
+  res.send("Hi")
 })
 // error handler
 app.use(function (err, req, res, next) {
