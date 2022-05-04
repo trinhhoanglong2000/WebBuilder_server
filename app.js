@@ -49,7 +49,9 @@ app.use('/collections', collectionRouter);
 app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
-
+app.get('/',function (req,res) {
+  
+})
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
