@@ -1,6 +1,7 @@
 const db = require('../../../database');
 const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
+const fileService = require('../../files/fileService')
 const DBHelper = require('../../../helper/DBHelper/DBHelper');
 const { collection } = require('../../accounts/accountModel');
 const { query } = require('express');
@@ -23,7 +24,16 @@ exports.createCollection = async (collectionObj) => {
             if (s3Result) collectionObj.thumbnail = s3Result.Location;
         }
 
-        return DBHelper.insertData(collectionObj, "productcollections", true)
+        collectionObj.id = uuidv4();
+
+        // upload richtext description to s3
+        const body = JSON.stringify(collectionObj.description, null, '/t');
+        const key = `richtext/productcollection/${collectionObj.id}`
+        const rest = await fileService.uploadTextFileToS3(body, key, 'json');
+
+        collectionObj.description = rest.Location;
+
+        return DBHelper.insertData(collectionObj, "productcollections", false)
     } catch (error) {
         console.log(error);
         return null;
@@ -50,37 +60,37 @@ exports.getCollectionsByStoreId = async (storeId, filter) => {
 }
 
 exports.findById = async (query) => {
-    
+
     let config = {
         where: {
             id: query.id
         }
     }
     // return DBHelper.getData("productcollections",query)  
-    return DBHelper.FindAll("productcollections",config)
+    return DBHelper.FindAll("productcollections", config)
 }
 exports.getData = async (query) => {
     //name
 
-    let condition =[];
-    
-    condition.push({store_id : query.store_id})
+    let condition = [];
+
+    condition.push({ store_id: query.store_id })
     if (query.name)
-        condition.push({name:{"OP.ILIKE" : "%" + query.name + "%"}})
+        condition.push({ name: { "OP.ILIKE": "%" + query.name + "%" } })
     let config = {
         where: {
-            "OP.AND" : condition,
+            "OP.AND": condition,
         },
-        limit : query.limit,
+        limit: query.limit,
         offset: query.offset
     }
     // return DBHelper.getData("productcollections",query)  
-    return DBHelper.FindAll("productcollections",config)
+    return DBHelper.FindAll("productcollections", config)
 }
 
 exports.createProductandCollectionLink = async (query) => {
-    return DBHelper.insertData(query,"product_productcollection",false)
+    return DBHelper.insertData(query, "product_productcollection", false)
 }
 exports.createProductCollection = async (query) => {
-    return DBHelper.insertData(query,"productcollections",true)
+    return DBHelper.insertData(query, "productcollections", true)
 }
