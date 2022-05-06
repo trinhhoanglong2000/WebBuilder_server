@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createStore = async (storeObj) => {
     if (storeObj.name) {
-        storeObj.store_link = storeObj.name.replace(' ', '-').toLowerCase() + '.ezmall.com';
+        storeObj.store_link = storeObj.name.replace(' ', '-').toLowerCase() + '.myeasymall.site';
     }
     return DBHelper.insertData(storeObj, "stores", true)
 
