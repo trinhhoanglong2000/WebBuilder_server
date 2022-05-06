@@ -8,7 +8,7 @@ exports.createProduct = async (productObj) => {
 
     // upload richtext description to s3
     const body = JSON.stringify(productObj.description, null, '/t');
-    const key = `richtext/${productObj.id}`
+    const key = `richtext/product/${productObj.id}`
     const rest = await fileService.uploadTextFileToS3(body, key, 'json');
 
     productObj.description = rest.Location;
