@@ -6,9 +6,7 @@ const dns = require('dns')
 router.get('/', function (req, res, next) {
     {
         let hostURL = req.get('Host')
-        console.log("Hi")
-        console.log(req.socket.localAddress)
-        //console.log(req)
+        console.log(req.subdomains)
         var domains = dns.resolveCname(req.hostname,(err,address)=>{
             console.log(address)
         })
