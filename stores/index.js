@@ -32,11 +32,11 @@ router.get('/', async (req, res, next) => {
         let directory = req.originalUrl
         console.log(subdomain)
         // local host and server
-        if (hostURL == "www.myeasymall.site" || hostURL == "example.com" || hostURL == "localhost") {
+        if (subdomain.length == 0 || subdomain.length >= 2 || (subdomain.includes("www"))) {
             next()
             return
         }
-        if (!fse.existsSync(`stores/${hostURL}`)) {
+        if (!fse.existsSync(`stores/${subdomain[0]}`)) {
             res.status(http.NotFound).json({
                 statusCode: http.ServerError,
                 message: "Not Found!"
@@ -49,7 +49,7 @@ router.get('/', async (req, res, next) => {
                 wordPath[0] = "/home"
             }
             res.sendFile("index.html", {
-                root: __dirname + `/${hostURL}${wordPath[0]}`
+                root: __dirname + `/${subdomain[0]}${wordPath[0]}`
             })
         }
     }
