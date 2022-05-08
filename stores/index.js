@@ -8,8 +8,8 @@ router.get('/', async function (req, res, next) {
         let hostURL = req.get('Host')
         let cname 
         const results = await Promise.allSettled([
-            dns.resolve4(req.hostname,()=>{}),
-            dns.resolveCname(req.hostname,()=>{}),
+            dns.resolve4(req.hostname,(err ,address)=>{ return address}),
+            dns.resolveCname(req.hostname,(err ,address)=>{ return address}),
         ]);
         // await dns.resolveCname(req.hostname,(err,address)=>{
         //     cname = address
