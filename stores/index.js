@@ -10,6 +10,8 @@ router.get('/', function (req, res, next) {
         var domains = dns.resolveCname(req.hostname,(err,address)=>{
             console.log(address)
         })
+        console.log("Check me")
+        console.log(req.socket.localAddress)
         let directory = req.originalUrl
         if (hostURL.includes(":5000")) {
             hostURL = hostURL.slice(0, hostURL.length - 5)
