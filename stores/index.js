@@ -12,7 +12,8 @@ router.get('/', function (req, res, next) {
 
         }
         // local host and server
-        if (hostURL == "www.myeasymall.site" || hostURL == "example.com"){
+        console.log(hostURL)
+        if (hostURL == "www.myeasymall.site" || hostURL == "example.com" ||hostURL =="localhost"){
             next()
             return
         }
