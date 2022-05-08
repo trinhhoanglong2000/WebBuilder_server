@@ -2,41 +2,39 @@ const express = require('express');
 const router = express.Router();
 const fse = require('fs-extra')
 const http = require('../const')
+
 router.get('/', function (req, res, next) {
     {
-        let a = req.subdomains
-        console.log("Check me")
-        console.log(req.get('Host'))
-        console.log(req.originalUrl)   
-        console.log(req.subdomains)
-        if (a.length == 1) {
-            if (a[0] == 'www'){
-                next()
-                return
-            }
-            if (!fse.existsSync(`stores/${a[0]}`)) {
-                res.status(http.NotFound).json({
-                    statusCode: http.ServerError,
-                    message: "Not Found!"
-                })
-                return
-            }
+        let hostURL = req.get('Host')
+        let directory = req.originalUrl
+        if (hostURL.includes(":5000")) {
+            hostURL = hostURL.slice(0, hostURL.length - 5)
 
-            res.sendFile("index.html", {
-                root: __dirname + `/${a[0]}/home`
-            });
-
-            // const newRouter = require(`./stores/${a[0]}`)
-            // app.use(subdomain(`${a[0]}`, newRouter))
-
-            // if (fse.existsSync(`stores/${a[0]}`)){
-            //   next()
-            // }
+        }
+        // local host and server
+        if (hostURL == "www.myeasymall.site" || hostURL == "example.com"){
+            next()
+            return
+        }
+        if (!fse.existsSync(`stores/${hostURL}`)) {
+            res.status(http.NotFound).json({
+                statusCode: http.ServerError,
+                message: "Not Found!"
+            })
+            return
         }
         else {
-            next()
+            let wordPath = directory.split('?')
+            console.log(wordPath)
+            if (directory === "/") {
+                directory = "/home"
+            }
+            res.sendFile("index.html", {
+                root: __dirname + `/${hostURL}${wordPath[0]}`
+            })
         }
     }
 
 });
+
 module.exports = router;
