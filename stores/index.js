@@ -10,6 +10,9 @@ router.get('/', function (req, res, next) {
         var domains = dns.resolveCname(req.hostname,(err,address)=>{
             console.log(address)
         })
+        var domains2 = dns.resolve4(req.hostname,(err,address)=>{
+            console.log(address)
+        })
         console.log("Check me")
         console.log(req.socket.localAddress)
         let directory = req.originalUrl
