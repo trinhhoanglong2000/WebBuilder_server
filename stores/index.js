@@ -26,11 +26,10 @@ router.get('/', async (req, res, next) => {
 
         if (result[1]) {
             if (rootDomain !== "myeasymall") {
-                subdomain = result[1][0] ? result[1][0].match(/(.*).myeasymall/)[1] : result[1][0]
+                subdomain = result[1][0] ? result[1][0].match(/(.*).myeasymall/)[1].split('.') : []
             }
         }
         let directory = req.originalUrl
-        console.log(subdomain)
         // local host and server
         if (subdomain.length == 0 || subdomain.length >= 2 || (subdomain.includes("www"))) {
             next()
