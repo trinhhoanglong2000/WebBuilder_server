@@ -1,70 +1,123 @@
-[name="header-navigation"].navbar .container {
+[name="header"].navbar .container {
     min-width: 100%;
     margin: 5px;
     padding: 1vh 4vw;
 }
 
-[name="header-navigation"].navbar i {
+[name="header"].navbar i {
     font-size: 25px;
     padding-left: 1vw;
     padding-right: 1vw;
 }
 
-[name="header-navigation"].navbar ul {
+[name="header"].navbar ul {
     font-size: 20px;
     list-style-type: none;
 }
 
-[name="header-navigation"].navbar a,
-[name="header-navigation"] .offcanvas a,
-[name="header-navigation"].navbar a.navbar-brand:hover {
+[name="header"].navbar a,
+[name="header"] .offcanvas a,
+[name="header"].navbar a.navbar-brand:hover {
     color: black;
 }
 
-[name="header-navigation"].navbar a:link {
+[name="header"].navbar a:link {
     text-decoration: none !important;
 }
 
-[name="header-navigation"].navbar a:hover,
-[name="header-navigation"].navbar i:hover {
+[name="header"].navbar a:hover,
+[name="header"].navbar i:hover {
     color: rgb(94, 94, 250) !important;
 }
 
-[name="header-navigation"].navbar a h4 {
+[name="header"].navbar a h4 {
     margin: 0;
 }
 
-[name="header-navigation"].navbar li {
+[name="header"].navbar li {
     width: auto; 
     padding: 10px;
 }
 
-[name="header-navigation"] .offcanvas .nav-pills .nav-link {
+[name="header"] .offcanvas .nav-pills .nav-link {
     border-radius: 0;
 }
 
-[name="header-navigation"].navbar .navbar-brand img {
+[name="header"].navbar .navbar-brand img {
     max-width: 100px;
 }
 
 @media only screen and (max-width: 767px) {
-    [name="header-navigation"] .offcanvas a:hover {
+    [name="header"] .offcanvas a:hover {
         color: black !important;
         background-color: #BBB;
     }
 
-    [name="header-navigation"] .offcanvas li {
+    [name="header"] .offcanvas li {
         width: 100%; 
     }
 
-    [name="header-navigation"].navbar i {
+    [name="header"].navbar i {
         font-size: 15px;
         padding-left: 1vw;
         padding-right: 1vw;
     }
 
-    [name="header-navigation"].navbar a:hover {
+    [name="header"].navbar a:hover {
         color: black !important;
         background-color: #BBB;
     }
+}
+
+/* Css header trait */
+[name='header'][theme='white'].navbar { 
+    background-color: white 
+}  
+
+[name='header'][theme='white'].navbar a, [name='header'][theme='white'].navbar i, [name='header'][theme='white'].navbar a.navbar-brand:hover { 
+    color: black 
+} 
+
+[name='header'][theme='black'].navbar { 
+    background-color: #121212 
+}  
+
+[name='header'][theme='black'].navbar a, [name='header'][theme='black'].navbar i, [name='header'][theme='black'].navbar a.navbar-brand:hover { 
+    color: white 
+} 
+
+[name='header'][theme='lGreen'].navbar { 
+    background-color: #69c5a3 
+}  
+
+[name='header'][theme='lGreen'].navbar a, [name='header'][theme='lGreen'].navbar i, [name='header'][theme='lGreen'].navbar a.navbar-brand:hover { 
+    color: black 
+} 
+
+[name='header'][theme='lBlue'].navbar { 
+    background-color: #c8e1e7 
+}  
+
+[name='header'][theme='lBlue'].navbar a, [name='header'][theme='lBlue'].navbar i, [name='header'][theme='lBlue'].navbar a.navbar-brand:hover { 
+    color: black 
+} 
+
+[name='header'][theme='sand'].navbar { 
+    background-color: #f6d7b0 
+}  
+
+[name='header'][theme='sand'].navbar a, [name='header'][theme='sand'].navbar i, [name='header'][theme='sand'].navbar a.navbar-brand:hover { 
+    color: black 
+} 
+
+[name='header'][theme='small'].navbar .navbar-brand img { 
+    max-width: 50px 
+}
+
+[name='header'][theme='medium'].navbar .navbar-brand img { 
+    max-width: 100px 
+}
+
+[name='header'][theme='large'].navbar .navbar-brand img { 
+    max-width: 150px 
 }

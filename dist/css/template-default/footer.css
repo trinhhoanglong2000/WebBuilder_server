@@ -1,25 +1,81 @@
-.footer-section ul {
+[name="footer"].footer-section ul {
     list-style-type: none;
+    padding: 0px;
 }
 
-.footer-section a {
-    color: black !important;
+[name="footer"].footer-section a {
+    color: black;
 }
 
-.footer-section a:link {
-    text-decoration: none !important;
+[name="footer"].footer-section a:link {
+    text-decoration: none;
 }
 
-.footer-section a:hover {
-    color: rgb(94, 94, 250) !important;
+[name="footer"].footer-section a:hover {
+    color: rgb(94, 94, 250);
 }
 
-.footer-section {
+[name="footer"].footer-section {
     padding: 1vh 3vw;
 }
 
-.footer-section i {
+[name="footer"].footer-section i {
     font-size: 35px;
     padding: 0vh 1vw;
     padding-left: 3vw;
 }
+
+[name="footer"].footer-section .footer-navigation div {
+    min-width: 25%;
+}
+
+[name="footer"].footer-section .footer-navigation div img {
+    max-width: 100px;
+}
+
+/* Css header trait */
+[name='footer'][theme='white'].footer-section { 
+    background-color: white;
+    color: black;
+} 
+
+[name='footer'][theme='white'].footer-section a { 
+    color: black;
+}
+
+[name='footer'][theme='black'].footer-section { 
+    background-color: #121212; 
+    color: white;
+} 
+
+[name='footer'][theme='black'].footer-section a { 
+    color: #cccbe9;
+}
+
+[name='footer'][theme='lGreen'].footer-section { 
+    background-color: #69c5a3; 
+    color: black;
+} 
+
+[name='footer'][theme='lGreen'].footer-section a { 
+    color: black;
+}
+
+[name='footer'][theme='lBlue'].footer-section { 
+    background-color: #c8e1e7; 
+    color: black;
+} 
+
+[name='footer'][theme='lBlue'].footer-section a { 
+    color: black;
+}
+
+[name='footer'][theme='sand'].footer-section { 
+    background-color: #f6d7b0;
+    color: black;
+} 
+
+[name='footer'][theme='sand'].footer-section a { 
+    color: black;
+}
+
