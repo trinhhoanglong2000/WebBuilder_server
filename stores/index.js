@@ -3,29 +3,34 @@ const router = express.Router();
 const fse = require('fs-extra')
 const http = require('../const')
 const dns = require('dns');
-router.get('/', async  (req, res, next) =>{
+router.get('/', async (req, res, next) => {
     {
         let hostURL = req.get('Host')
-        let cname
-        const ip4 = new Promise(((resolve, reject) =>{
+        let subdomain = req.subdomains;
+        const ip4 = new Promise(((resolve, reject) => {
             dns.resolve4(req.hostname, (err, address) => {
                 resolve(address)
             })
         }))
-        const cName = new Promise(((resolve, reject) =>{
+        const cName = new Promise(((resolve, reject) => {
             dns.resolveCname(req.hostname, (err, address) => {
                 resolve(address)
             })
         }))
-        const result = await Promise.all([ip4,cName]);
+        const result = await Promise.all([ip4, cName]);
         console.log(result[0])//ip4
         console.log(result[1])//Cname
 
-        let directory = req.originalUrl
-        if (hostURL.includes(":5000")) {
-            hostURL = hostURL.slice(0, hostURL.length - 5)
+        let urlArr = hostURL.split('.')
+        const rootDomain = urlArr.length >= 2 ? urlArr[urlArr.length - 2] : "myeasymall";
 
+        if (result[1]) {
+            if (rootDomain !== "myeasymall") {
+                subdomain = result[1][0] ? result[1][0].match(/(.*).myeasymall/)[1] : result[1][0]
+            }
         }
+        let directory = req.originalUrl
+        console.log(subdomain)
         // local host and server
         if (hostURL == "www.myeasymall.site" || hostURL == "example.com" || hostURL == "localhost") {
             next()
