@@ -26,8 +26,8 @@ router.get('/', function (req, res, next) {
         else {
             let wordPath = directory.split('?')
             console.log(wordPath)
-            if (directory === "/") {
-                directory = "/home"
+            if (wordPath[0] === "/") {
+                wordPath[0] = "/home"
             }
             res.sendFile("index.html", {
                 root: __dirname + `/${hostURL}${wordPath[0]}`
