@@ -2,34 +2,24 @@ const express = require('express');
 const router = express.Router();
 const fse = require('fs-extra')
 const http = require('../const')
-const dns = require('dns')
-router.get('/', async function (req, res, next) {
+const dns = require('dns');
+router.get('/', async  (req, res, next) =>{
     {
         let hostURL = req.get('Host')
-        let cname 
-        const results = await Promise.allSettled([
-            dns.resolve4(req.hostname,(err ,address)=>{ return address}),
-            dns.resolveCname(req.hostname,(err ,address)=>{ return address}),
-        ]);
-        // await dns.resolveCname(req.hostname,(err,address)=>{
-        //     cname = address
-        //     console.log("HOHO")
-
-        //     console.log(address)
-
-        // })
-        for (const {status, value, reason} of results) {
-            if (status === "fulfilled") {
-                // Promise was fulfilled, use `value`...
-                console.log(value)
-            } else {
-                console.log(reason)
-            }
-        }
-
-        // var domains2 = dns.resolve4(req.hostname,(err,address)=>{
-        //     console.log(address)
-        // })
+        let cname
+        const ip4 = new Promise(((resolve, reject) =>{
+            dns.resolve4(req.hostname, (err, address) => {
+                resolve(address)
+            })
+        }))
+        const cName = new Promise(((resolve, reject) =>{
+            dns.resolveCname(req.hostname, (err, address) => {
+                resolve(address)
+            })
+        }))
+        const result = await Promise.all([ip4,cName]);
+        console.log(result[0])//ip4
+        console.log(result[1])//Cname
 
         let directory = req.originalUrl
         if (hostURL.includes(":5000")) {
@@ -37,7 +27,7 @@ router.get('/', async function (req, res, next) {
 
         }
         // local host and server
-        if (hostURL == "www.myeasymall.site" || hostURL == "example.com" ||hostURL =="localhost"){
+        if (hostURL == "www.myeasymall.site" || hostURL == "example.com" || hostURL == "localhost") {
             next()
             return
         }
