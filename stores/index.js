@@ -5,6 +5,9 @@ const http = require('../const')
 router.get('/', function (req, res, next) {
     {
         let a = req.subdomains
+        console.log("Check me")
+        console.log(req.get('Host'))
+        console.log(req.originalUrl)   
         console.log(req.subdomains)
         if (a.length == 1) {
             if (a[0] == 'www'){
