@@ -24,7 +24,7 @@ exports.updateData = async (data, name, condition) => {
         //     `);
         const result = await db.query(`
         with jsondata(jdata) as (
-            values (jsonb_strip_nulls('${JSON.stringify(data)}')::jsonb)
+            values ('${JSON.stringify(data)}'::jsonb)
         )
         update ${name}
         set (${arr}) = (select ${arr}
