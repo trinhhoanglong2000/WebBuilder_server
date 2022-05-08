@@ -3,18 +3,34 @@ const router = express.Router();
 const fse = require('fs-extra')
 const http = require('../const')
 const dns = require('dns')
-router.get('/', function (req, res, next) {
+router.get('/', async function (req, res, next) {
     {
         let hostURL = req.get('Host')
-        console.log(req.subdomains)
-        var domains = dns.resolveCname(req.hostname,(err,address)=>{
-            console.log(address)
-        })
-        var domains2 = dns.resolve4(req.hostname,(err,address)=>{
-            console.log(address)
-        })
-        console.log("Check me")
-        console.log(req.socket.localAddress)
+        let cname 
+        const results = await Promise.allSettled([
+            dns.resolve4(req.hostname,()=>{}),
+            dns.resolveCname(req.hostname,()=>{}),
+        ]);
+        // await dns.resolveCname(req.hostname,(err,address)=>{
+        //     cname = address
+        //     console.log("HOHO")
+
+        //     console.log(address)
+
+        // })
+        for (const {status, value, reason} of results) {
+            if (status === "fulfilled") {
+                // Promise was fulfilled, use `value`...
+                console.log(value)
+            } else {
+                console.log(reason)
+            }
+        }
+
+        // var domains2 = dns.resolve4(req.hostname,(err,address)=>{
+        //     console.log(address)
+        // })
+
         let directory = req.originalUrl
         if (hostURL.includes(":5000")) {
             hostURL = hostURL.slice(0, hostURL.length - 5)
