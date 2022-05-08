@@ -10,13 +10,13 @@ router.get('/:id/products', storeController.getProductsByStoreId);
 router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
+router.get('/:id/store-components', authenticator.Authenticate, storeController.getStoreComponents);
 router.get('/:id/init-data', authenticator.Authenticate, storeController.getInitDataStore);
 
 /* POST create account. */
 router.post('/', authenticator.Authenticate, storeController.createStore);
 router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);
-router.post('/trait/:storeId', authenticator.Authenticate, storeController.uploadTraitFile);
-router.post('/logoUrl/:storeId', authenticator.Authenticate, storeController.updateLogoUrl);
+router.post('/save-store-data/:storeId', authenticator.Authenticate, storeController.updateStoreData);
 
 // POST CREATE PRODUCT
 router.post('/:id/products', authenticator.Authenticate, storeController.createProduct)
