@@ -6,6 +6,10 @@ const http = require('../const')
 router.get('/', function (req, res, next) {
     {
         let hostURL = req.get('Host')
+        console.log("cHECK ME")
+        console.log(hostURL)
+        console.log(req)
+        //console.log(req)
         let directory = req.originalUrl
         if (hostURL.includes(":5000")) {
             hostURL = hostURL.slice(0, hostURL.length - 5)
