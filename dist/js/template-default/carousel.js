@@ -1,4 +1,21 @@
+
 async function CarouselsGenerateCodeItem(categoryId, itemID) {
+  if(categoryId == null){
+    Render(null,itemID)
+  }else{
+    await fetch(`http://localhost:5000/collections/banner/${categoryId}`
+    , {
+      mode: 'cors',
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      }
+    }).then( res =>res.json()).then(myJson => myJson.data).then(data =>{
+      Render(data,itemID)
+    })
+  }
+}
+
+function Render(data,itemID){
   const defaultData = [
     {
       image: "https://dummyimage.com/1980x1080/55595c/ffffff",
@@ -19,48 +36,39 @@ async function CarouselsGenerateCodeItem(categoryId, itemID) {
       link: "/",
     }
   ]
-    await fetch(`http://localhost:5000/collections/banner/${categoryId}`
-    , {
-      mode: 'cors',
-      headers: {
-        'Access-Control-Allow-Origin': '*'
-      }
-    }).then( res =>res.json()).then(myJson => myJson.data).then(data =>{
-      console.log("DATA CAROUSEL")
-      console.log(data)
-      let listBanners = data.listBanners;
-      let carouselIndicators = $(`#${itemID} .carousel-indicators`)[0]
-      let carouselInner = $(`#${itemID} .carousel-inner`)[0];
-      carouselIndicators.innerHTML = "";
-      carouselInner.innerHTML = "";
-      if (listBanners.length == 0) {
-        listBanners = [...defaultData]
-      } 
-      listBanners.forEach((item, index) => {
-        let htmlButtonInsert = `
-      <button type="button" data-bs-target="#${itemID}" data-bs-slide-to="${index}" class = "${index == 0 ? "active" : ""}" aria-label="Slide ${index}"></button>
-      `
-        carouselIndicators.insertAdjacentHTML("beforeend", htmlButtonInsert);
-        let htmlCarouselItemInsert = `
-      <div class="carousel-item ${index == 0 ? "active" : ""}">
-        <div  class="d-block w-100 image-container">
-          <img src="${item.image}" alt="${item.image}">
-        </div>
-        <div class="carousel-caption">
-          <div class = "ezMall-carousel-contents">
-            <div class="ezMall-carousel-text-container d-block">
-              <h2 class="bolder">${item.caption}</h2>
-              <p>${item.description}</p>
-              <a class="btn ezMall-btn bolder" href=${item.link} role="button">Shop Now</a>
-              </div>
+  let listBanners = data == null ? [] : data.listBanners;
+  let carouselIndicators = $(`#${itemID} .carousel-indicators`)[0]
+  let carouselInner = $(`#${itemID} .carousel-inner`)[0];
+  carouselIndicators.innerHTML = "";
+  carouselInner.innerHTML = "";
+  if (listBanners.length == 0) {
+    listBanners = [...defaultData]
+  } 
+  listBanners.forEach((item, index) => {
+    let htmlButtonInsert = `
+  <button type="button" data-bs-target="#${itemID}" data-bs-slide-to="${index}" class = "${index == 0 ? "active" : ""}" aria-label="Slide ${index}"></button>
+  `
+    carouselIndicators.insertAdjacentHTML("beforeend", htmlButtonInsert);
+    let htmlCarouselItemInsert = `
+  <div class="carousel-item ${index == 0 ? "active" : ""}">
+    <div  class="d-block w-100 image-container">
+      <img src="${item.image}" alt="${item.image}">
+    </div>
+    <div class="carousel-caption">
+      <div class = "ezMall-carousel-contents">
+        <div class="ezMall-carousel-text-container d-block">
+          <h2 class="bolder">${item.caption}</h2>
+          <p>${item.description}</p>
+          <a class="btn ezMall-btn bolder" href=${item.link} role="button">Shop Now</a>
           </div>
-        </div>
       </div>
-    `
-        carouselInner.insertAdjacentHTML("beforeend", htmlCarouselItemInsert)
-      })
-    })
+    </div>
+  </div>
+`
+    carouselInner.insertAdjacentHTML("beforeend", htmlCarouselItemInsert)
+  })
 }
+
 function CarouselsGenerateCodeStart() {
   let carouselListElement = $(`div[ez-mall-type='carousel']`)
   for (let i = 0; i < carouselListElement.length; i++) {
