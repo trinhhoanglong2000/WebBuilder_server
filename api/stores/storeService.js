@@ -53,7 +53,6 @@ exports.findById = async (id) => {
 }
 
 exports.uploadStoreComponentsFile = async (storeId, data) => {
-    console.log(data)
     try {
         await s3.putObject({
             Body: JSON.stringify(data),

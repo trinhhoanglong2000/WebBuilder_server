@@ -42,9 +42,7 @@ exports.getcollectionById = async (req, res) => {
     let query = {}
     query.id = req.params.id
     const result = await collectionService.findById(query)
-    //console.log(result)
     let productQuery = req.query
-    //console.log(productQuery)
     if (result[0].id) {
         const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);
         if (listProducts) result[0].listProducts = listProducts;

@@ -7,6 +7,15 @@ router.get('/', async (req, res, next) => {
     {
         let hostURL = req.get('Host')
         let subdomain = req.subdomains;
+        let urlArr = hostURL.split('.')
+        const rootDomain = urlArr.length >= 2 ? urlArr[urlArr.length - 2] : "myeasymall";
+
+        if (subdomain.length == 0 || subdomain.length >= 2 || (subdomain.includes("www"))) {
+            if (rootDomain === 'myeasymall') {
+                next()
+                return
+            }
+        }
         const ip4 = new Promise(((resolve, reject) => {
             dns.resolve4(req.hostname, (err, address) => {
                 resolve(address)
@@ -21,8 +30,6 @@ router.get('/', async (req, res, next) => {
         console.log(result[0])//ip4
         console.log(result[1])//Cname
 
-        let urlArr = hostURL.split('.')
-        const rootDomain = urlArr.length >= 2 ? urlArr[urlArr.length - 2] : "myeasymall";
 
         if (result[1]) {
             if (rootDomain !== "myeasymall") {

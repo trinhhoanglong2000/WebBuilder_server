@@ -211,7 +211,6 @@ exports.getStoreComponents = async (req, res) => {
     const storeId = req.params.id;
 
     const result = await storeService.getStoreComponents(storeId);
-    console.log(result)
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
