@@ -42,14 +42,16 @@ app.use('*',userStoreRouter)
 app.use('/account', accountsRouter);
 app.use('/files', fileRouter);
 app.use('/auth', authRouter);
-app.use('/stores', storeRouter);
+app.use('/stores',authenticator.Authenticate, storeRouter);
 app.use('/pages', authenticator.Authenticate, pageRouter);
 app.use('/products', productRouter);
 app.use('/collections', collectionRouter);
 app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
-
+app.get('/',function (req,res) {
+  res.send("Hi")
+})
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development

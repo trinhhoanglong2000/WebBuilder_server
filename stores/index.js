@@ -2,33 +2,68 @@ const express = require('express');
 const router = express.Router();
 const fse = require('fs-extra')
 const http = require('../const')
-router.get('/', function (req, res, next) {
+const dns = require('dns');
+router.get('/', async (req, res, next) => {
     {
-        let a = req.subdomains
-        if (a.length == 1) {
-            if (!fse.existsSync(`stores/${a[0]}`)) {
-                res.status(http.NotFound).json({
-                    statusCode: http.ServerError,
-                    message: "Not Found!"
-                })
+        let hostURL = req.get('Host')
+        let subdomain = req.subdomains;
+        let urlArr = hostURL.split('.')
+        const rootDomain = urlArr.length >= 2 ? urlArr[urlArr.length - 2] : "myeasymall";
+
+        if (subdomain.length == 0 || subdomain.length >= 2 || (subdomain.includes("www"))) {
+            if (rootDomain === 'myeasymall') {
+                next()
                 return
             }
+        }
+        const ip4 = new Promise(((resolve, reject) => {
+            dns.resolve4(req.hostname, (err, address) => {
+                resolve(address)
+            })
+        }))
+        const cName = new Promise(((resolve, reject) => {
+            dns.resolveCname(req.hostname, (err, address) => {
+                resolve(address)
+            })
+        }))
+        const result = await Promise.all([ip4, cName]);
+        console.log(result[0])//ip4
+        console.log(result[1])//Cname
 
-            res.sendFile("index.html", {
-                root: __dirname + `/${a[0]}/home`
-            });
 
-            // const newRouter = require(`./stores/${a[0]}`)
-            // app.use(subdomain(`${a[0]}`, newRouter))
-
-            // if (fse.existsSync(`stores/${a[0]}`)){
-            //   next()
-            // }
+        if (result[1]) {
+            if (rootDomain !== "myeasymall") {
+                subdomain = result[1][0] ? result[1][0].match(/(.*).myeasymall/)[1].split('.') : []
+            }
+        }
+        let directory = req.originalUrl
+        // local host and server
+        if (subdomain.length == 0 || subdomain.length >= 2 || (subdomain.includes("www"))) {
+            next()
+            return
+        }
+        if (!fse.existsSync(`stores/${subdomain[0]}`)) {
+            res.status(http.NotFound).json({
+                statusCode: http.ServerError,
+                message: "Not Found!"
+            })
+            return
         }
         else {
-            next()
+            let wordPath = directory.split('?')
+            if (wordPath[0] === "/") {
+                wordPath[0] = "/home"
+            }
+            res.sendFile("index.html", {
+                root: __dirname + `/${subdomain[0]}${wordPath[0]}`
+            })
         }
     }
 
+});
+router.get('/product', function (req, res, next) {
+    {
+        res.send("Hi")
+    }
 });
 module.exports = router;

@@ -110,11 +110,11 @@ exports.loadContent = async (req, res) => {
     res.status(http.Success).json(content);
 }
 
-exports.uploadTraitFile = async (req, res) => {
+exports.uploadStoreComponentsFile = async (req, res) => {
     const id = req.params.storeId;
     const data = req.body.traitData;
 
-    const result = await storeService.uploadTraitFile(id, data);
+    const result = await storeService.uploadStoreComponentsFile(id, data);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -207,15 +207,36 @@ exports.getBannerCollectionsByStoreId = async (req, res) => {
     }
 };
 
+exports.getStoreComponents = async (req, res) => {
+    const storeId = req.params.id;
+
+    const result = await storeService.getStoreComponents(storeId);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+
 exports.getInitDataStore = async (req, res) => {
     const storeId = req.params.id;
     const query = req.query;
     query.store_id = storeId;
+
     const logoURL = storeService.getLogo(storeId);
     const listPagesId = pageService.getPagesByStoreId(query);
-    const storeTraitData = storeService.getTraitFileForStore(storeId);
     const storeTemplate = storeService.getTemplate(storeId)
-    const result = await Promise.all([logoURL, listPagesId, storeTraitData, storeTemplate]);
+
+    const result = await Promise.all([logoURL, listPagesId, storeTemplate]);
 
     if (result) {
         res.status(http.Success).json({
@@ -223,8 +244,7 @@ exports.getInitDataStore = async (req, res) => {
             data: {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
-                storeTraitData: result[2],
-                template : result[3]
+                template : result[2]
             },
             message: "Get products successfully!"
         })
@@ -236,6 +256,32 @@ exports.getInitDataStore = async (req, res) => {
         })
     }
 };
+
+exports.updateStoreData = async (req, res) => {
+    const storeId = req.params.storeId;
+    const logoUrl = req.body.logoUrl;
+    const storeComponents = req.body.storeComponents;
+    
+    const task1 = DBHelper.updateData({ id: storeId, logo_url: logoUrl }, "stores", "id");
+    const task2 = storeService.uploadStoreComponentsFile(storeId, storeComponents);
+
+    const result = await Promise.all([task1, task2]);
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            message: "Save store data success!"
+        });
+        return;
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server Error!"
+        });
+    }
+    return;
+}
 
 exports.createProduct = async (req, res) => {
     let check = {
@@ -377,31 +423,6 @@ exports.createCollection = async (req, res) => {
     }
 }
 
-exports.updateLogoUrl = async (req, res) => {
-    const storeId = req.params.storeId;
-    const logoUrl = req.body.logoUrl;
-
-    const data = {
-        id: storeId,
-        logo_url: logoUrl
-    }
-
-    const result = await DBHelper.updateData(data, "stores", "id");
-    if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            message: "Save logo URL success!"
-        });
-        return;
-    }
-    else {
-        res.status(http.ServerError).json({
-            statusCode: http.ServerError,
-            message: "Server Error!"
-        });
-    }
-    return;
-}
 exports.AuthenticateUserAndStore = async (req,res,check) => {
     if (req.user){
         let query = {

@@ -1,5 +1,6 @@
 const http = require('../../const');
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
 
 const s3 = new AWS.S3();
 
@@ -26,9 +27,8 @@ exports.uploadImageToS3 = async (req, res) => {
     let result = [];
 
     for (let item of data) {
-        const base64Image = item.base64Image;
-        const buf = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ""),'base64');
-        const type = base64Image.split(';')[0].split('/')[1];
+        const buf = Buffer.from(item.replace(/^data:image\/\w+;base64,/, ""),'base64');
+        const type = item.split(';')[0].split('/')[1];
 
         result.push(await s3.upload({
             Body: buf,
@@ -36,7 +36,7 @@ exports.uploadImageToS3 = async (req, res) => {
             ContentEncoding: 'base64',
             ContentType: `image/${type}`,
             ACL:'public-read',
-            Key: `assets/${item.name}.${type}`
+            Key: `assets/${uuidv4()}.${type}`
         }).promise());
     };
 
