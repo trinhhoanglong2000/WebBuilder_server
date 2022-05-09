@@ -5,6 +5,7 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
 exports.createCollection = async (collectionObj) => {
+    collectionObj.id = uuidv4();
     try {
         if (collectionObj.thumbnail) {
             const buf = Buffer.from(collectionObj.thumbnail.replace(/^data:image\/\w+;base64,/, ""),'base64');
@@ -26,7 +27,7 @@ exports.createCollection = async (collectionObj) => {
             INSERT INTO bannercollections (id, store_id, name, description, thumbnail) 
             VALUES ($1, $2, $3, $4, $5)
             returning id, thumbnail;
-            `, [uuidv4(), collectionObj.storeId, collectionObj.name, collectionObj.description, collectionObj.thumbnail]
+            `, [collectionObj.id, collectionObj.storeId, collectionObj.name, collectionObj.description, collectionObj.thumbnail]
         );
 
         return result.rows[0];

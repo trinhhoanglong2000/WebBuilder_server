@@ -5,6 +5,7 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
 exports.createBanner = async (bannerObj) => {
+    bannerObj.id = uuidv4();
     try {
         if (bannerObj.image) {
             const buf = Buffer.from(bannerObj.image.replace(/^data:image\/\w+;base64,/, ""),'base64');
@@ -23,10 +24,10 @@ exports.createBanner = async (bannerObj) => {
         
 
         const result = await db.query(`
-            INSERT INTO banners (id, bannercollection_id, caption, image, type) 
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO banners (id, bannercollection_id, caption, image, type,link) 
+            VALUES ($1, $2, $3, $4, $5, $6)
             returning id, image;
-            `, [uuidv4(), bannerObj.collection_id, bannerObj.caption, bannerObj.image, bannerObj.type]
+            `, [uuidv4(), bannerObj.collection_id, bannerObj.caption, bannerObj.image, bannerObj.type, bannerObj.link]
         );
 
         return result.rows[0];

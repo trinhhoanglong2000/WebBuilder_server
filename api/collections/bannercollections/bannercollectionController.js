@@ -5,6 +5,7 @@ const http = require('../../../const');
 exports.createCollection = async (req, res) => {
     // create new collection
     const collectionObj = req.body;
+    console.log(req.body)
     const newCollection = await collectionService.createCollection(collectionObj);
     if (newCollection) {
         res.status(http.Created).json({
