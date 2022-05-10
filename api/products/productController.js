@@ -53,7 +53,7 @@ exports.getProductById = async (req, res) => {
         let resultOption = await productOptionService.getOptionFromProductId(id)
         if (resultOption) {
             for (let i = 0; i < resultOption.length; i++){
-                const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[0].id)
+                const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[i].id)
                 resultOption[i].value = resultOptionValue
             }
             returnData.option = resultOption
