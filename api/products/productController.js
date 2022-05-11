@@ -3,6 +3,7 @@ const productService = require('./productService');
 const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
+const productCollectionSerice = require('../collections/productcollections/productcollectionService')
 exports.updateProduct = async (req, res) => {
     // create new product
     const ProductObj = req.body;
@@ -72,6 +73,8 @@ exports.getProductById = async (req, res) => {
             
             returnData.variant = resultVariant
         }
+        let resultCollection = await productCollectionSerice.getProductCollectionByProductId(id)
+        returnData.collections = resultCollection
         //console.log(returnData)
         res.status(http.Success).json({
             statusCode: http.Success,
