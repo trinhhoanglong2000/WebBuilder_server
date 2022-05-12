@@ -5,6 +5,7 @@ const authenticator = require('../../middleware/authentication');
 
 router.get('/', authenticator.Authenticate, storeController.getStoreByUserId);
 router.get('/:id', authenticator.Authenticate, storeController.getStoreById);
+router.get('/is-exist/:name', storeController.getStoreByName);
 router.get('/:storeId/:pageId/content', authenticator.Authenticate, storeController.loadContent);
 router.get('/:id/products', storeController.getProductsByStoreId);
 router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);

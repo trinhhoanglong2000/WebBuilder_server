@@ -84,6 +84,24 @@ exports.getStoreById = async (req, res) => {
     }
 }
 
+exports.getStoreByName = async (req, res) => {
+    const name = req.params.name.trim();
+    const result = await storeService.getStoreByName(name);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get store successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
 exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
     const storeId = req.params.storeId;
