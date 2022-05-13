@@ -20,6 +20,26 @@ exports.createCollection = async (req, res) => {
         })
     }
 }
+exports.deleteProductCollection = async (req, res) => {
+    const id = req.params.id
+
+    let productQuery = {}
+    productQuery.id = id
+    const newProduct = await collectionService.deleteProduct(productQuery)
+    if (newProduct) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newProduct,
+            message: "Delete product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
 
 exports.getAllCollections = async (req, res) => {
     const result = await collectionService.findAll();

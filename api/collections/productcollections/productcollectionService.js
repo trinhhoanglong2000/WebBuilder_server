@@ -30,6 +30,10 @@ exports.createCollection = async (collectionObj) => {
     }
 }
 
+exports.deleteProduct = async (productObj) => {
+    return DBHelper.deleteData("productcollections",productObj)
+}
+
 exports.findAll = async () => {
     return DBHelper.getData("productcollections")
 }

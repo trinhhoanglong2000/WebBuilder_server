@@ -38,6 +38,27 @@ exports.updateData = async (data, name, condition) => {
         return null;
     }
 }
+exports.deleteData = async (name, data = null) => {
+    try {
+        let arr = Object.keys(data)
+        let arr1 = Object.values(data)
+        for (var i = 0; i < arr1.length; i++) {
+            arr1[i] = "'" + arr1[i] + "'"
+        }
+        console.log(`
+        DELETE FROM ${name}
+        WHERE (${arr}) = (${arr1})
+        `)
+        const result = await db.query(`
+        DELETE FROM ${name}
+        WHERE (${arr}) = (${arr1})
+        `,);
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
 exports.insertData = async (data, name, needId) => {
     try {
         // create
@@ -62,19 +83,19 @@ exports.insertData = async (data, name, needId) => {
         }
         // console.log(data)
         let result
-        if (needId){
+        if (needId) {
             result = await db.query(`
             INSERT INTO ${name} (${arr})
             VALUES (${arr1})
             RETURNING id
             `,);
-        }else {
+        } else {
             result = await db.query(`
             INSERT INTO ${name} (${arr})
             VALUES (${arr1})
             `,);
         }
-      
+
         return result;
     } catch (error) {
         console.log(error);
@@ -187,20 +208,20 @@ function LoopForOP(data) {
     return query
 }
 exports.FindAll = async (name, data = null) => {
-    
+
     try {
         let where = ""
         let select = "*"
         let limit = ""
         let ofset = ""
-        let from  = `FROM ${name}`
-        if (data.join){
+        let from = `FROM ${name}`
+        if (data.join) {
             let subFrom = `FROM ${name} `
             let arr = Object.keys(data.join)
             let arr1 = Object.values(data.join)
-            for (let i = 0 ; i < arr.length; i++){
+            for (let i = 0; i < arr.length; i++) {
                 let arr2 = Object.keys(arr1[i].condition)
-                subFrom += `${arr1[i].type?arr1[i].type.toUpperCase():""}JOIN ${arr[i]}
+                subFrom += `${arr1[i].type ? arr1[i].type.toUpperCase() : ""}JOIN ${arr[i]}
                 ON  ${arr2[0]} = ${arr1[i].condition[arr2[0]]} 
                 `
             }

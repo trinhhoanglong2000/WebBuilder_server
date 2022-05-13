@@ -28,6 +28,34 @@ exports.updateProduct = async (req, res) => {
     }
 }
 
+exports.deleteProduct = async (req, res) => {
+    const id = req.params.id
+
+    let productQuery = {}
+    productQuery.id = id
+
+    let productRelativeQuery = {}
+    productRelativeQuery.product_id = id
+    const deleteProduct_Variant = await productService.deleteProductRelative("product_variant",productRelativeQuery)
+    const deleteProduct_ProductOptionValue = await productService.deleteProductRelative("product_optionvalue",productRelativeQuery)
+    const deleteProduct_ProductOption = await productService.deleteProductRelative("product_option",productRelativeQuery)
+    const deleteProduct_ProductCollection = await productService.deleteProductRelative("product_productcollection",productRelativeQuery)
+    const newProduct = await productService.deleteProduct(productQuery)
+    if (newProduct) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newProduct,
+            message: "Delete product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
 exports.getAllProducts = async (req, res) => {
     const result = await productService.findAll();
     if (result) {

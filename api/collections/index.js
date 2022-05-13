@@ -21,4 +21,7 @@ router.get('/banner/:id', bannercollectionController.getcollectionById);
 /* POST create account. */
 router.post('/product/create', authenticator.Authenticate, productcollectionController.createCollection);
 router.post('/banner/create', authenticator.Authenticate, bannercollectionController.createCollection);
+
+// DELETE 
+router.delete('/product/:id',authenticator.Authenticate, productcollectionController.deleteProductCollection)
 module.exports = router;
