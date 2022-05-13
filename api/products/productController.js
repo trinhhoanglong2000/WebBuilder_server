@@ -74,7 +74,8 @@ exports.getProductById = async (req, res) => {
             returnData.variant = resultVariant
         }
         let resultCollection = await productCollectionSerice.getProductCollectionByProductId(id)
-        returnData.collections = resultCollection
+        returnData.collection = resultCollection
+
         //console.log(returnData)
         res.status(http.Success).json({
             statusCode: http.Success,
