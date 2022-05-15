@@ -3,6 +3,7 @@ const productService = require('./productService');
 const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
+const productCollectionSerice = require('../collections/productcollections/productcollectionService')
 exports.updateProduct = async (req, res) => {
     // create new product
     const ProductObj = req.body;
@@ -17,6 +18,34 @@ exports.updateProduct = async (req, res) => {
             statusCode: http.Created,
             data: newProduct,
             message: "Create product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.deleteProduct = async (req, res) => {
+    const id = req.params.id
+
+    let productQuery = {}
+    productQuery.id = id
+
+    let productRelativeQuery = {}
+    productRelativeQuery.product_id = id
+    const deleteProduct_Variant = await productService.deleteProductRelative("product_variant",productRelativeQuery)
+    const deleteProduct_ProductOptionValue = await productService.deleteProductRelative("product_optionvalue",productRelativeQuery)
+    const deleteProduct_ProductOption = await productService.deleteProductRelative("product_option",productRelativeQuery)
+    const deleteProduct_ProductCollection = await productService.deleteProductRelative("product_productcollection",productRelativeQuery)
+    const newProduct = await productService.deleteProduct(productQuery)
+    if (newProduct) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newProduct,
+            message: "Delete product successfully!"
         })
     }
     else {
@@ -53,7 +82,7 @@ exports.getProductById = async (req, res) => {
         let resultOption = await productOptionService.getOptionFromProductId(id)
         if (resultOption) {
             for (let i = 0; i < resultOption.length; i++){
-                const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[0].id)
+                const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[i].id)
                 resultOption[i].value = resultOptionValue
             }
             returnData.option = resultOption
@@ -72,6 +101,9 @@ exports.getProductById = async (req, res) => {
             
             returnData.variant = resultVariant
         }
+        let resultCollection = await productCollectionSerice.getProductCollectionByProductId(id)
+        returnData.collection = resultCollection
+
         //console.log(returnData)
         res.status(http.Success).json({
             statusCode: http.Success,

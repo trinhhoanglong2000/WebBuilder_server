@@ -30,6 +30,10 @@ exports.createCollection = async (collectionObj) => {
     }
 }
 
+exports.deleteProduct = async (productObj) => {
+    return DBHelper.deleteData("productcollections",productObj)
+}
+
 exports.findAll = async () => {
     return DBHelper.getData("productcollections")
 }
@@ -61,7 +65,6 @@ exports.findById = async (query) => {
 }
 exports.getData = async (query) => {
     //name
-
     let condition =[];
     
     condition.push({store_id : query.store_id})
@@ -83,4 +86,22 @@ exports.createProductandCollectionLink = async (query) => {
 }
 exports.createProductCollection = async (query) => {
     return DBHelper.insertData(query,"productcollections",true)
+}
+exports.getProductCollectionByProductId = async(id) => {
+  
+    let config = {
+        join: {
+            "product_productcollection": {
+                condition: {
+                    "product_productcollection.productcollection_id": "productcollections.id",
+                }   
+            }
+        },
+        select: "productcollections.id, productcollections.name, productcollections.description, productcollections.thumbnail",
+        where: {
+            "product_productcollection.product_id": id
+        },
+        
+    }
+    return DBHelper.FindAll("productcollections",config)
 }

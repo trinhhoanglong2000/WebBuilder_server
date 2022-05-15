@@ -7,6 +7,12 @@ exports.createProduct = async (productObj) => {
 exports.updateProduct = async (productObj) => {
     return DBHelper.updateData(productObj,"products","id")
 }
+exports.deleteProduct = async (productObj) => {
+    return DBHelper.deleteData("products",productObj)
+}
+exports.deleteProductRelative = async (name,productObj) => {
+    return DBHelper.deleteData(`${name}`,productObj)
+}
 exports.findAll = async () => {
     try {
         const result = await db.query(`

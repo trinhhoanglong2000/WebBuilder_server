@@ -10,5 +10,6 @@ router.get('/:id', productController.getProductById);
 
 /* POST create account. */
 //router.post('/:id/create', productController.createProduct);
-router.post('/:id/update', productController.updateProduct);
+router.put('/:id', productController.updateProduct);
+router.delete('/:id',productController.deleteProduct);
 module.exports = router;
