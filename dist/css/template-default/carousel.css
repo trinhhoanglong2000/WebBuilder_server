@@ -7,16 +7,7 @@
 .carousel-height-small .carousel-item {
     height: 420px;
 }
-
-
-.ezMall-carousel .carousel-control-next, 
-.ezMall-carousel .carousel-control-prev{
-    width: 10%!important;
-}
-
-@media screen
-  and (max-device-width: 480px)
-  and (orientation: portrait){
+@media only screen and (max-width: 720px) {
     .carousel-height-medium .carousel-item {
         height: 280px;
     }
@@ -25,8 +16,14 @@
     }
     .carousel-height-small .carousel-item {
         height: 490px;
-    }
+    } 
 }
+
+.ezMall-carousel .carousel-control-next, 
+.ezMall-carousel .carousel-control-prev{
+    width: 10%!important;
+}
+
 .carousel-text-white h2,
 .carousel-text-white p {
     color: white;
@@ -52,7 +49,7 @@
 
 .ezMall-carousel-text-container {
     width: fit-content;
-
+    padding: 10px 0px;
 }
 
 .carousel-description-align-left .ezMall-carousel-text-container {
@@ -164,7 +161,7 @@
 
 .ezMall-carousel h2 {
     font-weight: bold;
-    font-size: 3vh;
+    font-size: calc(20px + 1vw);;
 }
 
 .ezMall-carousel a {
@@ -174,7 +171,7 @@
 
 .ezMall-carousel p {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: calc(10px + 1vw);;
 }
 
 .ezMall-carousel .image-container img{
