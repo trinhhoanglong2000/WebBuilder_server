@@ -1,7 +1,14 @@
+const { query } = require('express');
 const http = require('../../const');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createVariant = async (query) => {
     return DBHelper.insertData(query,"product_variant",true)
+}
+exports.updateVariant = async (query) => {
+    return DBHelper.updateData(query,"product_variant","id")
+}
+exports.deleteVariant = async (query) => {
+    return DBHelper.deleteData("product_variant",query)
 }
 exports.getVariant = async (id) => {
     let query = {

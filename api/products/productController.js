@@ -3,7 +3,8 @@ const productService = require('./productService');
 const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
-const productCollectionSerice = require('../collections/productcollections/productcollectionService')
+const productCollectionSerice = require('../collections/productcollections/productcollectionService');
+const { collection } = require('../accounts/accountModel');
 exports.updateProduct = async (req, res) => {
     // update produt
     const productId = req.params.id;
@@ -15,7 +16,10 @@ exports.updateProduct = async (req, res) => {
 
     const newProduct = await productService.updateProduct(productQuery)
     let collectionQuery = req.body.collection
-    //Create Collection
+    let productOptionQuery = req.body.option
+    let variantQuery = req.body.variant
+
+    //Update Collection
     if (collectionQuery) {
         for (let i = 0; i < collectionQuery.length; i++) {
             let query = {
@@ -28,6 +32,116 @@ exports.updateProduct = async (req, res) => {
                 const deleteCollection = await productCollectionSerice.deleteProductandCollectionLink(query)
             }
         }
+    }
+
+    //Update Option
+
+    if (productOptionQuery) {
+        for (let i = 0; i < productOptionQuery.length; i++) {
+            let optionId
+
+            let query = productOptionQuery[i]
+            query.product_id = productId
+            let updateStatus = productOptionQuery[i].update
+            let valueStatus = productOptionQuery[i].value
+            delete query["update"]
+            delete query["value"]
+
+
+            if (updateStatus == "Add") {
+
+                const newOption = await productOptionService.createDataOption(query)
+                optionId = newOption.rows[0].id
+            } else if (updateStatus == "Change") {
+                query.id = productOptionQuery[i].id
+
+                //Change Option 
+                optionId = productOptionQuery[i].id
+                const changeOption = await productOptionService.updateDataOption(query)
+            } else if (updateStatus == "Delete"){
+                let deleteQuery = {
+                    id: productOptionQuery[i].id
+                }
+
+                //Delete Option Value
+                let optionQuery = {
+                    "option_id": productOptionQuery[i].id
+                }
+                const deleteOptionValue = await productOptionService.deleteDataOptionValue(optionQuery)
+                //Delete Value
+                const deleteOption = await productOptionService.deleteDataOption(deleteQuery)
+                continue
+            }
+            //Update Option Value
+            for (let j = 0; j < valueStatus.length; j++) {
+                let optionQuery = valueStatus[j]
+                optionQuery.option_id = optionId
+                optionQuery.product_id = productId
+                optionQuery.name = productOptionQuery[i].name
+                let optionUpdateStatus = optionQuery.update
+                delete optionQuery["update"]
+                if (optionUpdateStatus == "Add") {
+                    const newOptionValue = await productOptionService.createDataOptionValue(optionQuery)
+                }
+                else if (optionUpdateStatus == "Change") {
+                    const changeOptionValue = await productOptionService.updateDataOptionValue(optionQuery, "id")
+                }
+                else if (optionUpdateStatus == "Delete"){
+                    let deleteQuery = {
+                        id: valueStatus[j].id
+                    }
+                    const deleteOptionValue = await productOptionService.deleteDataOptionValue(deleteQuery)
+                }
+            }
+
+        }
+    }
+
+    //Update variant 
+    let quantity = 0
+    if (variantQuery) {
+        for (let i = 0; i < variantQuery.length; i++) {
+            let option_value_id = []
+            let createVariantQuery = variantQuery[i]
+            for (let j = 0; j < createVariantQuery.option_value.length; j++) {
+                let query = createVariantQuery.option_value[j]
+
+                query.product_id = productId
+                const findOptionValue = await productOptionService.findDataOptionValue(query)
+                if (findOptionValue[0]){
+                    option_value_id.push(findOptionValue[0].id)
+                }
+                
+            }
+            quantity += createVariantQuery.quantity
+            let updateStatus = createVariantQuery.update
+
+            delete createVariantQuery.option_value
+            delete createVariantQuery.update
+
+            createVariantQuery.option_value_id = option_value_id
+            createVariantQuery.product_id = productId
+
+            if (updateStatus == "Add") {
+                const creatVariant = await productVariantService.createVariant(createVariantQuery)
+            } 
+            else if (updateStatus == "Change"){
+                const updateVariant = await productVariantService.updateVariant(createVariantQuery)
+            }
+            else if (updateStatus == "Delete"){
+                quantity -= createVariantQuery.quantity
+                let query = {
+                    id : createVariantQuery.id
+                }
+                const deleteVariant = await productVariantService.deleteVariant(query)
+            }
+            let updateQuery = {
+                "id": productId,
+                "inventory": quantity
+            }
+            const updateValue = await productService.updateProduct(updateQuery)
+        }
+
     }
 
     if (newProduct) {
@@ -44,7 +158,7 @@ exports.updateProduct = async (req, res) => {
         })
     }
 }
-  
+
 
 exports.deleteProduct = async (req, res) => {
     const id = req.params.id
@@ -101,7 +215,6 @@ exports.getProductById = async (req, res) => {
         if (resultOption) {
             for (let i = 0; i < resultOption.length; i++) {
                 const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[i].id)
-                console.log(resultOptionValue)
                 resultOption[i].value = resultOptionValue
             }
             returnData.option = resultOption

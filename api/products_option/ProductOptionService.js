@@ -3,8 +3,22 @@ const DBHelper = require('../../helper/DBHelper/DBHelper')
 exports.createDataOption = async (query) => {
     return DBHelper.insertData(query,"product_option",true)
 }
+
+exports.updateDataOption = async (query) => {
+    return DBHelper.updateData(query,"product_option","id")
+}
+
+exports.deleteDataOption = async (query) => {
+    return DBHelper.deleteData("product_option",query)
+}
 exports.createDataOptionValue = async (query) => {
     return DBHelper.insertData(query,"product_optionvalue",true)
+}
+exports.updateDataOptionValue = async (query,condition) => {
+    return DBHelper.updateData(query,"product_optionvalue", `${condition}`)
+}
+exports.deleteDataOptionValue = async (query) => {
+    return DBHelper.deleteData("product_optionvalue",query)
 }
 exports.findDataOptionValue = async (query) => {
     return DBHelper.getData("product_optionvalue",query)
