@@ -29,6 +29,10 @@ exports.createCollection = async (collectionObj) => {
         return null;
     }
 }
+exports.updateProductCollection = async (query) => {
+    return DBHelper.updateData(query,"productcollections","id")
+}
+    
 
 exports.deleteProduct = async (productObj) => {
     return DBHelper.deleteData("productcollections",productObj)
