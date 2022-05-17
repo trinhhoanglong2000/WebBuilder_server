@@ -29,6 +29,10 @@ exports.createCollection = async (collectionObj) => {
         return null;
     }
 }
+exports.updateProductCollection = async (query) => {
+    return DBHelper.updateData(query,"productcollections","id")
+}
+    
 
 exports.deleteProduct = async (productObj) => {
     return DBHelper.deleteData("productcollections",productObj)
@@ -84,6 +88,11 @@ exports.getData = async (query) => {
 exports.createProductandCollectionLink = async (query) => {
     return DBHelper.insertData(query,"product_productcollection",false)
 }
+
+exports.deleteProductandCollectionLink = async (query) => {
+    return DBHelper.deleteData("product_productcollection",query)
+}
+
 exports.createProductCollection = async (query) => {
     return DBHelper.insertData(query,"productcollections",true)
 }

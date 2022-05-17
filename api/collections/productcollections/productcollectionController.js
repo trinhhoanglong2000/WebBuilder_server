@@ -20,6 +20,40 @@ exports.createCollection = async (req, res) => {
         })
     }
 }
+exports.updateProductCollection = async (req, res) => {
+    // update new collection
+    const collectionId = req.body.collection.id
+    const collectionObj = req.body.collection;
+    const updateCollection = await collectionService.updateProductCollection(collectionObj)
+    const productQuery = req.body.product
+    // Update Product
+    if (productQuery) {
+        for (let i = 0; i < productQuery.length; i++) {
+            let query = {
+                "product_id": productQuery[i].id,
+                "productcollection_id": collectionId
+            }
+            if (productQuery[i].update == "Add") {
+                const newProduct = await collectionService.createProductandCollectionLink(query)
+            } else {
+                const deleteProduct = await collectionService.deleteProductandCollectionLink(query)
+            }
+        }
+    }
+    if (updateCollection) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: updateCollection,
+            message: "Create collection successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
 exports.deleteProductCollection = async (req, res) => {
     const id = req.params.id
 
@@ -63,14 +97,18 @@ exports.getcollectionById = async (req, res) => {
     query.id = req.params.id
     const result = await collectionService.findById(query)
     let productQuery = req.query
+    let resultQuery = {}
     if (result[0].id) {
+        resultQuery.collection = result[0]
         const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);
-        if (listProducts) result[0].listProducts = listProducts;
+        if (listProducts[0]) {
+            resultQuery.product = listProducts
+        }
     }
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
-            data: result,
+            data: resultQuery,
             message: "Get collection successfully!"
         })
     }
