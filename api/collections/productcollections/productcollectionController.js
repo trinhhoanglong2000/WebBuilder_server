@@ -59,6 +59,11 @@ exports.deleteProductCollection = async (req, res) => {
 
     let productQuery = {}
     productQuery.id = id
+
+    let productRelativeQuery = {
+        productcollection_id : id
+    }
+    const deleteProduct_ProductCollection = await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
     const newProduct = await collectionService.deleteProduct(productQuery)
     if (newProduct) {
         res.status(http.Created).json({
