@@ -13,8 +13,8 @@ function productData(e) {
     fetch(`${urlProductList}/collections/product/${id}`)
     .then((response) => response.json())
     .then((data) => {
-      if (data.data.product) 
-        products_data = data.data.product;
+      if (data.data.products) 
+        products_data = data.data.products;
       $(e)
       .find(".thumb-wrapper")
       .each(function (index) {
