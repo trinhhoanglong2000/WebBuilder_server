@@ -25,7 +25,7 @@ exports.updateProductCollection = async (req, res) => {
     const collectionId = req.body.collection.id
     const collectionObj = req.body.collection;
     const updateCollection = await collectionService.updateProductCollection(collectionObj)
-    const productQuery = req.body.product
+    const productQuery = req.body.products
     // Update Product
     if (productQuery) {
         for (let i = 0; i < productQuery.length; i++) {
@@ -107,7 +107,7 @@ exports.getcollectionById = async (req, res) => {
         resultQuery.collection = result[0]
         const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);
         if (listProducts[0]) {
-            resultQuery.product = listProducts
+            resultQuery.products = listProducts
         }
     }
     if (result) {
