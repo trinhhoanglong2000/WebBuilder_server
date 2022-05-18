@@ -110,14 +110,14 @@
     color: black 
 } 
 
-[name='header'][theme='small'].navbar .navbar-brand img { 
+[name='header'][logosize='small'].navbar .navbar-brand img { 
     max-width: 50px 
 }
 
-[name='header'][theme='medium'].navbar .navbar-brand img { 
+[name='header'][logosize='medium'].navbar .navbar-brand img { 
     max-width: 100px 
 }
 
-[name='header'][theme='large'].navbar .navbar-brand img { 
+[name='header'][logosize='large'].navbar .navbar-brand img { 
     max-width: 150px 
 }
