@@ -491,10 +491,6 @@ exports.createCollection = async (req, res) => {
     }
 }
 
-<<<<<<< HEAD
-exports.AuthenticateUserAndStore = async (req,res,check) => {
-    if (req.user){
-=======
 exports.updateLogoUrl = async (req, res) => {
     const storeId = req.params.storeId;
     const logoUrl = req.body.logoUrl;
@@ -522,7 +518,6 @@ exports.updateLogoUrl = async (req, res) => {
 }
 exports.AuthenticateUserAndStore = async (req, res, check) => {
     if (req.user) {
->>>>>>> cbfad58c9d85e011d4ac16dab78f266a0972190a
         let query = {
             id: check.id,
             user_id: check.user_id
