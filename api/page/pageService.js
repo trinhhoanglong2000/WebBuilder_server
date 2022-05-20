@@ -15,22 +15,31 @@ exports.createPage = async (pageBody) => {
       Bucket: "ezmall-bucket",
       ACL: 'public-read',
       ContentType: 'text/txt',
-      Key: `pages/${pageBody.storeId}/${pageBody.id}.txt`
+      Key: `pages/${pageBody.store_id}/${pageBody.id}.txt`
     }).promise();
 
-    const result = await db.query(`
-            INSERT INTO pages (id, store_id, name, content_URL) 
-            VALUES ($1, $2, $3, $4)
-            returning id, "contentURL";
-            `, [pageBody.id, pageBody.storeId, pageBody.name, s3Result ? s3Result.Location : ""]);
+    pageBody.content_url = s3Result ? s3Result.Location : "";
+    pageBody.page_url = '/' + pageBody.name.replace(' ', '-').toLowerCase();
 
+    const result = await db.query(`
+            INSERT INTO pages (id, store_id, name, content_url, page_url) 
+            VALUES ($1, $2, $3, $4, $5)
+            returning id, content_url, page_url;
+            `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url]);
+    
     return result;
+    // return DBHelper.insertData(pageBody, 'pages', false);
   } catch (error) {
     console.log(error);
     return null;
   }
 
 };
+
+exports.updatePage = async (data) => {
+  data.page_url = '/' + data.name.replace(' ', '-').toLowerCase();
+  return DBHelper.updateData(data, "pages", "id")
+}
 
 exports.getPagesByStoreId = async (query) => {
   let condition = [];

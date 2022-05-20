@@ -19,6 +19,24 @@ exports.create = async (req, res) => {
     }
 };
 
+exports.update = async (req, res) => {
+    const pageBody = req.body;
+    const result = await pageService.updatePage(pageBody);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update page successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.getPageContentURL = async (req, res) => {
     const id = req.params.id;
     const result = await pageService.getPageContentURL(id);

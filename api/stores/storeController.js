@@ -5,6 +5,8 @@ const productcollectionService = require('../collections/productcollections/prod
 const bannercollectionService = require('../collections/bannercollections/bannercollectionService');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
+const menuService = require('../menu/menuService');
+const menuItemService = require('../menuItem/menuItemService');
 const http = require('../../const');
 const DBHelper = require('../../helper/DBHelper/DBHelper');
 const { createAccountWithSocialLogin } = require('../accounts/accountService');
@@ -187,6 +189,53 @@ exports.getPagesByStoreId = async (req, res) => {
     }
 };
 
+exports.getMenuByStoreId = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await menuService.getMenuByStoreId(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get menu successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getListMenuItems = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const listMenu = await menuService.getMenuByStoreId(query);
+
+    if (listMenu) {
+        const navigation = await Promise.all(listMenu.map(async (item) => {
+            const menuItems = await menuItemService.getMenuItemByMenuId({ menu_id: item.id });
+            return {
+                ...item,
+                listMenuItem: menuItems
+            };
+        }))
+        console.log(navigation[0].listMenuItem)
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: navigation,
+            message: "Get menu successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.getProductCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
     const query = req.query
@@ -242,7 +291,7 @@ exports.getInitDataStore = async (req, res) => {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
                 storeTraitData: result[2],
-                template : result[3]
+                template: result[3]
             },
             message: "Get products successfully!"
         })
@@ -257,11 +306,11 @@ exports.getInitDataStore = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
     let check = {
-        id : req.params.id,
-        user_id : req.user.id
+        id: req.params.id,
+        user_id: req.user.id
     }
-    let authen = await this.AuthenticateUserAndStore(req,res,check)
-    if (!authen){
+    let authen = await this.AuthenticateUserAndStore(req, res, check)
+    if (!authen) {
         return
     }
     // create new product
@@ -276,23 +325,23 @@ exports.createProduct = async (req, res) => {
     let variantQuery = req.body.variant
     let collectionQuery = req.body.collection
 
-    
+
     //Create Product
     const newProduct = await productService.createProduct(productQuery);
     let productId = newProduct.rows[0].id
 
     //Create Collection
-    if (collectionQuery){
-        for (let i = 0 ; i <collectionQuery.length; i ++){
+    if (collectionQuery) {
+        for (let i = 0; i < collectionQuery.length; i++) {
             let query = {
-                "product_id" : productId,
+                "product_id": productId,
                 "productcollection_id": collectionQuery[i]
             }
             const newCollection = await productcollectionService.createProductandCollectionLink(query)
         }
     }
     //Create Option
-    
+
     if (productOptionQuery) {
         for (let i = 0; i < productOptionQuery.length; i++) {
             let query = {
@@ -311,7 +360,7 @@ exports.createProduct = async (req, res) => {
                 }
                 const newOptionValue = await productOptionService.createDataOptionValue(optionQuery)
             }
-            
+
         }
     }
 
@@ -320,9 +369,9 @@ exports.createProduct = async (req, res) => {
         for (let i = 0; i < variantQuery.length; i++) {
             let option_value_id = []
             let createVariantQuery = variantQuery[i]
-            for (let j = 0; j < createVariantQuery.option_value.length; j++){
+            for (let j = 0; j < createVariantQuery.option_value.length; j++) {
                 let query = createVariantQuery.option_value[j]
-              
+
                 query.product_id = productId
                 const findOptionValue = await productOptionService.findDataOptionValue(query)
                 option_value_id.push(findOptionValue[0].id)
@@ -333,12 +382,12 @@ exports.createProduct = async (req, res) => {
             createVariantQuery.product_id = productId
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
             let updateQuery = {
-                "id" : productId,
-                "inventory" : quantity
+                "id": productId,
+                "inventory": quantity
             }
             const updateValue = await productService.updateProduct(updateQuery)
         }
-       
+
     }
     if (newProduct) {
         res.status(http.Created).json({
@@ -356,11 +405,11 @@ exports.createProduct = async (req, res) => {
 }
 exports.createCollection = async (req, res) => {
     let check = {
-        id : req.params.id,
-        user_id : req.user.id
+        id: req.params.id,
+        user_id: req.user.id
     }
-    let authen = await this.AuthenticateUserAndStore(req,res,check)
-    if (!authen){
+    let authen = await this.AuthenticateUserAndStore(req, res, check)
+    if (!authen) {
         return
     }
 
@@ -371,10 +420,10 @@ exports.createCollection = async (req, res) => {
 
     let collectionId = newCollection.rows[0].id
     //Create Collection
-    if (productQuery){
-        for (let i = 0 ; i <productQuery.length; i ++){
+    if (productQuery) {
+        for (let i = 0; i < productQuery.length; i++) {
             let query = {
-                "product_id" : productQuery[i],
+                "product_id": productQuery[i],
                 "productcollection_id": collectionId
             }
             const newProduct = await productcollectionService.createProductandCollectionLink(query)
@@ -420,14 +469,14 @@ exports.updateLogoUrl = async (req, res) => {
     }
     return;
 }
-exports.AuthenticateUserAndStore = async (req,res,check) => {
-    if (req.user){
+exports.AuthenticateUserAndStore = async (req, res, check) => {
+    if (req.user) {
         let query = {
-            id : check.id,
-            user_id : check.user_id
+            id: check.id,
+            user_id: check.user_id
         }
         const authenticateUser = await storeService.FindUserAndStore(query)
-        if (!authenticateUser[0]){
+        if (!authenticateUser[0]) {
             res.status(http.Created).json({
                 statusCode: 403,
                 message: "Forbiden!"

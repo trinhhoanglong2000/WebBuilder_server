@@ -11,6 +11,8 @@ router.get('/:id/products', storeController.getProductsByStoreId);
 router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
+router.get('/:id/menu', storeController.getMenuByStoreId);
+router.get('/:id/list-menu-items', storeController.getListMenuItems);
 router.get('/:id/init-data', authenticator.Authenticate, storeController.getInitDataStore);
 
 /* POST create account. */
