@@ -1,8 +1,19 @@
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
+const fileService = require('../files/fileService')
+
 exports.createProduct = async (productObj) => {
-    return DBHelper.insertData(productObj, "products", true)
+    productObj.id = uuidv4();
+
+    // upload richtext description to s3
+    const body = JSON.stringify(productObj.description, null, '/t');
+    const key = `richtext/product/${productObj.id}`
+    const rest = await fileService.uploadTextFileToS3(body, key, 'json');
+
+    productObj.description = rest.Location;
+
+    return DBHelper.insertData(productObj, "products", false)
 }
 exports.updateProduct = async (productObj) => {
     return DBHelper.updateData(productObj,"products","id")

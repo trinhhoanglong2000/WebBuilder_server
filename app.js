@@ -17,7 +17,9 @@ const storeRouter = require('./api/stores');
 const collectionRouter = require('./api/collections');
 const bannerRouter = require('./api/banners');
 const authRouter = require('./api/authenticator');
-const variantsRouter = require('./api/variants')
+const variantsRouter = require('./api/variants');
+const menuRouter = require('./api/menu');
+const menuItemRouter = require('./api/menuItem');
 const productOptionRouter = require('./api/products_option')
 const authenticator = require('./middleware/authentication');
 const userStoreRouter = require('./stores')
@@ -52,6 +54,13 @@ app.use('/productoption', productOptionRouter)
 app.get('/',function (req,res) {
   res.send("Hi")
 })
+app.use('/menu', menuRouter);
+app.use('/menu-item', menuItemRouter);
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
+
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development

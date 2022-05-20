@@ -5,12 +5,15 @@ const authenticator = require('../../middleware/authentication');
 
 router.get('/', authenticator.Authenticate, storeController.getStoreByUserId);
 router.get('/:id', authenticator.Authenticate, storeController.getStoreById);
+router.get('/is-exist/:name', storeController.getStoreByName);
 router.get('/:storeId/:pageId/content', authenticator.Authenticate, storeController.loadContent);
 router.get('/:id/products', storeController.getProductsByStoreId);
 router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
 router.get('/:id/store-components', authenticator.Authenticate, storeController.getStoreComponents);
+router.get('/:id/menu', storeController.getMenuByStoreId);
+router.get('/:id/list-menu-items', storeController.getListMenuItems);
 router.get('/:id/init-data', authenticator.Authenticate, storeController.getInitDataStore);
 
 /* POST create account. */
