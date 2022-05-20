@@ -311,8 +311,7 @@ exports.getInitDataStore = async (req, res) => {
             data: {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
-                storeTraitData: result[2],
-                template: result[3]
+                template : result[2]
             },
             message: "Get products successfully!"
         })
