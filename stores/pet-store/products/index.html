@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Pet store</title>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+          <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+          <link id="Header" href="http://localhost:5000/files/dist/css/template-default/Header.css" rel="stylesheet">
+    <link id="Main" href="http://localhost:5000/files/dist/css/template-default/Main.css" rel="stylesheet">
+    <link id="Footer" href="http://localhost:5000/files/dist/css/template-default/Footer.css" rel="stylesheet">
+    <link id="ProductSection" href="http://localhost:5000/files/dist/css/template-default/ProductSection.css" rel="stylesheet">
+    
+          <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Main.js" id="Main" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Footer.js" id="Footer" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/ProductSection.js" id="ProductSection" class="ScriptClass"></script>
+    
+      </head>
+      <style>
+        * { box-sizing: border-box; } body {margin: 0;}strong{font-weight:bold;}#itgoz{text-align:left;}
+      </style>
+      <body>
+          <header theme="white" logosize="medium" name="header" store-id="621b5a807ea079a0f7351fb8" class="navbar navbar-expand-md border-bottom border-dark"><div class="container align-items-baseline"><button type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><i class="fa fa-bars"></i></button><a href="#" class="navbar-brand text-uppercase font-weight-bold"><img src=https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/621b5a807ea079a0f7351fb8.jpeg></a><div class="d-block d-md-none"><i class="fa fa-search"></i><i class="fa fa-shopping-bag"></i></div><div id="navbarSupportedContent" class="collapse navbar-collapse"><ul class="navbar-nav"><li class="nav-item"><a href="#" class="nav-link p-1"> Home</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Products</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Contact</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Payment</a></li></ul></div><div class="d-none d-md-block"><i class="fa fa-search icon-header"></i><i class="fa fa-shopping-bag icon-header"></i></div></div></header><div class="main-content"><div name="products-section" class="container"><h2 name="products-section-text" id="itgoz" class="section-header">Products</h2><div>
+          <div class="Form-input form-outline d-flex w-100 border rounded  ml-1 mr-2 mt-1">
+
+				<input type="search" id="form1" class="form-control pr-0" style="border:none" placeholder="Search" />
+				<button type="button" class="btn disabled" aria-disabled="true" class="btn">
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</button>
+
+			</div>
+			<div class="flex-column flex-sm-row d-flex align-items-center  mt-2 ">
+				<div class="d-flex align-items-center flex-grow-1">
+					<label><i>Filter:</i></label>
+					<div class="dropdown">
+						<button class="btn dropdown-toggle shadow-none" type="button" id="dropdownMenuButton1"
+							data-bs-toggle="dropdown" aria-expanded="false">
+							Availability
+						</button>
+						<div class="dropdown-menu dropdown-menu-end dropdown-menu-sm-start"
+							style="width: 300px;left:-65px!important" aria-labelledby="dropdownMenuButton1">
+							<div style="font-size: 14px;" class="border-bottom py-3">0 selected</div>
+							<div class="my-3 mx-3">
+								<input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+								<label for="vehicle1">In stock</label><br>
+								<input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
+								<label for="vehicle2">Out of stock</label><br>
+
+						
+							</div>
+
+						</div>
+					</div>
+					<div class="dropdown">
+						<button class="btn dropdown-toggle shadow-none" type="button" id="dropdownMenuButton2"
+							data-bs-toggle="dropdown" aria-expanded="false">
+							Price
+						</button>
+						<div class="dropdown-menu dropdown-menu-end dropdown-menu-sm-start"
+							style="width: 300px;left:-65px!important" aria-labelledby="dropdownMenuButton2">
+							<div style="font-size: 14px;" class="border-bottom py-3">The highest price is $10.00 </div>
+							<div class="d-flex my-3">
+								<input type="text" class="form-control" style="margin-left: 10px;" placeholder="From"
+									aria-label="Username" aria-describedby="basic-addon1">
+								<div style="width: 30px;">
+
+								</div>
+								<input type="text" class="form-control" style="margin-right: 10px;" placeholder="To"
+									aria-label="Username" aria-describedby="basic-addon1">
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+				<div class="d-flex align-items-center">
+					<label><i>Sort by: </i></label>
+					<select class="form-select" style="width: auto;" aria-label="Default select example">
+						<option selected>Open this select menu</option>
+						<option value="1">One</option>
+						<option value="2">Two</option>
+						<option value="3">Three</option>
+					</select>
+				</div>
+			</div>
+          </div><div name="products-section-grid" class="new-arrivals-content">
+          <div class="row">
+          <div class="col-md-3 col-sm-4">
+              <div class="single-new-arrival">
+                  <div class="single-new-arrival-bg">
+                      <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
+                          alt="new-arrivals images">
+                      <div class="single-new-arrival-bg-overlay"></div>
+
+                      <div class="new-arrival-cart">
+                          <p>
+                              <span class="lnr lnr-cart"></span>
+                              <a href="#"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Add <span>to
+                                  </span> cart</a>
+                          </p>
+
+                      </div>
+                  </div>
+                  <h4><a href="#">Example Tittle</a></h4>
+                  <p class="arrival-product-price">$65.00</p>
+              </div>
+          </div>
+
+        </div>
+        <div class="w-100 d-flex justify-content-center " style ="height: 50px;" >
+          <div class="dots d-none">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+          </div></div></div><footer theme="white" name="footer" class="footer-section"><hr/><div class="row footer-navigation"><div class="col-md"><h5>Quick links</h5><ul><li><a href="https://www.youtube.com/">Search</a></li><li><a href="https://www.youtube.com/">Tern of service</a></li><li><a href="https://www.youtube.com/">Refund policy</a></li></ul></div><div class="col-md"><h5>Heading</h5><ul>Share your store detail, promotion or brand contents with your customers.</ul></div></div><hr/><div class="text-center text-md-start pb-2">
+          <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+          <i class="fa fa-envelope-o" aria-hidden="true"></i>
+          <i class="fa fa-facebook-square" aria-hidden="true"></i>
+          </div></footer>
+      </body>
+      </html>
+      

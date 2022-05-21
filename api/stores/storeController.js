@@ -107,7 +107,9 @@ exports.getStoreByName = async (req, res) => {
 exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
     const storeId = req.params.storeId;
-    const result = await pageService.savePageContent(storeId, pageId, req.body);
+    const result = await pageService.savePageContent(storeId, pageId, req.body); 
+    await pageService.saveHTMLFile(storeId,pageId,req.body)
+    //console.log(req.body)
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

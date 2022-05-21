@@ -10,6 +10,10 @@ exports.getTemplate = async (query) => {
     }
     return DBHelper.FindAll("template",config)
 }
+
+exports.getTemplateById = async (query) => {
+    return DBHelper.getData("template",query)
+}
 exports.insertTemplateUser = async (query) => {
     return DBHelper.insertData(query,"account_template",false)
 }

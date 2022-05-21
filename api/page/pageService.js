@@ -1,10 +1,13 @@
 const DBHelper = require('../../helper/DBHelper/DBHelper');
+const storeService = require('../stores/storeService');
+const templateService = require('../template/templateService')
 const AWS = require('aws-sdk');
 
 const s3 = new AWS.S3();
 
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
+const fse = require('fs-extra')
 
 exports.createPage = async (pageBody) => {
   try {
@@ -26,7 +29,7 @@ exports.createPage = async (pageBody) => {
             VALUES ($1, $2, $3, $4, $5)
             returning id, content_url, page_url;
             `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url]);
-    
+
     return result;
     // return DBHelper.insertData(pageBody, 'pages', false);
   } catch (error) {
@@ -72,7 +75,79 @@ exports.savePageContent = async (storeId, pageId, content) => {
     return null;
   }
 };
+exports.saveHTMLFile = async (storeId, pageId, content) => {
+  const storeName = await storeService.findById(storeId)
 
+  //Get PageName
+  let queryPage = {
+    id: pageId,
+    store_id: storeId
+  }
+  const PageName = await getPagesByStoreIdAndId(queryPage)
+  let queryTemplate = {
+    id : storeName.template_id
+  }
+  const templateName = await templateService.getTemplateById(queryTemplate)
+  const storeNameConvert = storeName.name ? storeName.name.replace(' ', '-').toLowerCase() : null;
+  const pageNameConvert = PageName[0] ? PageName[0].name.replace(' ', '-').toLowerCase() : null;
+ 
+  //Components
+  let componentArr = []
+  const _components = JSON.parse(content.components)
+  const Main = _components.filter((value)=>value.name=="Main")
+  const mainComponents = Main[0]? Main[0].components:[]
+  componentArr= [..._components.map((value)=> value.name),...mainComponents.map((value)=> value.name)]
+  let css =""
+  let js = ""
+    componentArr.forEach(value=>{
+    css += `<link id="${value}" href="${process.env.SERVER_URL}/files/dist/css/${templateName[0].name}/${value}.css" rel="stylesheet">
+    `
+    js += `<script type="text/javascript" src="${process.env.SERVER_URL}/files/dist/js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
+    `
+  })
+  // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
+  if (storeNameConvert && pageNameConvert) {
+    const HTML = 
+      `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${storeName.name}</title>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+          <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+          ${css}
+      </head>
+      <style>
+        ${content.css}
+      </style>
+      <body >
+          ${content.html}
+      </body>
+      ${js}
+
+      </html>
+      `
+    fse.outputFile(`stores/${storeNameConvert}/${pageNameConvert}/index.html`, HTML)
+      .then(() => {
+        console.log('The file has been saved!');
+      })
+      .catch(err => {
+        console.error(err)
+      });
+
+
+  }
+};
+
+var getPagesByStoreIdAndId = exports.getPagesByStoreIdAndId = async (query) => {
+  return DBHelper.getData("pages", query)
+}
 exports.getPageContentURL = async (pageId) => {
   try {
     const result = await db.query(`

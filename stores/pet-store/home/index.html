@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Pet store</title>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+          <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+          <link id="Header" href="http://localhost:5000/files/dist/css/template-default/Header.css" rel="stylesheet">
+    <link id="Main" href="http://localhost:5000/files/dist/css/template-default/Main.css" rel="stylesheet">
+    <link id="Footer" href="http://localhost:5000/files/dist/css/template-default/Footer.css" rel="stylesheet">
+    <link id="Carousel" href="http://localhost:5000/files/dist/css/template-default/Carousel.css" rel="stylesheet">
+    <link id="Multicolumn" href="http://localhost:5000/files/dist/css/template-default/Multicolumn.css" rel="stylesheet">
+    <link id="Multicolumn" href="http://localhost:5000/files/dist/css/template-default/Multicolumn.css" rel="stylesheet">
+    <link id="imageWithText" href="http://localhost:5000/files/dist/css/template-default/imageWithText.css" rel="stylesheet">
+    <link id="Product List" href="http://localhost:5000/files/dist/css/template-default/Product List.css" rel="stylesheet">
+    <link id="Rich Text" href="http://localhost:5000/files/dist/css/template-default/Rich Text.css" rel="stylesheet">
+    <link id="image" href="http://localhost:5000/files/dist/css/template-default/image.css" rel="stylesheet">
+    <link id="video" href="http://localhost:5000/files/dist/css/template-default/video.css" rel="stylesheet">
+    
+      </head>
+      <style>
+        * { box-sizing: border-box; } body {margin: 0;}strong{font-weight:bold;}#ip2p5{text-align:left;}#iev2x{text-align:center;}#iu5ek{text-align:center;}#i02uk{text-align:left;}#ib30a{font-size:medium;}#iuaqi{text-align:left;}#if7a9{font-size:medium;}#i86xi{background-color:white;color:rgb(33, 37, 41);padding-top:50px;padding-bottom:50px;padding-left:50px;padding-right:50px;width:100%;}#iwlcg{font-size:large;}#iwfxv{min-width:7rem;min-height:2.5rem;}#inkrl{padding:18px;padding-top:10px;padding-bottom:10px;padding-left:5px;padding-right:5px;}#i90ay{text-align:center;padding:0px;}#ivw4d{text-align:center;}#iuxon{font-size:large;}#i5f5p{text-align:center;}#ixaxt{font-size:medium;}#i30qt{text-align:center;}#ipsnb{font-size:small;}#ia66i{padding-left:5px;padding-right:5px;padding-top:10px;padding-bottom:10px;}#i0p0j{padding-left:50px;padding-right:50px;width:100%;}
+      </style>
+      <body >
+          <header theme="white" logosize="medium" name="header" store-id="621b5a807ea079a0f7351fb8" class="navbar navbar-expand-md border-bottom border-dark"><div class="container align-items-baseline"><button type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><i class="fa fa-bars"></i></button><a href="#" class="navbar-brand text-uppercase font-weight-bold"><img src=https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/621b5a807ea079a0f7351fb8.jpeg></a><div class="d-block d-md-none"><i class="fa fa-search"></i><i class="fa fa-shopping-bag"></i></div><div id="navbarSupportedContent" class="collapse navbar-collapse"><ul class="navbar-nav"><li class="nav-item"><a href="#" class="nav-link p-1"> Home</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Products</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Contact</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Payment</a></li></ul></div><div class="d-none d-md-block"><i class="fa fa-search icon-header"></i><i class="fa fa-shopping-bag icon-header"></i></div></div></header><main class="main-content"><div ez-mall-type="carousel" textColor="black" displayType="bottom-left" descriptionAlign="left" bannerHeight="lager" descriptionBackground="true" name="banners" data="25068e64-2035-42de-bcf2-5fd0d0d8e894" class="carousel-description-background carousel-text-black carousel-height-lager carousel-description-align-left carousel-display-bottom-left">
+        <div id="A3a660a01-2495-41dd-ba37-392e4e2a5b43" class=" carousel slide ezMall-carousel" data-bs-ride="carousel" data-type="banners">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#A3a660a01-2495-41dd-ba37-392e4e2a5b43" data-bs-slide-to="0" class="active" aria-label="Slide 0"
+            aria-current="true"></button>
+      
+          <button type="button" data-bs-target="#A3a660a01-2495-41dd-ba37-392e4e2a5b43" data-bs-slide-to="1" class="" aria-label="Slide 1"></button>
+      
+          <button type="button" data-bs-target="#A3a660a01-2495-41dd-ba37-392e4e2a5b43" data-bs-slide-to="2" class="" aria-label="Slide 2"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="d-block w-100 image-container">
+              <img src="https://dummyimage.com/1980x1080/55595c/ffffff" alt="https://dummyimage.com/1980x1080/55595c/ffffff">
+            </div>
+            <div class="carousel-caption">
+              <div class="ezMall-carousel-contents">
+                <div class="ezMall-carousel-text-container d-block">
+                  <h2 class="bolder">Image banner</h2>
+                  <p>Give customers details about the banner image(s) or content on the template.</p>
+                  <a class="btn ezMall-btn bolder" href="/" role="button">Shop Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <div class="carousel-item">
+            <div class="d-block w-100 image-container">
+              <img src="https://dummyimage.com/1980x1080/55595c/ffffff" alt="https://dummyimage.com/1980x1080/55595c/ffffff">
+            </div>
+            <div class="carousel-caption">
+              <div class="ezMall-carousel-contents">
+                <div class="ezMall-carousel-text-container d-block">
+                  <h2 class="bolder">Image banner</h2>
+                  <p>Give customers details about the banner image(s) or content on the template.</p>
+                  <a class="btn ezMall-btn bolder" href="/" role="button">Shop Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <div class="carousel-item">
+            <div class="d-block w-100 image-container">
+              <img src="https://dummyimage.com/1980x1080/55595c/ffffff" alt="https://dummyimage.com/1980x1080/55595c/ffffff">
+            </div>
+            <div class="carousel-caption">
+              <div class="ezMall-carousel-contents">
+                <div class="ezMall-carousel-text-container d-block">
+                  <h2 class="bolder">Image banner</h2>
+                  <p>Give customers details about the banner image(s) or content on the template.</p>
+                  <a class="btn ezMall-btn bolder" href="/" role="button">Shop Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#A3a660a01-2495-41dd-ba37-392e4e2a5b43" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#A3a660a01-2495-41dd-ba37-392e4e2a5b43" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+        </div><div ez-mall-type="multicolumn" numCols="2" paddingMode id="inkrl" class="multicolumn-numCols-2 container"><h2 id="iu5ek">NEWS</h2><div class="row ezMall-multicolumn"><div ez-mall-type="columnItem" name="columnItem" class="ezMall-column-item card navbar container ezMall-col"><div class="column-item-image"><img src="https://kenh14cdn.com/thumb_w/660/203336854389633024/2022/5/4/-16516484288561206804486.jpg" class="img-responsive img-fluid" alt=""></div><div class="card-body"><div id="i02uk" class="card-title">Doctor Strange in the Multiverse of Madness </div><div id="ib30a"><p><span style="color: rgb(32, 32, 32);">Enter a new dimension of Strange. Watch the trailer for Marvel Studios' Doctor Strange in the Multiverse of Madness. Only in theaters May 6.</span></p></div></div></div><div ez-mall-type="columnItem" name="columnItem" class="ezMall-column-item card navbar container ezMall-col"><div class="column-item-image"><img src="https://upload.wikimedia.org/wikipedia/vi/0/05/Thor_Love_And_Thunder_logo.jpg" class="img-responsive img-fluid" alt=""></div><div class="card-body"><div id="iuaqi" class="card-title">Marvel Studios' Thor Love and Thunder</div><div id="if7a9"><p>Thor enlists the help of Valkyrie, Korg and ex-girlfriend Jane Foster to fight Gorr the God Butcher, who intends to make the gods extinct.﻿</p></div></div></div></div></div><div ez-mall-type="multicolumn" numCols="3" id="ia66i" paddingMode class="multicolumn-numCols-3 container"><h2 id="i90ay">PRODUCTS</h2><div class="row ezMall-multicolumn"><a ez-mall-type="columnItem" name="columnItem" class="ezMall-column-item card navbar container ezMall-col"><div class="column-item-image"> <img src="https://product.hstatic.net/1000282067/product/nike-air-force-1-low-da8481-100-release-date-1-1068x718_548ee554712c49c7b1dd8f9661c960f7_1024x1024.png" class="img-responsive img-fluid" alt=""></div><div class="card-body"><div id="ivw4d" class="card-title">Shoes</div><div id="iuxon"><p class="card-text">Share information about your brand with your customers. Describe a product, make announcements, or
+                      welcome customers to your store.</p></div></div></a><a ez-mall-type="columnItem" name="columnItem" class="ezMall-column-item card navbar container ezMall-col"><div class="column-item-image"> <img src="https://img.freepik.com/free-photo/headshot-beautiful-dark-skinned-curly-has-pleased-expression-rejoices-success-enjoys-spare-time-wears-casual-t-shirt-isolated-yellow-wall-people-positive-emotions-feelings-concept_273609-27729.jpg?w=2000" class="img-responsive img-fluid" alt=""></div><div class="card-body"><div id="i5f5p" class="card-title">T-SHIRT</div><div id="ixaxt"><p class="card-text">Share information about your brand with your customers. Describe a product, make announcements, or
+                      welcome customers to your store.</p></div></div></a><a ez-mall-type="columnItem" name="columnItem" class="ezMall-column-item card navbar container ezMall-col"><div class="column-item-image"> <img src="https://media.istockphoto.com/photos/blue-jean-background-blue-denim-jeans-texture-jeans-background-blue-picture-id1134830751?k=20&m=1134830751&s=612x612&w=0&h=QDGjGqJUxlh_ow6yQo-OQsEn76-iBhDWNfvLnV6EMpk=" class="img-responsive img-fluid" alt=""></div><div class="card-body"><div id="i30qt" class="card-title">JEANS</div><div id="ipsnb"><p class="card-text">Share information about your brand with your customers. Describe a product, make announcements, or
+                      welcome customers to your store.</p></div></div></a></div></div><div name="imageWithText" class="container"><div class="row"><div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-center"><img src="https://i.ytimg.com/vi/lhltLA-21Ow/maxresdefault.jpg" class="img-responsive img-fluid"></div><div class="col text-part d-flex align-items-center"><div><h1 id="ip2p5">AIR FORCE I DRAKE</h1><p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or event privide review.</p><div class="text-center"><button class="btn"> SHOW NOW </button></div></div></div></div></div><div name="products-collections" data-ez-mall-collection="1aba045b-3377-4d24-9bf6-88f2135de3ad" class="container product-section"><h2 id="iev2x">TOP PRODUCTS</h2><div>                <div id="A43e7967a-1565-4abe-9424-35bca3ee4c2b" class="carousel slide" data-bs-ride="carousel" data-type = "products-collections" >
+                    <!-- Carousel indicators -->
+
+                    <!-- Wrapper for carousel items -->
+                    <div class="carousel-inner">
+                        <div class="item carousel-item active">
+                            <div class="row">
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+
+                                        </div>
+                                        <div class="thumb-content flex-column">
+                                            <h4>Apple iPad</h4>
+                                            <p class="item-price"><strike>$400.00</strike> <span>$369.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Sony Headphone</h4>
+                                            <p class="item-price"><strike>$25.00</strike> <span>$23.99</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Macbook Air</h4>
+                                            <p class="item-price"><strike>$899.00</strike> <span>$649.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-half-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Nikon DSLR</h4>
+                                            <p class="item-price"><strike>$315.00</strike> <span>$250.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item carousel-item">
+                            <div class="row">
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Sony Play Station</h4>
+                                            <p class="item-price"><strike>$289.00</strike> <span>$269.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Macbook Pro</h4>
+                                            <p class="item-price"><strike>$1099.00</strike> <span>$869.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-half-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Bose Speaker</h4>
+                                            <p class="item-price"><strike>$109.00</strike> <span>$99.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Samsung Galaxy S8</h4>
+                                            <p class="item-price"><strike>$599.00</strike> <span>$569.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item carousel-item">
+                            <div class="row">
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Apple iPhone</h4>
+                                            <p class="item-price"><strike>$369.00</strike> <span>$349.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Canon DSLR</h4>
+                                            <p class="item-price"><strike>$315.00</strike> <span>$250.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Google Pixel</h4>
+                                            <p class="item-price"><strike>$450.00</strike> <span>$418.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Apple Watch</h4>
+                                            <p class="item-price"><strike>$350.00</strike> <span>$330.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Carousel controls -->
+
+                    <button class="carousel-control-prev carousel-control left" type="button" data-bs-target="#A43e7967a-1565-4abe-9424-35bca3ee4c2b" data-bs-slide="prev">
+                        <i class="fa fa-angle-left"></i>
+                      </button>
+                      <button class="carousel-control-next carousel-control right" type="button" data-bs-target="#A43e7967a-1565-4abe-9424-35bca3ee4c2b" data-bs-slide="next">
+                        <i class="fa fa-angle-right"></i>
+                      </button>
+                </div></div></div><div name="rich-text" id="i86xi" class="Rich-Text"><h1 id="ibs6i">SIGN  UP WITH  MORE DISCOUNDS</h1><div id="iwlcg" class="rich-text-field"><p>Share information about your brand with your customers. Describe a product, make announcements, or <a href="https://www.youtube.com/" target="_blank">welcome </a>customers to your store.</p></div><a id="iwfxv" class="btn btn-primary align-self-center d-inline-flex justify-content-center align-items-center">SIGN UP NOW</a></div><div name="image" id="i0p0j" class="text-center"><img src="https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/fc291891-e9ca-4313-961a-606f7607fcb3.jpeg" class="img-thumbnail"/></div><div theme="white" name="video" class="container text-center"><iframe width="100%" height="600" src="https://www.youtube.com/embed/cQCqrw1LABM?&autoplay=0&loop=0&playlist=cQCqrw1LABM&controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""><iframe ></iframe></iframe></div></main><footer theme="white" name="footer" class="footer-section"><hr/><div class="row footer-navigation"><div class="col-md"><h5>Quick links</h5><ul><li><a href="https://www.youtube.com/">Search</a></li><li><a href="https://www.youtube.com/">Tern of service</a></li><li><a href="https://www.youtube.com/">Refund policy</a></li></ul></div><div class="col-md"><h5>Heading</h5><ul>Share your store detail, promotion or brand contents with your customers.</ul></div></div><hr/><div class="text-center text-md-start pb-2">
+          <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+          <i class="fa fa-envelope-o" aria-hidden="true"></i>
+          <i class="fa fa-facebook-square" aria-hidden="true"></i>
+          </div></footer>
+      </body>
+      <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Main.js" id="Main" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Footer.js" id="Footer" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Carousel.js" id="Carousel" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Multicolumn.js" id="Multicolumn" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Multicolumn.js" id="Multicolumn" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/imageWithText.js" id="imageWithText" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Product List.js" id="Product List" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Rich Text.js" id="Rich Text" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/image.js" id="image" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/video.js" id="video" class="ScriptClass"></script>
+    
+
+      </html>
+      
