@@ -2,6 +2,7 @@ const DBHelper = require('../../helper/DBHelper/DBHelper');
 const storeService = require('../stores/storeService');
 const templateService = require('../template/templateService')
 const AWS = require('aws-sdk');
+const URLParser = require('../../helper/common')
 
 const s3 = new AWS.S3();
 
@@ -22,7 +23,7 @@ exports.createPage = async (pageBody) => {
     }).promise();
 
     pageBody.content_url = s3Result ? s3Result.Location : "";
-    pageBody.page_url = '/' + pageBody.name.replace(' ', '-').toLowerCase();
+    pageBody.page_url = '/' + pageBody.name.trim().replace(' ', '-').toLowerCase();
 
     const result = await db.query(`
             INSERT INTO pages (id, store_id, name, content_url, page_url) 
@@ -40,8 +41,22 @@ exports.createPage = async (pageBody) => {
 };
 
 exports.updatePage = async (data) => {
-  data.page_url = '/' + data.name.replace(' ', '-').toLowerCase();
+  data.name = data.name.trim();
+  data.page_url = '/' + URLParser.generateURL(data.name);
   return DBHelper.updateData(data, "pages", "id")
+}
+
+exports.deletePage = async (query) => {
+  return DBHelper.deleteData('pages', query)
+}
+
+exports.getPageByName = async (name, store_id) => {
+  const result = await db.query(`
+            SELECT * 
+            FROM pages
+            WHERE LOWER(name)=LOWER('${name}') and (store_id)=('${store_id}')
+    `)
+    return result.rows;
 }
 
 exports.getPagesByStoreId = async (query) => {

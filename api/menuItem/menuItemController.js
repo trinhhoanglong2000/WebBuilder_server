@@ -45,3 +45,23 @@ exports.updateMenuItem = async (req, res) => {
         })
     }
 }
+
+exports.deleteMenuItem = async (req, res) => {
+    const query = {
+        id: req.params.id,
+    };
+    const result = await menuItemService.deleteMenuItem(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "delete menu item successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}

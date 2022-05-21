@@ -18,3 +18,7 @@ exports.getMenuItemByMenuId = async (query) => {
 exports.updateMenuItem = async (menuItemObj) => {
     return DBHelper.updateData(menuItemObj, 'menu_item', 'id')
 }
+
+exports.deleteMenuItem = async (query) => {
+    return DBHelper.deleteData('menu_item', query);
+}
