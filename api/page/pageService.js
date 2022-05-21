@@ -1,5 +1,6 @@
 const DBHelper = require('../../helper/DBHelper/DBHelper');
 const AWS = require('aws-sdk');
+const URLParser = require('../../helper/common')
 
 const s3 = new AWS.S3();
 
@@ -37,7 +38,8 @@ exports.createPage = async (pageBody) => {
 };
 
 exports.updatePage = async (data) => {
-  data.page_url = '/' + data.name.replace(' ', '-').toLowerCase();
+  data.name = data.name.trim();
+  data.page_url = '/' + URLParser.generateURL(data.name);
   return DBHelper.updateData(data, "pages", "id")
 }
 

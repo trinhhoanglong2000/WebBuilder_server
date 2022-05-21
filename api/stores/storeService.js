@@ -4,9 +4,12 @@ const s3 = new AWS.S3();
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
+const URLParser = require('../../helper/common')
+
 exports.createStore = async (storeObj) => {
     if (storeObj.name) {
-        storeObj.store_link = storeObj.name.replace(' ', '-').toLowerCase() + '.myeasymall.site';
+        storeObj.name = storeObj.name.trim();
+        storeObj.store_link =  URLParser.generateURL(storeObj.name) + '.myeasymall.site';
     }
     return DBHelper.insertData(storeObj, "stores", true)
 
