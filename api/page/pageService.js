@@ -103,8 +103,8 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
     id : storeName.template_id
   }
   const templateName = await templateService.getTemplateById(queryTemplate)
-  const storeNameConvert = storeName.name ? storeName.name.replace(' ', '-').toLowerCase() : null;
-  const pageNameConvert = PageName[0] ? PageName[0].name.replace(' ', '-').toLowerCase() : null;
+  const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+  const pageNameConvert = PageName[0] ? URLParser.generateURL(PageName[0].name) : null;
  
   //Components
   let componentArr = []

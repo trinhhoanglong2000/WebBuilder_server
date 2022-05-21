@@ -1,4 +1,4 @@
 
 exports.generateURL = (s) => {
-    return  s.replace(/\s+/g,' ').trim().toLowerCase().replace(/ /g, '-');
+    return  s.trim().toLowerCase().replace(/\s+/g,'-')
 }
