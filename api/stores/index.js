@@ -9,6 +9,7 @@ router.get('/is-exist/:name', storeController.getStoreByName);
 router.get('/:storeId/:pageId/content', authenticator.Authenticate, storeController.loadContent);
 router.get('/:id/products', storeController.getProductsByStoreId);
 router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);
+router.get('/:id/page/:name', storeController.getPageByName);
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
 router.get('/:id/store-components', authenticator.Authenticate, storeController.getStoreComponents);

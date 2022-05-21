@@ -19,7 +19,7 @@ exports.createPage = async (pageBody) => {
     }).promise();
 
     pageBody.content_url = s3Result ? s3Result.Location : "";
-    pageBody.page_url = '/' + pageBody.name.replace(' ', '-').toLowerCase();
+    pageBody.page_url = '/' + pageBody.name.trim().replace(' ', '-').toLowerCase();
 
     const result = await db.query(`
             INSERT INTO pages (id, store_id, name, content_url, page_url) 
@@ -39,6 +39,19 @@ exports.createPage = async (pageBody) => {
 exports.updatePage = async (data) => {
   data.page_url = '/' + data.name.replace(' ', '-').toLowerCase();
   return DBHelper.updateData(data, "pages", "id")
+}
+
+exports.deletePage = async (query) => {
+  return DBHelper.deleteData('pages', query)
+}
+
+exports.getPageByName = async (name, store_id) => {
+  const result = await db.query(`
+            SELECT * 
+            FROM pages
+            WHERE LOWER(name)=LOWER('${name}') and (store_id)=('${store_id}')
+    `)
+    return result.rows;
 }
 
 exports.getPagesByStoreId = async (query) => {

@@ -104,6 +104,26 @@ exports.getStoreByName = async (req, res) => {
     }
 }
 
+exports.getPageByName = async (req, res) => {
+    const name = req.params.name;
+    const store_id = req.params.id;
+    const result = await pageService.getPageByName(name, store_id);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "get page successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+
 exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
     const storeId = req.params.storeId;
@@ -221,7 +241,6 @@ exports.getListMenuItems = async (req, res) => {
                 listMenuItem: menuItems
             };
         }))
-        console.log(navigation[0].listMenuItem)
         res.status(http.Success).json({
             statusCode: http.Success,
             data: navigation,
