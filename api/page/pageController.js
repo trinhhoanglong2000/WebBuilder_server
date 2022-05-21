@@ -46,7 +46,7 @@ exports.update = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-    const query = { id: req.body.id };
+    const query = { id: req.params.id };
     const result = await pageService.deletePage(query);
     if (result) {
         res.status(http.Success).json({

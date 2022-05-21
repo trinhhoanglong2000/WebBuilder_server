@@ -7,6 +7,6 @@ router.post('/', authenticator.Authenticate, menuItemController.createMenuItem);
 
 router.put('/', authenticator.Authenticate, menuItemController.updateMenuItem);
 
-router.delete('/', authenticator.Authenticate, menuItemController.deleteMenuItem);
+router.delete('/:id', authenticator.Authenticate, menuItemController.deleteMenuItem);
 
 module.exports = router;

@@ -48,9 +48,8 @@ exports.updateMenuItem = async (req, res) => {
 
 exports.deleteMenuItem = async (req, res) => {
     const query = {
-        id: req.body.id,
+        id: req.params.id,
     };
-    console.log(req.body)
     const result = await menuItemService.deleteMenuItem(query);
     if (result) {
         res.status(http.Success).json({
