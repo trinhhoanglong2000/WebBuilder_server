@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const s3 = new AWS.S3();
 
 exports.getFileName = async (req, res) =>{
+    console.log("Hehe123")
     console.log(req.params.filename)
     res.status(http.Success).sendFile(`${req.params.filename}`,{root:'.'})
 }
