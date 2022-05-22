@@ -115,9 +115,9 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   let css =""
   let js = ""
     componentArr.forEach(value=>{
-    css += `<link id="${value}" href="${process.env.SERVER_URL}/files/dist/css/${templateName[0].name}/${value}.css" rel="stylesheet">
+    css += `<link id="${value}" href="${process.env.SERVER_URL}/css/${templateName[0].name}/${value}.css" rel="stylesheet">
     `
-    js += `<script type="text/javascript" src="${process.env.SERVER_URL}/files/dist/js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
+    js += `<script type="text/javascript" src="${process.env.SERVER_URL}/js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
     `
   })
   // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
