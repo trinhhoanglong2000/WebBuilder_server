@@ -5,10 +5,17 @@ const path = require('path');
 const s3 = new AWS.S3();
 
 exports.getFileName = async (req, res) =>{
+  
+    let productionPath = path.join(path.dirname(require.main.filename),'../')
+    console.log("Hi")
+    if (productionPath === "/app/"){
+        productionPath = '/'
+    }
     var options = {
-        root: path.join(path.dirname(require.main.filename),'../')
+        root: productionPath
     }
     console.log(path.join(path.dirname(require.main.filename),'../'))
+    
     res.status(http.Success).sendFile(`${req.params.filename}`,options)
    
     // var fileName = `${req.params.filename}`;
