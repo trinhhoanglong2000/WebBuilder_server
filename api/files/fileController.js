@@ -7,7 +7,9 @@ const s3 = new AWS.S3();
 exports.getFileName = async (req, res) =>{
     console.log("Hehe123")
     console.log(req.params.filename)
-    res.status(http.Success).sendFile(`${req.params.filename}`,{root:'.'})
+    // res.status(http.Success).sendFile(`${req.params.filename}`,{root:'.'})
+    res.status(http.Success).send("Hi")
+    
 }
 
 exports.uploadAsset = async (req, res) => {
