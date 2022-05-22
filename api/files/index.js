@@ -24,6 +24,8 @@ var upload = multer({
 router.post('/assets', upload.array('file'), fileController.uploadAsset)
 router.post('/upload-image-to-s3', fileController.uploadImageToS3);
 
+router.put('/object', fileController.deleteObject);
+
 router.get('/:filename(*{1,}(\.css|\.js)$)',fileController.getFileName)
 // express js Regrex is stupid, * mean everything not 0 or more
 module.exports = router;
