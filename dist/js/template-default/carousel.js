@@ -1,7 +1,8 @@
-
-async function CarouselsGenerateCodeItem(categoryId, itemID) {
+async function CarouselsGenerateCodeItem(e) {
+  const categoryId = e.getAttribute("data");
+  const itemID = $(e).find(".ezMall-carousel").attr("id")
   if(categoryId == null){
-    Render(null,itemID)
+    Render(null,itemID,e)
   }else{
     await fetch(`http://localhost:5000/collections/banner/${categoryId}`
     , {
@@ -10,12 +11,12 @@ async function CarouselsGenerateCodeItem(categoryId, itemID) {
         'Access-Control-Allow-Origin': '*'
       }
     }).then( res =>res.json()).then(myJson => myJson.data).then(data =>{
-      Render(data,itemID)
+      Render(data,itemID,e)
     })
   }
 }
 
-function Render(data,itemID){
+function Render(data,itemID,e){
   const defaultData = [
     {
       image: "https://dummyimage.com/1980x1080/55595c/ffffff",
@@ -37,8 +38,8 @@ function Render(data,itemID){
     }
   ]
   let listBanners = data == null ? [] : data.listBanners;
-  let carouselIndicators = $(`#${itemID} .carousel-indicators`)[0]
-  let carouselInner = $(`#${itemID} .carousel-inner`)[0];
+  let carouselIndicators =$(e).find('.carousel-indicators')[0];
+  let carouselInner =  $(e).find('.carousel-inner')[0]
   carouselIndicators.innerHTML = "";
   carouselInner.innerHTML = "";
   if (listBanners.length == 0) {
@@ -70,12 +71,9 @@ function Render(data,itemID){
 }
 
 function CarouselsGenerateCodeStart() {
-  let carouselListElement = $(`div[ez-mall-type='carousel']`)
-  for (let i = 0; i < carouselListElement.length; i++) {
-    let categoryId = carouselListElement[i].getAttribute("data");
-    let itemID = carouselListElement[i].getAttribute("id");
-    CarouselsGenerateCodeItem(categoryId, itemID)
-  }
+  $("div[ez-mall-type='carousel']").each(function (i) {
+    CarouselsGenerateCodeItem(this)
+  });
 }
 
 //SetListenOnChangeAtrribute();
@@ -88,5 +86,4 @@ $(document).ready(function () {
   else {
     CarouselsGenerateCodeStart();
   }
-
 })
