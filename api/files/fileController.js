@@ -6,8 +6,9 @@ const s3 = new AWS.S3();
 
 exports.getFileName = async (req, res) =>{
     var options = {
-        root: path.join(__dirname,'../../')
+        root: path.join(path.dirname(require.main.filename),'../')
     }
+    console.log(path.join(path.dirname(require.main.filename),'../'))
     res.status(http.Success).sendFile(`${req.params.filename}`,options)
    
     // var fileName = `${req.params.filename}`;
