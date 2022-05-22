@@ -41,8 +41,6 @@ exports.getAllCollections = async (req, res) => {
 
 exports.getcollectionById = async (req, res) => {
     const id = req.params.id;
-    console.log(`id`);
-    console.log(id);
     const result = await collectionService.findById(id);
     const listBanners = id != null ? await bannerService.getBannersByCollectionId(id) : [];
     if (listBanners) result.listBanners = listBanners;

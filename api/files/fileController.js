@@ -7,14 +7,14 @@ const s3 = new AWS.S3();
 exports.getFileName = async (req, res) =>{
   
     let productionPath = path.join(path.dirname(require.main.filename),'../')
-    console.log("Hi")
-
+    console.log(path.resolve(__dirname ,`../../`))
+    console.log(path.join(__dirname ,`../../`))
     var options = {
         root: productionPath
     }
 
     res.sendFile(`${req.params.filename}`, {
-        root: path.join(__dirname ,`../../`)
+        root: path.resolve(__dirname ,`../../`)
     })
 
    
