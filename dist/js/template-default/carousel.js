@@ -4,7 +4,8 @@ async function CarouselsGenerateCodeItem(e) {
   if(categoryId == null){
     Render(null,itemID,e)
   }else{
-    await fetch(`http://localhost:5000/collections/banner/${categoryId}`
+    const rootUrl= $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+    await fetch(`${rootUrl}/collections/banner/${categoryId}`
     , {
       mode: 'cors',
       headers: {
