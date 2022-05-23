@@ -25,14 +25,24 @@ const authenticator = require('./middleware/authentication');
 const userStoreRouter = require('./stores')
 const app = express();
 
-const subdomain = require('express-subdomain')
-
+var hbs = require('express-handlebars')
 const corsOptions = {
   origin: true,
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
 }
+app.engine('hbs', hbs.engine({
+  extname: 'hbs',
+  defaultLayout: 'layout',
+  layoutsDir: __dirname + '/views/layouts/',
+  partialsDir: __dirname + '/views/partials/',
+  runtimeOptions: {
+      allowProtoPropertiesByDefault: true
+  },
+
+}))
+app.set('view engine', 'hbs')
 app.use(logger('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());

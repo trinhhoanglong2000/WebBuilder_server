@@ -107,6 +107,13 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
   const pageNameConvert = PageName[0] ? URLParser.generateURL(PageName[0].name) : null;
 
+  //Create HTML FOOTER HEADER AND BODY
+
+  const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
+  const footer = content.html.match(/(?<=<\/main>)(?:.|\n)*/gm)[0]
+  const header = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
+
+
   //Components
   let componentArr = []
   const _components = JSON.parse(content.components)
@@ -124,40 +131,50 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
   if (storeNameConvert && pageNameConvert) {
     const HTML =
-      `<!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${storeName.name}</title>
-          <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
-          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-          <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
-          ${css}
-      </head>
+      `
+      ${css}
       <style>
         ${content.css}
       </style>
       <body >
-          ${content.html}
+          ${main}
       </body>
       ${js}
-
-      </html>
       `
-    fse.outputFile(`stores/${storeNameConvert}/${pageNameConvert}/index.html`, HTML)
-      .then(() => {
-        console.log('The file has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
+    // fse.outputFile(`stores/${storeNameConvert}/${pageNameConvert}/index.html`, HTML)
+    //   .then(() => {
+    //     console.log('The file has been saved!');
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   });
 
+    //HEADER HTML
+    fse.outputFile(`views/partials/${storeNameConvert}/header.hbs`, header)
+    .then(() => {
+      console.log('Header File has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
 
+    //FOOTER HTML
+    fse.outputFile(`views/partials/${storeNameConvert}/footer.hbs`, footer)
+    .then(() => {
+      console.log('Footer File has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
+
+    //MAIN HTML
+    fse.outputFile(`views/bodies/${storeNameConvert}/${pageNameConvert}/index.hbs`, HTML)
+    .then(() => {
+      console.log('Body Main File has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
   }
 };
 exports.createHTMLFile = async (storeId, pageId, content) => {

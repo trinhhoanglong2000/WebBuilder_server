@@ -4,7 +4,7 @@ async function CarouselsGenerateCodeItem(e) {
   if(categoryId == null){
     Render(null,itemID,e)
   }else{
-    await fetch(`${process.env.SERVER_URL}/collections/banner/${categoryId}`
+    await fetch(`${'http://localhost:5000'}/collections/banner/${categoryId}`
     , {
       mode: 'cors',
       headers: {
