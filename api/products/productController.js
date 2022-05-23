@@ -9,9 +9,10 @@ exports.updateProduct = async (req, res) => {
     // update produt
     const productId = req.params.id;
 
-    let productQuery = req.body.product[0]
-
-    delete productQuery["update"]
+    let productQuery = req.body.product
+    if (productQuery) {
+        delete productQuery["update"]
+    }
     productQuery.id = productId
 
     const newProduct = await productService.updateProduct(productQuery)
@@ -58,7 +59,7 @@ exports.updateProduct = async (req, res) => {
                 //Change Option 
                 optionId = productOptionQuery[i].id
                 const changeOption = await productOptionService.updateDataOption(query)
-            } else if (updateStatus == "Delete"){
+            } else if (updateStatus == "Delete") {
                 let deleteQuery = {
                     id: productOptionQuery[i].id
                 }
@@ -86,7 +87,7 @@ exports.updateProduct = async (req, res) => {
                 else if (optionUpdateStatus == "Change") {
                     const changeOptionValue = await productOptionService.updateDataOptionValue(optionQuery, "id")
                 }
-                else if (optionUpdateStatus == "Delete"){
+                else if (optionUpdateStatus == "Delete") {
                     let deleteQuery = {
                         id: valueStatus[j].id
                     }
@@ -108,10 +109,10 @@ exports.updateProduct = async (req, res) => {
 
                 query.product_id = productId
                 const findOptionValue = await productOptionService.findDataOptionValue(query)
-                if (findOptionValue[0]){
+                if (findOptionValue[0]) {
                     option_value_id.push(findOptionValue[0].id)
                 }
-                
+
             }
             quantity += createVariantQuery.quantity
             let updateStatus = createVariantQuery.update
@@ -124,14 +125,14 @@ exports.updateProduct = async (req, res) => {
 
             if (updateStatus == "Add") {
                 const creatVariant = await productVariantService.createVariant(createVariantQuery)
-            } 
-            else if (updateStatus == "Change"){
+            }
+            else if (updateStatus == "Change") {
                 const updateVariant = await productVariantService.updateVariant(createVariantQuery)
             }
-            else if (updateStatus == "Delete"){
+            else if (updateStatus == "Delete") {
                 quantity -= createVariantQuery.quantity
                 let query = {
-                    id : createVariantQuery.id
+                    id: createVariantQuery.id
                 }
                 const deleteVariant = await productVariantService.deleteVariant(query)
             }
