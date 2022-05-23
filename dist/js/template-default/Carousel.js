@@ -14,7 +14,7 @@ async function CarouselsGenerateCodeItem(e) {
       Render(data,itemID,e)
     })
   }
-}
+} 
 
 function Render(data,itemID,e){
   const defaultData = [
