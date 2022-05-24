@@ -2,11 +2,23 @@ const http = require('../../const');
 const AWS = require('aws-sdk');
 const fileService = require('./fileService')
 const { v4: uuidv4 } = require('uuid');
-
+const path = require('path');
 const s3 = new AWS.S3();
 
 exports.getFileName = async (req, res) =>{
-    res.status(http.Success).sendFile(`${req.params.filename}`,{root:'.'})
+  
+    let productionPath = path.join(path.dirname(require.main.filename),'../')
+    console.log(path.resolve(__dirname ,`../../`))
+    console.log(path.join(__dirname ,`../../`))
+    var options = {
+        root: productionPath
+    }
+
+    res.sendFile(`${req.params.filename}`, {
+        root: path.resolve(__dirname ,`../../`)
+    })
+
+   
 }
 
 exports.uploadAsset = async (req, res) => {

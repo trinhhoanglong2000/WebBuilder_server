@@ -37,7 +37,7 @@ function productData(e) {
   //Init
   function init() {
     if (!urlProductList){
-      urlProductList = $('script.scriptClass').attr('src').match(/^.*?(?=\/files)/gm)[0]
+      urlProductList = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     }
   
     $("div[name='products-collections'] ").each(function (i) {

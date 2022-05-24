@@ -1,4 +1,6 @@
 const DBHelper = require('../../helper/DBHelper/DBHelper');
+const storeService = require('../stores/storeService');
+const templateService = require('../template/templateService')
 const AWS = require('aws-sdk');
 const URLParser = require('../../helper/common')
 
@@ -6,6 +8,7 @@ const s3 = new AWS.S3();
 
 const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
+const fse = require('fs-extra')
 
 exports.createPage = async (pageBody) => {
   try {
@@ -27,7 +30,8 @@ exports.createPage = async (pageBody) => {
             VALUES ($1, $2, $3, $4, $5)
             returning id, content_url, page_url;
             `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url]);
-    
+
+
     return result;
     // return DBHelper.insertData(pageBody, 'pages', false);
   } catch (error) {
@@ -53,7 +57,7 @@ exports.getPageByName = async (name, store_id) => {
             FROM pages
             WHERE LOWER(name)=LOWER('${name}') and (store_id)=('${store_id}')
     `)
-    return result.rows;
+  return result.rows;
 }
 
 exports.getPagesByStoreId = async (query) => {
@@ -87,7 +91,201 @@ exports.savePageContent = async (storeId, pageId, content) => {
     return null;
   }
 };
+exports.saveHTMLFile = async (storeId, pageId, content) => {
+  const storeName = await storeService.findById(storeId)
 
+  //Get PageName
+  let queryPage = {
+    id: pageId,
+    store_id: storeId
+  }
+  const PageName = await getPagesByStoreIdAndId(queryPage)
+  let queryTemplate = {
+    id: storeName.template_id
+  }
+  const templateName = await templateService.getTemplateById(queryTemplate)
+  const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+  const pageNameConvert = PageName[0] ? URLParser.generateURL(PageName[0].name) : null;
+
+  //Create HTML FOOTER HEADER AND BODY
+
+  const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
+  const footer = content.html.match(/(?<=<\/main>)(?:.|\n)*/gm)[0]
+  const header = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
+
+
+  //Components
+  let componentArr = []
+  const _components = JSON.parse(content.components)
+  const Main = _components.filter((value) => value.name == "Main")
+  const mainComponents = Main[0] ? Main[0].components : []
+  componentArr = [..._components.map((value) => value.name), ...mainComponents.map((value) => value.name)]
+  let css = ""
+  let js = ""
+  componentArr.forEach(value => {
+    css += `<link id="${value}" href="${process.env.SERVER_URL}/css/${templateName[0].name}/${value}.css" rel="stylesheet">
+    `
+    js += `<script type="text/javascript" src="${process.env.SERVER_URL}/js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
+    `
+  })
+  // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
+  if (storeNameConvert && pageNameConvert) {
+    const HTML =
+      `
+      ${css}
+      <style>
+        ${content.css}
+      </style>
+      <body >
+          ${main}
+      </body>
+      ${js}
+      `
+    // fse.outputFile(`stores/${storeNameConvert}/${pageNameConvert}/index.html`, HTML)
+    //   .then(() => {
+    //     console.log('The file has been saved!');
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   });
+
+    //HEADER HTML
+    fse.outputFile(`views/partials/${storeNameConvert}/header.hbs`, header)
+    .then(() => {
+      console.log('Header File has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
+
+    //FOOTER HTML
+    fse.outputFile(`views/partials/${storeNameConvert}/footer.hbs`, footer)
+    .then(() => {
+      console.log('Footer File has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
+
+    //MAIN HTML
+    fse.outputFile(`views/bodies/${storeNameConvert}/${pageNameConvert}/index.hbs`, HTML)
+    .then(() => {
+      console.log('Body Main File has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
+  }
+};
+exports.createHTMLFile = async (storeId, pageId, content) => {
+  const storeName = await storeService.findById(storeId)
+
+  //Get PageName
+  let queryPage = {
+    id: pageId,
+    store_id: storeId
+  }
+  const PageName = await getPagesByStoreIdAndId(queryPage)
+  let queryTemplate = {
+    id: storeName.template_id
+  }
+  const templateName = await templateService.getTemplateById(queryTemplate)
+  const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+  const pageNameConvert = PageName[0] ? URLParser.generateURL(PageName[0].name) : null;
+
+  // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
+  if (storeNameConvert && pageNameConvert) {
+    const HTML =
+      `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${storeName.name}</title>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+          <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+         
+      </head>
+      <style>
+        
+      </style>
+      <body >
+        
+      </body>
+      
+      </html>
+      `
+    fse.outputFile(`stores/${storeNameConvert}/${pageNameConvert}/index.html`, HTML)
+      .then(() => {
+        console.log('The file has been saved!');
+      })
+      .catch(err => {
+        console.error(err)
+      });
+
+
+  }
+};
+exports.removeHTMLFile = async (pageId) => {
+  let query = { id: pageId }
+  const storeResult = await FindPageByIdOnly(query)
+  const storeId = storeResult[0].store_id
+  const storeName = await storeService.findById(storeId)
+
+  //Get PageName
+  let queryPage = {
+    id: pageId,
+    store_id: storeId
+  }
+  const PageName = await getPagesByStoreIdAndId(queryPage)
+
+  const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+  const pageNameConvert = PageName[0] ? URLParser.generateURL(PageName[0].name) : null;
+
+  fse.rm(`stores/${storeNameConvert}/${pageNameConvert}`, { recursive: true, force: true })
+    .then(() => {
+      console.log('The file has been saved!');
+    })
+    .catch(err => {
+      console.error(err)
+    });
+}
+
+exports.renameHTMLFile = async (pageId, newName) => {
+  let query = { id: pageId }
+  const storeResult = await FindPageByIdOnly(query)
+  const storeId = storeResult[0].store_id
+  const storeName = await storeService.findById(storeId)
+
+  //Get PageName
+  let queryPage = {
+    id: pageId,
+    store_id: storeId
+  }
+  const PageName = await getPagesByStoreIdAndId(queryPage)
+
+  const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+  const pageNameConvert = PageName[0] ? URLParser.generateURL(PageName[0].name) : null;
+  const newPageNameConvert = URLParser.generateURL(newName)
+  if (`stores/${storeNameConvert}/${pageNameConvert}`) {
+    fse.rename(`stores/${storeNameConvert}/${pageNameConvert}`, `stores/${storeNameConvert}/${newPageNameConvert}`)
+      .then(() => {
+        console.log('The file has been saved!');
+      })
+      .catch(err => {
+        console.error(err)
+      });
+  }
+}
+
+var getPagesByStoreIdAndId = exports.getPagesByStoreIdAndId = async (query) => {
+  return DBHelper.getData("pages", query)
+}
 exports.getPageContentURL = async (pageId) => {
   try {
     const result = await db.query(`
@@ -116,3 +314,7 @@ exports.findPageById = async (storeId, pageId) => {
     return null;
   }
 };
+
+var FindPageByIdOnly = exports.FindPageByIdOnly = async (query) => {
+  return DBHelper.getData("pages", query)
+}
