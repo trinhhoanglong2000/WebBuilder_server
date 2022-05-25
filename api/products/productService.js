@@ -16,13 +16,13 @@ exports.createProduct = async (productObj) => {
     return DBHelper.insertData(productObj, "products", false)
 }
 exports.updateProduct = async (productObj) => {
-    return DBHelper.updateData(productObj,"products","id")
+    return DBHelper.updateData(productObj, "products", "id")
 }
 exports.deleteProduct = async (productObj) => {
-    return DBHelper.deleteData("products",productObj)
+    return DBHelper.deleteData("products", productObj)
 }
-exports.deleteProductRelative = async (name,productObj) => {
-    return DBHelper.deleteData(`${name}`,productObj)
+exports.deleteProductRelative = async (name, productObj) => {
+    return DBHelper.deleteData(`${name}`, productObj)
 }
 exports.findAll = async () => {
     try {
@@ -40,10 +40,25 @@ exports.findAll = async () => {
 
 exports.getProductsByStoreId = async (query) => {
     let condition = [];
-
-    condition.push({ store_id: query.store_id })
-    if (query.title)
-        condition.push({ title: { "OP.ILIKE": "%" + query.title + "%" } })
+    let arr = Object.keys(query)
+    let arr1 = Object.values(query)
+    //condition.push({ store_id: query.store_id })
+      // if (query.title)
+    //     condition.push({ title: { "OP.ILIKE": "%" + query.title + "%" } })
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] == "title" || arr[i] == "type") {
+            let queryTemp = {}
+            queryTemp[`${arr[i]}`] = { "OP.ILIKE": "%" + arr1[i] + "%" }
+            condition.push(queryTemp)
+        }
+        else {
+            let queryTemp = {}
+            queryTemp[`${arr[i]}`] = arr1[i]
+            condition.push(queryTemp)
+        }
+     
+    }
+  
     let config = {
         where: {
             "OP.AND": condition,
@@ -59,14 +74,14 @@ exports.getProductsByStoreId = async (query) => {
     //     limit : query.limit,
     //     offset: query.offset
     // }
-    return DBHelper.FindAll("products",config)
+    return DBHelper.FindAll("products", config)
 }
 
 exports.findById = async (id) => {
     let query = {
-        id : id
+        id: id
     }
-    return DBHelper.getData("products",query)
+    return DBHelper.getData("products", query)
 }
 exports.getProductsByCollectionId = async (collectionId, data) => {
     try {
