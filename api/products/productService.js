@@ -39,13 +39,26 @@ exports.findAll = async () => {
 }
 
 exports.getProductsByStoreId = async (query) => {
+    let condition = [];
+
+    condition.push({ store_id: query.store_id })
+    if (query.title)
+        condition.push({ title: { "OP.ILIKE": "%" + query.title + "%" } })
     let config = {
         where: {
-            store_id : query.store_id
+            "OP.AND": condition,
         },
-        limit : query.limit,
+        limit: query.limit,
         offset: query.offset
     }
+
+    // let config = {
+    //     where: {
+    //         store_id : query.store_id
+    //     },
+    //     limit : query.limit,
+    //     offset: query.offset
+    // }
     return DBHelper.FindAll("products",config)
 }
 

@@ -7,7 +7,6 @@ const authenticator = require('../../middleware/authentication');
 
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
-
 /* POST create account. */
 //router.post('/:id/create', productController.createProduct);
 router.put('/:id', productController.updateProduct);
