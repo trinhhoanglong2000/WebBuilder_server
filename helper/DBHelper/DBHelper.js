@@ -84,6 +84,11 @@ exports.insertData = async (data, name, needId) => {
         // console.log(data)
         let result
         if (needId) {
+            console.log(`
+            INSERT INTO ${name} (${arr})
+            VALUES (${arr1})
+            RETURNING id
+            `)
             result = await db.query(`
             INSERT INTO ${name} (${arr})
             VALUES (${arr1})

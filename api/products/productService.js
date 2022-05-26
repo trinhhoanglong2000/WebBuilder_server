@@ -7,13 +7,14 @@ exports.createProduct = async (productObj) => {
     productObj.id = uuidv4();
 
     // upload richtext description to s3
-    const body = JSON.stringify(productObj.description, null, '/t');
-    const key = `richtext/product/${productObj.id}`
-    const rest = await fileService.uploadTextFileToS3(body, key, 'json');
+    if (productObj.description) {
+        const body = JSON.stringify(productObj.description, null, '/t');
+        const key = `richtext/product/${productObj.id}`
+        const rest = await fileService.uploadTextFileToS3(body, key, 'json');
 
-    productObj.description = rest.Location;
-
-    return DBHelper.insertData(productObj, "products", false)
+        productObj.description = rest.Location;
+    }
+    return DBHelper.insertData(productObj, "products", true)
 }
 exports.updateProduct = async (productObj) => {
     return DBHelper.updateData(productObj, "products", "id")
@@ -40,10 +41,14 @@ exports.findAll = async () => {
 
 exports.getProductsByStoreId = async (query) => {
     let condition = [];
+    let store_Query = {
+        store_id : query.store_id
+    }
+    delete query["store_id"]
     let arr = Object.keys(query)
     let arr1 = Object.values(query)
     //condition.push({ store_id: query.store_id })
-      // if (query.title)
+    // if (query.title)
     //     condition.push({ title: { "OP.ILIKE": "%" + query.title + "%" } })
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] == "title" || arr[i] == "type") {
@@ -56,12 +61,12 @@ exports.getProductsByStoreId = async (query) => {
             queryTemp[`${arr[i]}`] = arr1[i]
             condition.push(queryTemp)
         }
-     
+
     }
-  
+
     let config = {
         where: {
-            "OP.AND": condition,
+            "OP.AND": [store_Query,{"OP.OR" : condition}],
         },
         limit: query.limit,
         offset: query.offset

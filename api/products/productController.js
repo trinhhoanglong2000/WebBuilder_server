@@ -13,6 +13,9 @@ exports.updateProduct = async (req, res) => {
     if (productQuery) {
         delete productQuery["update"]
     }
+    else {
+        productQuery = {}
+    }
     productQuery.id = productId
 
     const newProduct = await productService.updateProduct(productQuery)
