@@ -70,6 +70,26 @@ exports.uploadImageToS3 = async (req, res) => {
     
 }
 
+exports.uploadProductImageToS3 = async (req, res) => {
+    const data = req.body.data;
+
+    const result = await fileService.postImage('products-image', data);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "post object successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+
 exports.deleteObject = async (req, res) => {
     const url = req.body.url;
 

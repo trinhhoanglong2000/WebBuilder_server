@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const { v4: uuidv4 } = require('uuid');
 
 exports.uploadTextFileToS3 = async (body, key, type) => {
 
@@ -18,6 +19,31 @@ exports.uploadTextFileToS3 = async (body, key, type) => {
     return null;
   }
 };
+
+exports.postImage = async (folder, data) => {
+  try {
+    const result = await data.reduce(async (list, item) => {
+      const buf = Buffer.from(item.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+      const type = item.split(';')[0].split('/')[1];
+
+      const res = await s3.upload({
+        Body: buf,
+        Bucket: "ezmall-bucket",
+        ContentEncoding: 'base64',
+        ContentType: `image/${type}`,
+        ACL: 'public-read',
+        Key: `${folder}/${uuidv4()}.${type}`
+      }).promise();
+
+      return list.push(res.Location)
+    }, Promise.resolve([]))
+
+    return result;
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
 
 exports.deleteObject = async (url) => {
   try {
