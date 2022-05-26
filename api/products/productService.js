@@ -14,7 +14,7 @@ exports.createProduct = async (productObj) => {
 
         productObj.description = rest.Location;
     }
-    return DBHelper.insertData(productObj, "products", true)
+    return DBHelper.insertData(productObj, "products", false, "id")
 }
 exports.updateProduct = async (productObj) => {
     return DBHelper.updateData(productObj, "products", "id")

@@ -59,9 +59,11 @@ exports.deleteData = async (name, data = null) => {
         return null;
     }
 }
-exports.insertData = async (data, name, needId) => {
+exports.insertData = async (data, name, needId, returnData = "id") => {
     try {
-        // create
+        let returnDataQuery = returnData? `RETURNING ${returnData}` : ""
+       
+        // create\
         if (needId) {
             data.id = uuidv4()
         }
@@ -83,23 +85,16 @@ exports.insertData = async (data, name, needId) => {
         }
         // console.log(data)
         let result
-        if (needId) {
-            console.log(`
-            INSERT INTO ${name} (${arr})
-            VALUES (${arr1})
-            RETURNING id
-            `)
-            result = await db.query(`
-            INSERT INTO ${name} (${arr})
-            VALUES (${arr1})
-            RETURNING id
-            `,);
-        } else {
-            result = await db.query(`
-            INSERT INTO ${name} (${arr})
-            VALUES (${arr1})
-            `,);
-        }
+        console.log(`
+        INSERT INTO ${name} (${arr})
+        VALUES (${arr1})
+        ${returnDataQuery}
+        `)
+        result = await db.query(`
+        INSERT INTO ${name} (${arr})
+        VALUES (${arr1})
+        ${returnDataQuery}
+        `,);
 
         return result;
     } catch (error) {
