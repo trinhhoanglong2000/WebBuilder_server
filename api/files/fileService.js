@@ -35,7 +35,8 @@ exports.postImage = async (folder, data) => {
         Key: `${folder}/${uuidv4()}.${type}`
       }).promise();
 
-      return list.push(res.Location)
+      list.push(res.Location);
+      return list;
     }, Promise.resolve([]))
 
     return result;
