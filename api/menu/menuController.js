@@ -32,10 +32,10 @@ exports.getMenuItem = async (req, res) => {
         menu = menu[0];
         let item = await menuItemService.getMenuItemByMenuId({ menu_id: menu.id })
         menu.listMenuItem = item;
-        res.status(http.Created).json({
-            statusCode: http.Created,
+        res.status(http.Success).json({
+            statusCode: http.Success,
             data: menu,
-            message: "Create menu successfully!"
+            message: "Get menu successfully!"
         })
     }
     else {
