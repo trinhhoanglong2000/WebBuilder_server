@@ -75,8 +75,8 @@ exports.uploadProductImageToS3 = async (req, res) => {
 
     const result = await fileService.postImage('products-image', data);
     if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
+        res.status(http.Created).json({
+            statusCode: http.Created,
             data: result,
             message: "post object successfully!"
         })

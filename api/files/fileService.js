@@ -22,10 +22,9 @@ exports.uploadTextFileToS3 = async (body, key, type) => {
 
 exports.postImage = async (folder, data) => {
   try {
-    const result = await data.reduce(async (list, item) => {
+    const result = await Promise.all(data.map(async (item) => {
       const buf = Buffer.from(item.replace(/^data:image\/\w+;base64,/, ""), 'base64');
       const type = item.split(';')[0].split('/')[1];
-
       const res = await s3.upload({
         Body: buf,
         Bucket: "ezmall-bucket",
@@ -35,9 +34,8 @@ exports.postImage = async (folder, data) => {
         Key: `${folder}/${uuidv4()}.${type}`
       }).promise();
 
-      list.push(res.Location);
-      return list;
-    }, Promise.resolve([]))
+      return res.Location;
+    }))
 
     return result;
   } catch (error) {
