@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Pet store</title>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+          <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+          <link id="Header" href="http://localhost:5000/css/template-default/Header.css" rel="stylesheet">
+    <link id="Cart" href="http://localhost:5000/css/template-default/Cart.css" rel="stylesheet">
+    <link id="Main" href="http://localhost:5000/css/template-default/Main.css" rel="stylesheet">
+    <link id="Footer" href="http://localhost:5000/css/template-default/Footer.css" rel="stylesheet">
+    <link id="Product List" href="http://localhost:5000/css/template-default/Product List.css" rel="stylesheet">
+    
+      </head>
+      <style>
+        * { box-sizing: border-box; } body {margin: 0;}#idaod{text-align:center;}strong{font-weight:bold;}#izctj{text-align:center;font-weight:bold;padding:0px;}#i4z8h{text-align:center;font-weight:bold;padding:0px;}#iywjg{padding-top:71px;padding-right:0px;padding-bottom:100px;}
+      </style>
+      <body >
+          <nav theme="white" logosize="medium" logoSize="medium" name="header" store-id="621b5a807ea079a0f7351fb8" class="navbar navbar-expand-md border-bottom border-dark"><div class="container-fluid align-items-center"><button type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><i class="fa fa-bars"></i></button><a href="#" class="navbar-brand text-uppercase font-weight-bold"><img src="https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/assets/621b5a807ea079a0f7351fb8.jpeg" class="img-thumbnail navbar"/><h4 class="d-none">Store name</h4></a><div class="d-block d-md-none"><i class="fa fa-search"></i><i class="fa fa-shopping-bag"></i></div><div id="navbarSupportedContent-2" class="collapse navbar-collapse"><ul class="navbar-nav"><li class="nav-item"><a href="#" class="nav-link p-1"> Products</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Cart</a></li><li class="nav-item"><a href="#" class="nav-link p-1"> Payment</a></li></ul></div><div class="d-none d-md-block"><i class="fa fa-search icon-header"></i><i class="fa fa-shopping-bag icon-header"></i></div></div></nav><div ez-mall-type="cart" class="" id="iywjg"><h2 class="" id="izctj">SHOPPING CART</h2><h2 class="container" id="i4z8h">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="form-check">
+                                            <div class="row">
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <input class="form-check-input" type="checkbox" value="" id="1">
+                                                </div>
+
+                                                Tất cả sản phẩm
+
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center justify-content-center"> Đơn giá</div>
+
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center justify-content-center">Số lượng</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center justify-content-center">Thành tiền</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex justify-content-center align-items-center" style="">
+                                            <button type="button" class="btn fa fa-trash  text-danger" data-toggle="button"
+                                                aria-pressed="false" autocomplete="off" style="height: 29px;padding: 0px 10px;">
+                                            </button>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th class="name">
+                                        <div class="form-check">
+                                            <div class="row">
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <input class="form-check-input" type="checkbox" value="" id="1">
+                                                </div>
+                                                <div class="col-md-11 col-8">
+                                                    <div class="row">
+                                                        <div class="col-xl-4 row d-flex justify-content-center">
+                                                            <img src="https://dummyimage.com/150x150/000/fff" alt="Image"
+                                                                style="width: 100px;">
+                                                        </div>
+                                                        <div class="col-xl-8 row d-flex flex-column justify-content-center">
+                                                            <div class="p-0 justify-content-center text-center"> Tên của sản phẩm 1</div>
+                                                            <div class="p-0 justify-content-center text-center"> Loại của sản phẩm 1</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td class="price">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">
+                                            100
+                                        </div>
+                                    </td>
+                                    <td class="quantity">
+                                        <div class=" d-flex justify-content-center align-items-center" style="height:100px">
+                                            <input type="number" id="typeNumber" class="form-control" value="1"
+                                                style="min-width: 70px; width: 70px;" />
+                                        </div>
+                                    </td>
+                                    <td class="total  justify-content-center align-items-center">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">xxx</div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">
+                                            <button type="button" class="btn fa fa-trash" data-toggle="button" aria-pressed="false"
+                                                autocomplete="off" style="height: 29px;padding: 0px 10px;">
+                                            </button>
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                                <tr>
+                                    <th class="name">
+                                        <div class="form-check">
+                                            <div class="row">
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <input class="form-check-input" type="checkbox" value="" id="1">
+                                                </div>
+                                                <div class="col-md-11 col-8">
+                                                    <div class="row">
+                                                        <div class="col-xl-4 row d-flex justify-content-center">
+                                                            <img src="https://dummyimage.com/150x150/000/fff" alt="Image"
+                                                                style="width: 100px;">
+                                                        </div>
+                                                        <div class="col-xl-8 row d-flex flex-column justify-content-center">
+                                                            <div class="p-0 justify-content-center text-center"> Tên của sản phẩm 1</div>
+                                                            <div class="p-0 justify-content-center text-center"> Loại của sản phẩm 1</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td class="price">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">
+                                            100
+                                        </div>
+                                    </td>
+                                    <td class="quantity">
+                                        <div class=" d-flex justify-content-center align-items-center" style="height:100px">
+                                            <input type="number" id="typeNumber" class="form-control" value="1"
+                                                style="min-width: 70px; width: 70px;" />
+                                        </div>
+                                    </td>
+                                    <td class="total  justify-content-center align-items-center">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">xxx</div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">
+                                            <button type="button" class="btn fa fa-trash" data-toggle="button" aria-pressed="false"
+                                                autocomplete="off" style="height: 29px;padding: 0px 10px;">
+                                            </button>
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                                <tr>
+                                    <th class="name">
+                                        <div class="form-check">
+                                            <div class="row">
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <input class="form-check-input" type="checkbox" value="" id="1">
+                                                </div>
+                                                <div class="col-md-11 col-8">
+                                                    <div class="row">
+                                                        <div class="col-xl-4 row d-flex justify-content-center">
+                                                            <img src="https://dummyimage.com/150x150/000/fff" alt="Image"
+                                                                style="width: 100px;">
+                                                        </div>
+                                                        <div class="col-xl-8 row d-flex flex-column justify-content-center">
+                                                            <div class="p-0 justify-content-center text-center"> Tên của sản phẩm 1</div>
+                                                            <div class="p-0 justify-content-center text-center"> Loại của sản phẩm 1</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td class="price">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">
+                                            100
+                                        </div>
+                                    </td>
+                                    <td class="quantity">
+                                        <div class=" d-flex justify-content-center align-items-center" style="height:100px">
+                                            <input type="number" id="typeNumber" class="form-control" value="1"
+                                                style="min-width: 70px; width: 70px;" />
+                                        </div>
+                                    </td>
+                                    <td class="total  justify-content-center align-items-center">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">xxx</div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="d-flex justify-content-center align-items-center" style="height:100px">
+                                            <button type="button" class="btn fa fa-trash" data-toggle="button" aria-pressed="false"
+                                                autocomplete="off" style="height: 29px;padding: 0px 10px;">
+                                            </button>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr>
+                        <div class="row px-2 py-3" style="font-size: 16px; font-family: "Segoe UI";">
+                            <div class="col-3  d-flex align-items-center">
+                                <div class="form-check">
+                                    <div class="row font-weight-bold  d-flex align-items-center">
+                                        <div class="col-auto d-flex align-items-center">
+                                            <input class="form-check-input" type="checkbox" value="" id="1">
+                                        </div>
+                                        CHỌN TẤT CẢ
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 font-weight-bold d-flex align-items-center ">
+                                    <button type="button" class="btn fa fa-trash font-weight-bold" data-toggle="button" aria-pressed="false"
+                                        autocomplete="off" style="height: 29px;padding: 0px 10px;">
+                                        BỎ CHỌN
+                                    </button>
+                            </div>
+                            <div class="col-4 d-flex align-items-center font-weight-bold  justify-content-center">
+                                Tổng: XXX . XXX . XXX
+                            </div>
+                            <div class="col-3  d-flex align-items-center justify-content-end ">
+                                <button type="button" class="btn btn-warning btn-lg text-light font-weight-bolder">Mua hàng</button>
+                            </div>
+                        </div>
+                        <hr>
+                        </h2></div><main class="main-content"><div name="products-collections" data-ez-mall-collection="6812c591-bfd0-4239-a5d6-d2fed54aad3b" class="container product-section"><h2 id="idaod">Trending Products</h2><div>                <div id="A3e811c59-539f-43d7-833a-1e04900af568" class="carousel slide" data-bs-ride="carousel" data-type = "products-collections" >
+                    <!-- Carousel indicators -->
+
+                    <!-- Wrapper for carousel items -->
+                    <div class="carousel-inner">
+                        <div class="item carousel-item active">
+                            <div class="row">
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+
+                                        </div>
+                                        <div class="thumb-content flex-column">
+                                            <h4>Apple iPad</h4>
+                                            <p class="item-price"><strike>$400.00</strike> <span>$369.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Sony Headphone</h4>
+                                            <p class="item-price"><strike>$25.00</strike> <span>$23.99</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Macbook Air</h4>
+                                            <p class="item-price"><strike>$899.00</strike> <span>$649.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-half-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Nikon DSLR</h4>
+                                            <p class="item-price"><strike>$315.00</strike> <span>$250.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item carousel-item">
+                            <div class="row">
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Sony Play Station</h4>
+                                            <p class="item-price"><strike>$289.00</strike> <span>$269.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Macbook Pro</h4>
+                                            <p class="item-price"><strike>$1099.00</strike> <span>$869.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-half-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Bose Speaker</h4>
+                                            <p class="item-price"><strike>$109.00</strike> <span>$99.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Samsung Galaxy S8</h4>
+                                            <p class="item-price"><strike>$599.00</strike> <span>$569.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item carousel-item">
+                            <div class="row">
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Apple iPhone</h4>
+                                            <p class="item-price"><strike>$369.00</strike> <span>$349.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Canon DSLR</h4>
+                                            <p class="item-price"><strike>$315.00</strike> <span>$250.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Google Pixel</h4>
+                                            <p class="item-price"><strike>$450.00</strike> <span>$418.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="thumb-wrapper">
+                                        <div class="img-box">
+                                            <img src="https://dummyimage.com/600x400/55595c/fff"
+                                                class="img-responsive img-fluid" alt=""/>
+                                        </div>
+                                        <div class="thumb-content">
+                                            <h4>Apple Watch</h4>
+                                            <p class="item-price"><strike>$350.00</strike> <span>$330.00</span></p>
+                                            <div class="star-rating">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star"></i></li>
+                                                    <li class="list-inline-item"><i class="fa fa-star-o"></i></li>
+                                                </ul>
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Carousel controls -->
+
+                    <button class="carousel-control-prev carousel-control left" type="button" data-bs-target="#A3e811c59-539f-43d7-833a-1e04900af568" data-bs-slide="prev">
+                        <i class="fa fa-angle-left"></i>
+                      </button>
+                      <button class="carousel-control-next carousel-control right" type="button" data-bs-target="#A3e811c59-539f-43d7-833a-1e04900af568" data-bs-slide="next">
+                        <i class="fa fa-angle-right"></i>
+                      </button>
+                </div></div></div></main><footer theme="white" name="footer" class="footer-section"><hr/><div class="row footer-navigation"><div menu-collection="9e0ff97a-9211-4035-883f-0d66375e5d4d" class="col-md"><h5>Quick links</h5><ul class="quicklinks-menu"><li><a href="https://www.youtube.com/">Search</a></li><li><a href="https://www.youtube.com/">Tern of service</a></li><li><a href="https://www.youtube.com/">Refund policy</a></li></ul></div><div class="col-md"><h5>Heading</h5><p>Share your store detail, promotion or brand contents with your customers.</p></div></div><hr/><div class="text-center text-md-start pb-2">
+          <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+          <i class="fa fa-envelope-o" aria-hidden="true"></i>
+          <i class="fa fa-facebook-square" aria-hidden="true"></i>
+          </div></footer>
+      </body>
+      <script type="text/javascript" src="http://localhost:5000/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/js/template-default/Cart.js" id="Cart" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/js/template-default/Main.js" id="Main" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/js/template-default/Footer.js" id="Footer" class="ScriptClass"></script>
+    <script type="text/javascript" src="http://localhost:5000/js/template-default/Product List.js" id="Product List" class="ScriptClass"></script>
+    
+
+      </html>
+      
