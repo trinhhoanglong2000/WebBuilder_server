@@ -13,6 +13,9 @@ exports.create = async (req, res) => {
     }
     const page = await pageService.createPage(pageBody);
     if (page) {
+        await pageService.createHTMLFile(pageBody.store_id,page.rows[0].id)
+    }
+    if (page) {
         res.status(http.Created).json({
             statusCode: http.Created,
             data: page,
@@ -29,7 +32,9 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     const pageBody = req.body;
+    await pageService.renameHTMLFile(req.body.id,req.body.name)
     const result = await pageService.updatePage(pageBody);
+  
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -47,7 +52,10 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     const query = { id: req.params.id };
+    await pageService.removeHTMLFile(req.params.id)
+    
     const result = await pageService.deletePage(query);
+  
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

@@ -15,5 +15,5 @@ exports.getTemplateById = async (query) => {
     return DBHelper.getData("template",query)
 }
 exports.insertTemplateUser = async (query) => {
-    return DBHelper.insertData(query,"account_template",false)
+    return DBHelper.insertData(query,"account_template",false,null)
 }

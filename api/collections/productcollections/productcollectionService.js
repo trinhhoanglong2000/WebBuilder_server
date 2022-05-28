@@ -97,7 +97,7 @@ exports.getData = async (query) => {
 }
 
 exports.createProductandCollectionLink = async (query) => {
-    return DBHelper.insertData(query, "product_productcollection", false)
+    return DBHelper.insertData(query, "product_productcollection", false,null)
 }
 
 exports.deleteProductandCollectionLink = async (query) => {
@@ -105,7 +105,7 @@ exports.deleteProductandCollectionLink = async (query) => {
 }
 
 exports.createProductCollection = async (query) => {
-    return DBHelper.insertData(query,"productcollections",true)
+    return DBHelper.insertData(query,"productcollections",true,"id")
 }
 exports.getProductCollectionByProductId = async(id) => {
   

@@ -42,9 +42,9 @@ router.get('/', async (req, res, next) => {
             next()
             return
         }
-        if (!fse.existsSync(`stores/${subdomain[0]}`)) {
+        if (!fse.existsSync(`views/bodies/${subdomain[0]}`)) {
             res.status(http.NotFound).json({
-                statusCode: http.ServerError,
+                statusCode: http.NotFound,
                 message: "Not Found!"
             })
             return
@@ -54,10 +54,17 @@ router.get('/', async (req, res, next) => {
             if (wordPath[0] === "/") {
                 wordPath[0] = "/home"
             }
-            res.sendFile("index.html", {
-                root: __dirname + `/${subdomain[0]}${wordPath[0]}`
+            // res.sendFile("index.html", {
+            //     root: __dirname + `/${subdomain[0]}${wordPath[0]}`
+            // })
+            res.render(`bodies/${subdomain[0]}${wordPath[0]}/index`,
+            {
+                header : function() { return `${subdomain[0]}/header`},
+                footer : function() { return `${subdomain[0]}/footer`},
+                config : function() { return `${subdomain[0]}/config`}
             })
         }
+       
     }
 
 });

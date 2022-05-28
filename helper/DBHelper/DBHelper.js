@@ -59,9 +59,11 @@ exports.deleteData = async (name, data = null) => {
         return null;
     }
 }
-exports.insertData = async (data, name, needId) => {
+exports.insertData = async (data, name, needId, returnData = "id") => {
     try {
-        // create
+        let returnDataQuery = returnData? `RETURNING ${returnData}` : ""
+       
+        // create\
         if (needId) {
             data.id = uuidv4()
         }
@@ -83,18 +85,16 @@ exports.insertData = async (data, name, needId) => {
         }
         // console.log(data)
         let result
-        if (needId) {
-            result = await db.query(`
-            INSERT INTO ${name} (${arr})
-            VALUES (${arr1})
-            RETURNING id
-            `,);
-        } else {
-            result = await db.query(`
-            INSERT INTO ${name} (${arr})
-            VALUES (${arr1})
-            `,);
-        }
+        console.log(`
+        INSERT INTO ${name} (${arr})
+        VALUES (${arr1})
+        ${returnDataQuery}
+        `)
+        result = await db.query(`
+        INSERT INTO ${name} (${arr})
+        VALUES (${arr1})
+        ${returnDataQuery}
+        `,);
 
         return result;
     } catch (error) {
@@ -214,6 +214,7 @@ exports.FindAll = async (name, data = null) => {
         let select = "*"
         let limit = ""
         let ofset = ""
+        let order = ""
         let from = `FROM ${name}`
         if (data.join) {
             let subFrom = `FROM ${name} `
@@ -241,6 +242,18 @@ exports.FindAll = async (name, data = null) => {
         if (data.offset) {
             ofset = `OFFSET ${data.offset}`
         }
+        if (data.order){
+        
+            let arr = Object.keys(data.order[0])
+            let arr1 = Object.values(data.order[0])
+            order = `ORDER BY ${arr[0]} ${arr1[0]}`
+
+            for (let i = 1; i < arr.length; i++){
+                let arr = Object.keys(data.order[i])
+                let arr1 = Object.values(data.order[i])
+                order += `, ${arr[0]} ${arr1[0]}`
+            }
+        }
         // id = "123"
         // price > 123
         // newdata = {
@@ -256,6 +269,7 @@ exports.FindAll = async (name, data = null) => {
         SELECT ${select}
         ${from}
         ${where}
+        ${order}
         ${limit}
         ${ofset}
         `

@@ -31,6 +31,63 @@ exports.createStore = async (req, res) => {
     }
 }
 
+exports.getCustomType = async (req, res) => {
+    // create new store
+    const storeId = req.params.id;
+    let query = {
+        store_id : storeId,
+        custom_type : true
+    }
+    const newStore = await productService.getAllCustomType(query)
+    let returnData =[]
+    if (newStore){
+        for (let i = 0; i < newStore.length; i++){
+            returnData.push(newStore[i].type)
+        }
+    }
+    if (newStore) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: returnData,
+            message: "Create store successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getVendor = async (req, res) => {
+    // create new store
+    const storeId = req.params.id;
+    let query = {
+        store_id : storeId,
+    }
+    const newStore = await productService.getVendor(query)
+    let returnData =[]
+    if (newStore){
+        for (let i = 0; i < newStore.length; i++){
+            returnData.push(newStore[i].vendor)
+        }
+    }
+    if (newStore) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: returnData,
+            message: "Create store successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
 exports.getAllStores = async (req, res) => {
     const result = await storeService.findAll();
     if (result) {
