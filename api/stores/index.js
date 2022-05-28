@@ -16,7 +16,8 @@ router.get('/:id/store-components', authenticator.Authenticate, storeController.
 router.get('/:id/menu', storeController.getMenuByStoreId);
 router.get('/:id/list-menu-items', storeController.getListMenuItems);
 router.get('/:id/init-data', authenticator.Authenticate, storeController.getInitDataStore);
-
+router.get('/:id/products/custom-type',authenticator.Authenticate, storeController.getCustomType)
+router.get('/:id/products/vendor',authenticator.Authenticate, storeController.getVendor)
 /* POST create account. */
 router.post('/', authenticator.Authenticate, storeController.createStore);
 router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);

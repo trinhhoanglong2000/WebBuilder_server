@@ -42,7 +42,7 @@ exports.findAll = async () => {
 exports.getProductsByStoreId = async (query) => {
     let condition = [];
     let store_Query = {
-        store_id : query.store_id
+        store_id: query.store_id
     }
     delete query["store_id"]
     let arr = Object.keys(query)
@@ -65,8 +65,8 @@ exports.getProductsByStoreId = async (query) => {
     }
 
     let conditionQuery = [store_Query]
-    if (condition.length > 0){
-        conditionQuery.push({"OP.OR" : condition})
+    if (condition.length > 0) {
+        conditionQuery.push({ "OP.OR": condition })
     }
     let config = {
         where: {
@@ -123,4 +123,38 @@ exports.getProductsByCollectionId = async (collectionId, data) => {
         console.log(error);
         return null;
     }
+}
+
+
+exports.getAllCustomType = async (query) => {
+    try {
+        console.log(`
+        SELECT DISTINCT type
+        FROM products
+        WHERE store_id = ${query.store_id} AND custom_type = ${query.custom_type}
+        ORDER BY type
+    `)
+        const result = await db.query(`
+                SELECT DISTINCT type
+                FROM products
+                WHERE store_id = '${query.store_id}' AND custom_type = ${query.custom_type}
+                ORDER BY type
+            `)
+        return result.rows;
+
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.getVendor = async (query) => {
+    let config = {
+        select : "DISTINCT vendor",
+        where : { store_id : query.store_id},
+        order : [{ vendor : "ASC"}]
+    }
+
+    return DBHelper.FindAll("products",config)
 }
