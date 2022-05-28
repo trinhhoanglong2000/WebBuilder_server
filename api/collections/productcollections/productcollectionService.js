@@ -40,6 +40,13 @@ exports.createCollection = async (collectionObj) => {
     }
 }
 exports.updateProductCollection = async (query) => {
+    if (query.description && typeof query.description === 'object') {
+        const body = JSON.stringify(query.description, null, '/t');
+        const key = `richtext/productcollection/${query.id}`
+        const rest = await fileService.uploadTextFileToS3(body, key, 'json');
+
+        query.description = rest.Location;
+    }
     return DBHelper.updateData(query,"productcollections","id")
 }
     
@@ -105,7 +112,17 @@ exports.deleteProductandCollectionLink = async (query) => {
 }
 
 exports.createProductCollection = async (query) => {
-    return DBHelper.insertData(query,"productcollections",true,"id")
+    query.id = uuidv4();
+
+    // upload richtext description to s3
+    if (query.description) {
+        const body = JSON.stringify(query.description, null, '/t');
+        const key = `richtext/productcollection/${query.id}`
+        const rest = await fileService.uploadTextFileToS3(body, key, 'json');
+
+        query.description = rest.Location;
+    }
+    return DBHelper.insertData(query,"productcollections",false,"id")
 }
 exports.getProductCollectionByProductId = async(id) => {
   

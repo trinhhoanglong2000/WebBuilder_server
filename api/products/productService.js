@@ -17,6 +17,13 @@ exports.createProduct = async (productObj) => {
     return DBHelper.insertData(productObj, "products", false, "id")
 }
 exports.updateProduct = async (productObj) => {
+    if (productObj.description && typeof productObj.description === 'object') {
+        const body = JSON.stringify(productObj.description, null, '/t');
+        const key = `richtext/product/${productObj.id}`
+        const rest = await fileService.uploadTextFileToS3(body, key, 'json');
+
+        productObj.description = rest.Location;
+    }
     return DBHelper.updateData(productObj, "products", "id")
 }
 exports.deleteProduct = async (productObj) => {
