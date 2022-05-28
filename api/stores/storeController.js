@@ -453,7 +453,6 @@ exports.createProduct = async (req, res) => {
     //Create Product
     const newProduct = await productService.createProduct(productQuery);
     let productId = newProduct.rows[0].id
-
     //Create Collection
     if (collectionQuery) {
         for (let i = 0; i < collectionQuery.length; i++) {

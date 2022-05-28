@@ -40,7 +40,7 @@ exports.createCollection = async (collectionObj) => {
     }
 }
 exports.updateProductCollection = async (query) => {
-    if (query.description && typeof query.description === 'object') {
+    if (query.description) {
         const body = JSON.stringify(query.description, null, '/t');
         const key = `richtext/productcollection/${query.id}`
         const rest = await fileService.uploadTextFileToS3(body, key, 'json');

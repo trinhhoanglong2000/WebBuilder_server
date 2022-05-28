@@ -17,7 +17,7 @@ exports.createProduct = async (productObj) => {
     return DBHelper.insertData(productObj, "products", false, "id")
 }
 exports.updateProduct = async (productObj) => {
-    if (productObj.description && typeof productObj.description === 'object') {
+    if (productObj.description) {
         const body = JSON.stringify(productObj.description, null, '/t');
         const key = `richtext/product/${productObj.id}`
         const rest = await fileService.uploadTextFileToS3(body, key, 'json');

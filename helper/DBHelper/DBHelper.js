@@ -3,7 +3,6 @@ const db = require("../../database/index");
 const { v4: uuidv4 } = require('uuid');
 
 exports.updateData = async (data, name, condition) => {
-    console.log(uuidv4())
     let arr = Object.keys(data)
     let conditionArr
     for (var i = 0; i < arr.length; i++) {
@@ -12,6 +11,7 @@ exports.updateData = async (data, name, condition) => {
             conditionArr = arr.splice(i, 1);
         }
     }
+    arr = Object.keys(data)
     try {
 
         // const result = await db.query(`
@@ -22,6 +22,16 @@ exports.updateData = async (data, name, condition) => {
         // from source AS j
         // where account.id = j.id;
         //     `);
+        console.log(`
+        with jsondata(jdata) as (
+            values ('${JSON.stringify(data)}'::jsonb)
+        )
+        update ${name}
+        set (${arr}) = (select ${arr}
+            from jsonb_populate_record(NULL::${name}, to_jsonb(${name}) || jdata))
+        from jsondata
+            where ${name}.${conditionArr[0]} = (jdata->>'${conditionArr[0]}')::text;
+            `)
         const result = await db.query(`
         with jsondata(jdata) as (
             values ('${JSON.stringify(data)}'::jsonb)
@@ -32,6 +42,7 @@ exports.updateData = async (data, name, condition) => {
         from jsondata
             where ${name}.${conditionArr[0]} = (jdata->>'${conditionArr[0]}')::text;
             `);
+
         return result;
     } catch (error) {
         console.log(error);
