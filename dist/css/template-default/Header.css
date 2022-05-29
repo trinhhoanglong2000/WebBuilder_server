@@ -47,26 +47,9 @@
     max-width: 100px;
 }
 
-@media only screen and (max-width: 767px) {
-    [name="header"] .offcanvas a:hover {
-        color: black !important;
-        background-color: #BBB;
-    }
-
-    [name="header"] .offcanvas li {
-        width: 100%; 
-    }
-
-    [name="header"].navbar i {
-        font-size: 15px;
-        padding-left: 1vw;
-        padding-right: 1vw;
-    }
-
-    [name="header"].navbar a:hover {
-        color: black !important;
-        background-color: #BBB;
-    }
+[name="header"].navbar i.fa-shopping-bag span {
+    padding: 0.25em 0.25em;
+    font-size: .6em;
 }
 
 /* Css header trait */

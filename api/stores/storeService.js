@@ -100,7 +100,7 @@ exports.getStoreComponents = async (storeId) => {
 }
 
 
-exports.getLogo = async (id) => {
+exports.getStoreLogoById = async (id) => {
     try {
         const result = await db.query(`
             SELECT logo_url 
@@ -113,6 +113,21 @@ exports.getLogo = async (id) => {
         return null;
     }
 }
+
+exports.getStoreNameById = async (id) => {
+    try {
+        const result = await db.query(`
+            SELECT name 
+            FROM stores 
+            WHERE (id = '${id}')
+        `)
+        return result.rows[0];
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 exports.getTemplate = async (id) => {
     let config = {
         join: {

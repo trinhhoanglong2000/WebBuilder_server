@@ -17,7 +17,7 @@ async function CarouselsGenerateCodeItem(e) {
 }
 
 function Render(data,itemID,e){
-  const defaultData = [
+  const defaultData = [ 
     {
       image: "https://dummyimage.com/1980x1080/55595c/ffffff",
       caption: "Image banner",
