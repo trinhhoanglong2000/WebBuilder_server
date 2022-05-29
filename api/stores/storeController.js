@@ -10,12 +10,33 @@ const menuItemService = require('../menuItem/menuItemService');
 const http = require('../../const');
 const DBHelper = require('../../helper/DBHelper/DBHelper');
 const { createAccountWithSocialLogin } = require('../accounts/accountService');
-
+const URLParser = require('../../helper/common/index')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
     storeObj.user_id = req.user.id;
     const newStore = await storeService.createStore(storeObj);
+    
+    const storeId = newStore ? newStore.rows[0].id : ""
+    // CREATE CONFIG fILE
+    URLParser.createConfigHTML(storeId)
+
+    //CREATE DEFAULT PAGE
+    let page = await pageService.createPage({store_id : storeId, name: "Home"});
+    if (page) {
+        await pageService.createHTMLFile(storeId,page.rows[0].id)
+    }
+
+    page = await pageService.createPage({store_id : storeId, name: "Products"});
+    if (page) {
+        await pageService.createHTMLFile(storeId,page.rows[0].id)
+    }
+
+    page = await pageService.createPage({store_id : storeId, name: "Cart"});
+    if (page) {
+        await pageService.createHTMLFile(storeId,page.rows[0].id)
+    }
+
     if (newStore) {
         res.status(http.Created).json({
             statusCode: http.Created,
