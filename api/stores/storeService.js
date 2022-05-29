@@ -5,11 +5,15 @@ const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 const URLParser = require('../../helper/common')
-
+const templateService = require('../template/templateService')
 exports.createStore = async (storeObj) => {
     if (storeObj.name) {
         storeObj.name = storeObj.name.trim();
         storeObj.store_link =  URLParser.generateURL(storeObj.name) + '.myeasymall.site';
+    }
+    let template = await templateService.getTemplate({name : "template-default"})
+    if (template){
+        storeObj.template_id = template[0].id
     }
     return DBHelper.insertData(storeObj, "stores", true)
 
