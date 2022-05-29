@@ -58,3 +58,17 @@ exports.deleteObject = async (url) => {
     return null;
   }
 }
+
+exports.deleteObjectByKey = async (key) => {
+  try {
+    const params = {
+      Bucket: "ezmall-bucket",
+      Key: key
+    }
+    const result = await s3.deleteObject(params).promise()
+    return result
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
