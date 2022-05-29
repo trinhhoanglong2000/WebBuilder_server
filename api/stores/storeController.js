@@ -36,6 +36,8 @@ exports.createStore = async (req, res) => {
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }
+    
+    //CREATE HEADER AND FOOTER
 
     if (newStore) {
         res.status(http.Created).json({
