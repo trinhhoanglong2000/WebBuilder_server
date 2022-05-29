@@ -3,6 +3,7 @@ const storeService = require('../stores/storeService');
 const templateService = require('../template/templateService')
 const AWS = require('aws-sdk');
 const URLParser = require('../../helper/common')
+const fileService = require('../files/fileService')
 
 const s3 = new AWS.S3();
 
@@ -18,12 +19,12 @@ exports.createPage = async (pageBody) => {
       Body: JSON.stringify("", null, '\t'),
       Bucket: "ezmall-bucket",
       ACL: 'public-read',
-      ContentType: 'text/txt',
-      Key: `pages/${pageBody.store_id}/${pageBody.id}.txt`
+      ContentType: 'text/json',
+      Key: `pages/${pageBody.store_id}/${pageBody.id}.json`
     }).promise();
 
     pageBody.content_url = s3Result ? s3Result.Location : "";
-    pageBody.page_url = '/' + pageBody.name.trim().replace(' ', '-').toLowerCase();
+    pageBody.page_url = '/' + URLParser.generateURL(pageBody.name);
 
     const result = await db.query(`
             INSERT INTO pages (id, store_id, name, content_url, page_url) 
@@ -48,6 +49,10 @@ exports.updatePage = async (data) => {
 }
 
 exports.deletePage = async (query) => {
+  const storeResult = await FindPageByIdOnly(query)
+  const storeId = storeResult[0].store_id
+  const key = `pages/${storeId}/${query.id}.json`;
+  await fileService.deleteObjectByKey(key)
   return DBHelper.deleteData('pages', query)
 }
 
