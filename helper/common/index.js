@@ -30,7 +30,7 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
       id: pageId,
       store_id: storeId
     }
-    const PageName = await getPagesByStoreIdAndId(queryPage)
+    const PageName = await pageService.getPagesByStoreIdAndId(queryPage)
     let queryTemplate = {
       id: storeName.template_id
     }
@@ -43,13 +43,17 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
     const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
     const footer = content.html.match(/(?<=<\/main>)(?:.|\n)*/gm)[0]
     const header = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
-  
+    
+    
   
     //Components
     let componentArr = []
     const _components = JSON.parse(content.components)
+
+   
     const Main = _components.filter((value) => value.name == "Main")
-    const mainComponents = Main[0] ? Main[0].components : []
+    const mainComponents = Main[0] ? (Main[0].components ? Main[0].components :[]) : []
+
     componentArr = [..._components.map((value) => value.name), ...mainComponents.map((value) => value.name)]
     let css = ""
     let js = ""

@@ -16,14 +16,16 @@ router.get('/:id/store-components', authenticator.Authenticate, storeController.
 router.get('/:id/menu', storeController.getMenuByStoreId);
 router.get('/:id/list-menu-items', storeController.getListMenuItems);
 router.get('/:id/init-data', authenticator.Authenticate, storeController.getInitDataStore);
-router.get('/:id/products/custom-type',authenticator.Authenticate, storeController.getCustomType)
-router.get('/:id/products/vendor',authenticator.Authenticate, storeController.getVendor)
+router.get('/:id/products/custom-type',authenticator.Authenticate, storeController.getCustomType);
+router.get('/:id/products/vendor', authenticator.Authenticate, storeController.getVendor);
+router.get('/:id/headerData', storeController.getHeaderData);
+
 /* POST create account. */
 router.post('/', authenticator.Authenticate, storeController.createStore);
 router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);
 router.post('/save-store-data/:storeId', authenticator.Authenticate, storeController.updateStoreData);
 
 // POST CREATE PRODUCT
-router.post('/:id/products', authenticator.Authenticate, storeController.createProduct)
-router.post('/:id/collections', authenticator.Authenticate, storeController.createCollection)
+router.post('/:id/products', authenticator.Authenticate, storeController.createProduct);
+router.post('/:id/collections', authenticator.Authenticate, storeController.createCollection);
 module.exports = router;
