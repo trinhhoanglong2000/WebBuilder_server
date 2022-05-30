@@ -1,5 +1,6 @@
 const http = require('../../const');
 const AWS = require('aws-sdk');
+const fileService = require('./fileService')
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const s3 = new AWS.S3();
@@ -67,4 +68,43 @@ exports.uploadImageToS3 = async (req, res) => {
         message: "Server Error!"
     });
     
+}
+
+exports.uploadProductImageToS3 = async (req, res) => {
+    const data = req.body.data;
+
+    const result = await fileService.postImage('products-image', data);
+    if (result) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: result,
+            message: "post object successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+
+exports.deleteObject = async (req, res) => {
+    const url = req.body.url;
+
+    const result = await fileService.deleteObject(url);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Delte object successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
 }

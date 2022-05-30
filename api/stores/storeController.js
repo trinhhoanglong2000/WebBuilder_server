@@ -10,12 +10,35 @@ const menuItemService = require('../menuItem/menuItemService');
 const http = require('../../const');
 const DBHelper = require('../../helper/DBHelper/DBHelper');
 const { createAccountWithSocialLogin } = require('../accounts/accountService');
-
+const URLParser = require('../../helper/common/index')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
     storeObj.user_id = req.user.id;
     const newStore = await storeService.createStore(storeObj);
+    
+    const storeId = newStore ? newStore.rows[0].id : ""
+    // CREATE CONFIG fILE
+    URLParser.createConfigHTML(storeId)
+
+    //CREATE DEFAULT PAGE
+    let page = await pageService.createPage({store_id : storeId, name: "Home"});
+    if (page) {
+        await pageService.createHTMLFile(storeId,page.rows[0].id)
+    }
+
+    page = await pageService.createPage({store_id : storeId, name: "Products"});
+    if (page) {
+        await pageService.createHTMLFile(storeId,page.rows[0].id)
+    }
+
+    page = await pageService.createPage({store_id : storeId, name: "Cart"});
+    if (page) {
+        await pageService.createHTMLFile(storeId,page.rows[0].id)
+    }
+    
+    //CREATE HEADER AND FOOTER
+
     if (newStore) {
         res.status(http.Created).json({
             statusCode: http.Created,
@@ -377,7 +400,7 @@ exports.getInitDataStore = async (req, res) => {
     const query = req.query;
     query.store_id = storeId;
 
-    const logoURL = storeService.getLogo(storeId);
+    const logoURL = storeService.getStoreLogoById(storeId);
     const listPagesId = pageService.getPagesByStoreId(query);
     const storeTemplate = storeService.getTemplate(storeId)
 
@@ -391,7 +414,37 @@ exports.getInitDataStore = async (req, res) => {
                 listPagesId: result[1],
                 template : result[2]
             },
-            message: "Get products successfully!"
+            message: "Get data successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
+exports.getHeaderData = async (req, res) => {
+    const storeId = req.params.id;
+    const query = req.query;
+    query.store_id = storeId;
+
+    const logoURL = storeService.getStoreLogoById(storeId);
+    const storeName = storeService.getStoreNameById(storeId);
+    const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
+    
+    const result = await Promise.all([logoURL, storeName, menuItems]);
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: {
+                logoURL: result[0].logo_url,
+                storeName: result[1].name,
+                menuItems: result[2],
+            },
+            message: "Get data successfully!"
         })
     }
     else {
@@ -453,7 +506,6 @@ exports.createProduct = async (req, res) => {
     //Create Product
     const newProduct = await productService.createProduct(productQuery);
     let productId = newProduct.rows[0].id
-
     //Create Collection
     if (collectionQuery) {
         for (let i = 0; i < collectionQuery.length; i++) {
