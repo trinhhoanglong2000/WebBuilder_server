@@ -4,7 +4,8 @@ async function CarouselsGenerateCodeItem(e) {
   if(categoryId == null){
     Render(null,itemID,e)
   }else{
-    await fetch(`${'http://localhost:5000'}/collections/banner/${categoryId}`
+    const rootUrl= $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+    await fetch(`${rootUrl}/collections/banner/${categoryId}`
     , {
       mode: 'cors',
       headers: {
@@ -17,8 +18,8 @@ async function CarouselsGenerateCodeItem(e) {
 }
 
 function Render(data,itemID,e){
-  const defaultData = [ 
-    {
+  const defaultData = [
+  {
       image: "https://dummyimage.com/1980x1080/55595c/ffffff",
       caption: "Image banner",
       description: "Give customers details about the banner image(s) or content on the template.",
