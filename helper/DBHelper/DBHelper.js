@@ -129,6 +129,11 @@ exports.getData = async (name, data = null) => {
                 arr1[i] = "'" + arr1[i] + "'"
             }
 
+            console.log(`
+            SELECT *
+            FROM ${name}
+            WHERE (${arr}) = (${arr1})
+            `)
             const result = await db.query(`
         SELECT *
         FROM ${name}

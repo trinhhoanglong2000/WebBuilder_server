@@ -532,7 +532,8 @@ exports.createProduct = async (req, res) => {
                     "name": productOptionQuery[i].name,
                     "value": productOptionQuery[i].value[j],
                     "product_id": productId,
-                    "option_id": newOption.rows[0].id
+                    "option_id": newOption.rows[0].id,
+                    "rank" : j
                 }
                 const newOptionValue = await productOptionService.createDataOptionValue(optionQuery)
             }
@@ -550,6 +551,7 @@ exports.createProduct = async (req, res) => {
 
                 query.product_id = productId
                 const findOptionValue = await productOptionService.findDataOptionValue(query)
+                //console.log(findOptionValue)
                 option_value_id.push(findOptionValue[0].id)
             }
             quantity += createVariantQuery.quantity
