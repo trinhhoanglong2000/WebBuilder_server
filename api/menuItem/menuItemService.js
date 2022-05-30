@@ -15,6 +15,25 @@ exports.getMenuItemByMenuId = async (query) => {
     return DBHelper.FindAll("menu_item", config)
 }
 
+exports.getHeaderMenuItemsByStoreId = async (query) => {
+    let config = {
+        select: "menu_item.id, menu_item.name, menu_item.link",
+        where: {
+            "OP.AND": [{"menu.store_id": query.store_id}, {"menu.name": "Header"}]
+        },
+        join: {
+            "menu": {
+                condition: {
+                    "menu_item.menu_id": "menu.id",
+                }   
+            }
+        },
+        limit: query.limit,
+        offset: query.offset
+    }
+    return DBHelper.FindAll("menu_item", config)
+}
+
 exports.updateMenuItem = async (menuItemObj) => {
     return DBHelper.updateData(menuItemObj, 'menu_item', 'id')
 }
