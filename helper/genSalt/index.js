@@ -10,3 +10,9 @@ exports.hashPassword = (password) => {
 exports.compare = (text, hash) => {
     return bcrypt.compareSync(text, hash);
 }
+
+exports.hashString = (string) => {
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash = bcrypt.hashSync(string, salt);
+    return hash;
+}
