@@ -3,6 +3,9 @@
 
 const nodemailer =  require('nodemailer');
 const helper = require('../../helper/common');
+const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('../../helper/genSalt');
+const verificationService = require('../verification/verificationService')
 
 var transporter =  nodemailer.createTransport({ // config mail server
     host: 'smtp.gmail.com',
@@ -10,7 +13,7 @@ var transporter =  nodemailer.createTransport({ // config mail server
     secure: true,
     auth: {
         user: 'bestlophoc@gmail.com',
-        pass: 'lophoc123'
+        pass: 'Lophoc@18CLC3'
     },
     tls: {
         // do not fail on invalid certs
@@ -19,22 +22,30 @@ var transporter =  nodemailer.createTransport({ // config mail server
 });
 
 
-exports.sendVerifyEmail = async (recipient) => {
-    var result = true;
-    const code = helper.generateCode()
-    var Options = {
+exports.sendVerifyEmail = async (email, id) => {
+    let result = true;
+    const uniqueString = uuidv4() + id;
+    const Options = {
         from: '"EASYMALL" bestlophoc@gmail.com', // sender address
-        to: [recipient], // list of receivers
+        to: [email], // list of receivers
         subject: "[EASYMALL VERIFY]", // Subject line
-        html: `<p>Your verify code: ${code}</p>` // plain text body
+        html: 
+            `<p>Verify your email address to complete the signup and login to your account.</p>
+            <p>Press <a href=${process.env.SERVER_URL + "/verify/" + id + "/" + uniqueString}>here</a> to proceed.</p>
+            ` // plain text body
     }
 
-    await transporter.sendMail(Options, (err, info) => {
-        console.log(info)
-        if (err) {
-            result = false;
-        }
-    });
+    const hashedUniqueString = bcrypt.hashString(uniqueString)
+    const createVerificationResult = await verificationService.createVerification(id, hashedUniqueString)
+
+    transporter.sendMail(Options)
+    .then(() => {
+        result = true
+    })
+    .catch((err) => {
+        console.log(err)
+        result = false
+    })
 
     return result;
     

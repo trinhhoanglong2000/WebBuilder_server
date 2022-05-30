@@ -23,6 +23,7 @@ const menuItemRouter = require('./api/menuItem');
 const productOptionRouter = require('./api/products_option')
 const authenticator = require('./middleware/authentication');
 const emailRouter = require('./api/email');
+const verificationRouter = require('./api/verification');
 const userStoreRouter = require('./stores')
 const app = express();
 
@@ -69,6 +70,7 @@ app.get('/',function (req,res) {
 app.use('/menu', menuRouter);
 app.use('/menu-item', menuItemRouter);
 app.use('/mail', emailRouter);
+app.use('/verify', verificationRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

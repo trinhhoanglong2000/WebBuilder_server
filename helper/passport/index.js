@@ -17,6 +17,9 @@ passport.use(
     async function (email, password, done) {
       const acc = await accountService.getUserByEmail(email);
       if (acc) {
+        if (!acc.verified) {
+          return done(null, false, { message: "Email hasn't been verified yet. Check your inbox." });
+        }
         if (genSalt.compare(password, acc.password)) {
           return done(null, { id: acc.id, email: email });
         }
