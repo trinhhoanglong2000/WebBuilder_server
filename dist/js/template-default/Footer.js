@@ -1,12 +1,13 @@
 
 //==============|Data Selector|============
-function embeData(e) {
+function embedFooterData() {
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
 
-    $(e).find('div[name="QuickLink"]').each(function() {
+    $('div[name="QuickLink"]').each(function() {
         const menu = $(this).find('.quicklinks-menu');
         const id = $(this).attr('menu-collection')
-
+        if (!id) return;
+        
         fetch(`${serverURL}/menu/${id}`)
         .then((response) => response.json())
         .then((response) => {
@@ -24,10 +25,10 @@ function embeData(e) {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embeData(this);
+            embedFooterData();
         })
     }
     else {
-        embeData(this);
+        embedFooterData();
     }
 })
