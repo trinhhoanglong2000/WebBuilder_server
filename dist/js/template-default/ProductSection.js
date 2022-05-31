@@ -6,7 +6,7 @@ let canLoadProductSection = true
 let productHTML = "";
 
 function productData(e) {
-    const idStore = $('header[name="header"]').attr('store-id') || '621b5a807ea079a0f7351fb8'
+    const idStore = $('nav[name="header"]').attr("store-id") || ''
     const limit = $(e).data('ez-mall-numproducts') || "8";
     fetch(`${urlProductSection}/stores/${idStore}/products?limit=${limit}&offset=${startProductSection}`)
         .then((response) => response.json())
@@ -50,7 +50,7 @@ function init() {
     
 
     if (!urlProductSection) {
-        urlProductSection = $('script.scriptClass').attr('src').match(/^.*?(?=\/files)/gm)[0]
+        urlProductSection = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     }
 
     // 
