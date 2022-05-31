@@ -179,12 +179,19 @@ exports.updateProduct = async (req, res) => {
                 }
                 const deleteVariant = await productVariantService.deleteVariant(query)
             }
-            let updateQuery = {
-                "id": productId,
-                "inventory": quantity
-            }
-            const updateValue = await productService.updateProduct(updateQuery)
+            
         }
+        
+        quantity = 0
+        const product = await productVariantService.getVariant(productId)
+        for (let i = 0; i < product.length;i++){
+            quantity += product[i].quantity
+        }
+        let updateQuery = {
+            "id": productId,
+            "inventory": quantity
+        }
+        const updateValue = await productService.updateProduct(updateQuery)
 
     }
 
