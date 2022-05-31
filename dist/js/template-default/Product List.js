@@ -1,7 +1,8 @@
 let urlProductList = null;
 
 function productData(e) {
-    let products_data = [
+    let products_data=[];
+    let products_data_default = [
       {
         title: "Product Title",
         price: "$100.00",
@@ -13,8 +14,12 @@ function productData(e) {
     fetch(`${urlProductList}/collections/product/${id}`)
     .then((response) => response.json())
     .then((data) => {
-      if (data.data.products) 
+      if (data.data.products.length!=0) {
         products_data = data.data.products;
+      }
+      else{
+        products_data = products_data_default
+      }
       $(e)
       .find(".thumb-wrapper")
       .each(function (index) {
