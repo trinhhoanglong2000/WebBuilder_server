@@ -28,7 +28,8 @@ exports.getOptionFromProductId = async (id) =>{
         select : "id,name",
         where : {
             product_id : id
-        }
+        },
+        order : [{rank : "ASC"}]
     }
     return DBHelper.FindAll("product_option",query)
 }

@@ -522,7 +522,8 @@ exports.createProduct = async (req, res) => {
         for (let i = 0; i < productOptionQuery.length; i++) {
             let query = {
                 "name": productOptionQuery[i].name,
-                "product_id": productId
+                "product_id": productId,
+                "rank" : i
             }
             const newOption = await productOptionService.createDataOption(query)
 
