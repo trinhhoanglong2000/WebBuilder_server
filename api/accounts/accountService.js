@@ -11,10 +11,13 @@ exports.createAccount = async (accountObj) => {
     const valid = validate.validateAccount(accountObj);
     if (valid.error) {
         console.log(valid.error)
-        return { message: valid.error.details[0].message }};
+        return { message: valid.error.details[0].message }
+    };
     // hash pw
-    accountObj.password = genSalt.hashPassword(accountObj.password);
-    return DBHelper.insertData(accountObj,"account",true, 'id, email')
+    if (accountObj.password) {
+        accountObj.password = genSalt.hashPassword(accountObj.password);
+    }
+    return DBHelper.insertData(accountObj, "account", true, 'id, email')
 }
 exports.createAccountWithSocialLogin = (accountObj) => {
     try {
