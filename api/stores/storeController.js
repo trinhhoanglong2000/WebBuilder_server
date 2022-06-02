@@ -22,17 +22,17 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    let page = await pageService.createPage({store_id : storeId, name: "Home"});
+    let page = await pageService.createPage({store_id : storeId, name: "Home"},"");
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }
 
-    page = await pageService.createPage({store_id : storeId, name: "Products"});
+    page = await pageService.createPage({store_id : storeId, name: "Products"},"");
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }
 
-    page = await pageService.createPage({store_id : storeId, name: "Cart"});
+    page = await pageService.createPage({store_id : storeId, name: "Cart"},"");
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }

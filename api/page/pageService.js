@@ -11,7 +11,7 @@ const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const fse = require('fs-extra')
 
-exports.createPage = async (pageBody) => {
+exports.createPage = async (pageBody,url="",isDefault=false) => {
   try {
     pageBody.id = uuidv4();
 
@@ -24,13 +24,17 @@ exports.createPage = async (pageBody) => {
     }).promise();
 
     pageBody.content_url = s3Result ? s3Result.Location : "";
-    pageBody.page_url = '/' + URLParser.generateURL(pageBody.name);
+    if (url ==="")
+      pageBody.page_url = '/' + URLParser.generateURL(pageBody.name);
+    else{
+      pageBody.page_url = '/' + url
+    }
 
     const result = await db.query(`
-            INSERT INTO pages (id, store_id, name, content_url, page_url) 
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO pages (id, store_id, name, content_url, page_url, is_default) 
+            VALUES ($1, $2, $3, $4, $5 , $6)
             returning id, content_url, page_url;
-            `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url]);
+            `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url,isDefault]);
 
 
     return result;
