@@ -69,7 +69,7 @@ exports.getProductsByStoreId = async (query) => {
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] == "title" || arr[i] == "type") {
             let queryTemp = {}
-            queryTemp[`${arr[i]}`] = { "OP.ILIKE": "%" + arr1[i] + "%" }
+            queryTemp[`UPPER(${arr[i]})`] = { "OP.ILIKE": "%" + arr1[i].toUpperCase().trim() + "%" }
             condition.push(queryTemp)
         }
         else {
