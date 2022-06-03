@@ -1,25 +1,10 @@
 //const sgMail = require('@sendgrid/mail')
 //const apiKey = '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';
 
-const nodemailer =  require('nodemailer');
-const helper = require('../../helper/common');
+const transporter = require('../../config/email');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('../../helper/genSalt');
 const verificationService = require('../verification/verificationService')
-
-var transporter =  nodemailer.createTransport({ // config mail server
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: 'bestlophoc@gmail.com',
-        pass: 'Lophoc@18CLC3'
-    },
-    tls: {
-        // do not fail on invalid certs
-        rejectUnauthorized: false
-    }
-});
 
 
 exports.sendVerifyEmail = async (email, id) => {

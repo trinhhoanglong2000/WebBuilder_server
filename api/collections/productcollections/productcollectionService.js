@@ -3,7 +3,6 @@ const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 const fileService = require('../../files/fileService')
 const DBHelper = require('../../../helper/DBHelper/DBHelper');
-const { collection } = require('../../accounts/accountModel');
 const { query } = require('express');
 const s3 = new AWS.S3();
 

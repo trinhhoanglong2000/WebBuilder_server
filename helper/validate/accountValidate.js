@@ -13,3 +13,10 @@ exports.validateAccount = (accountObj) => {
     });
     return schema.validate(accountObj);
 }
+
+exports.validatePassword = (password) => {
+    var schema = Joi.object({
+        password: Joi.string().min(8).max(30).required()
+    })
+    return schema.validate({password: password});
+}

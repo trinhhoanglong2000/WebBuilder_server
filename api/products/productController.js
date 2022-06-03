@@ -4,7 +4,6 @@ const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const productCollectionSerice = require('../collections/productcollections/productcollectionService');
-const { collection } = require('../accounts/accountModel');
 exports.updateProduct = async (req, res) => {
     // update produt
     const productId = req.params.id;

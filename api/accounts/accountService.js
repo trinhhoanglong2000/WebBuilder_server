@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-const Account = require('./accountModel');
 const validate = require('../../helper/validate/accountValidate');
 const genSalt = require('../../helper/genSalt');
 const http = require('../../const');
@@ -19,16 +17,7 @@ exports.createAccount = async (accountObj) => {
     }
     return DBHelper.insertData(accountObj, "account", true, 'id, email')
 }
-exports.createAccountWithSocialLogin = (accountObj) => {
-    try {
-        accountObj._id = mongoose.Types.ObjectId();
-        const account = new Account(accountObj);
-        return account.save();
-    } catch {
-        console.log(error);
-        return null;
-    }
-}
+
 exports.getUserByEmail = async (email) => {
     try {
         const result = await db.query(`
@@ -45,32 +34,35 @@ exports.getUserByEmail = async (email) => {
 
 }
 
-exports.findAccWithMail = (email) => {
-    try {
-        const account = Account.findOne({
-            email: email
-        })
-        return account;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-
+exports.getUserInfo = async (id) => {
+    return DBHelper.getData('account', { id: id });
 }
+
 exports.updateUser = async (data) => {
     return DBHelper.updateData(data, "account", "id")
 }
-exports.updateInfoForOneField = (fieldNeedUpdate, data, emailSearch) => {
-    try {
-        let fieldToUpdate = {
-            [fieldNeedUpdate]: data
-        }
-        const account = Account.findOneAndUpdate({
-            email: emailSearch
-        }, { $set: fieldToUpdate })
-        return account;
-    } catch (error) {
-        console.log(error);
-        return null;
+
+exports.updatePassword = async (id, currentPassword, newPassword) => {
+    //get old password
+    const res = await db.query(`
+        SELECT password
+        FROM account 
+        WHERE (id = '${id}')
+    `)
+    const password = res.rows[0].password
+
+    // check correct current password
+    if (!genSalt.compare(currentPassword, password)) {
+        return { message: "Password is incorrect." }
     }
+
+    const valid = validate.validatePassword(newPassword);
+    if (valid.error) return { message: valid.error.details[0].message }
+
+    newPassword = genSalt.hashPassword(newPassword);
+    const data = {
+        id: id,
+        password: newPassword
+    }
+    return DBHelper.updateData(data, "account", "id")
 }

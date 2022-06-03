@@ -6,3 +6,4 @@ exports.NotFound = 404
 exports.Unauthorized = 401
 exports.Conflict = 409
 exports.ServerError = 500
+exports.NotAcceptable = 406
