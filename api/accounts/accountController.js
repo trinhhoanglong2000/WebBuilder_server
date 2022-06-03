@@ -42,7 +42,11 @@ exports.getUserInfo = async (req, res) => {
 }
 
 exports.UpdateUser = async (req, res) => {
-    const result = await accountService.updateUser(req.body);
+    const data = {
+        ...req.body,
+        id: req.user.id
+    }
+    const result = await accountService.updateUser(data);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

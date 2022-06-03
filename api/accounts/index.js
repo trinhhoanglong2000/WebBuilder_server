@@ -9,5 +9,5 @@ const authenticator = require('../../middleware/authentication');
 router.get('/',accountController.getUserByEmail)
 router.get('/user-info', authenticator.Authenticate, accountController.getUserInfo)
 router.put('/change-password', authenticator.Authenticate, accountController.UpdatePassword)
-router.post('/updateaccount',accountController.UpdateUser)
+router.put('/updateaccount', authenticator.Authenticate, accountController.UpdateUser)
 module.exports = router;
