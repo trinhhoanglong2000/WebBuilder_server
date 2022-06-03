@@ -41,6 +41,21 @@ exports.updateProduct = async (req, res) => {
     //Update Option
 
     if (productOptionQuery) {
+       
+        const option = await productOptionService.getOptionFromProductId(productId)
+        let productOptionQueryWithoutDelete = productOptionQuery.filter((e) => e.update === "Delete")
+        let countOption = 0
+    
+        while (countOption < option.length) {
+            const found = productOptionQueryWithoutDelete.find(e => e.id === option[countOption].id)
+            if (found) {
+                option.splice(countOption, 1)
+            }
+            else {
+                countOption++
+            }
+        }
+      
         for (let i = 0; i < productOptionQuery.length; i++) {
             let optionId
 
@@ -53,7 +68,8 @@ exports.updateProduct = async (req, res) => {
 
 
             if (updateStatus == "Add") {
-
+                query.rank = countOption
+                countOption++
                 const newOption = await productOptionService.createDataOption(query)
                 optionId = newOption.rows[0].id
             } else if (updateStatus == "Change") {
@@ -77,6 +93,28 @@ exports.updateProduct = async (req, res) => {
                 continue
             }
             //Update Option Value
+
+            const optionValue = await productOptionService.findDataOptionValue({ option_id: optionId })
+            let valueStatusWithoutDelete = valueStatus.filter((e) => e.update === "Delete")
+            let countOptionValue = 0
+
+            while (countOptionValue < optionValue.length) {
+                const found = valueStatusWithoutDelete.find(e => e.id === optionValue[countOptionValue].id)
+                if (found) {
+                    optionValue.splice(countOptionValue, 1)
+                }
+                else {
+                    countOptionValue++
+                }
+            }
+
+            for (let j = 0; j < optionValue.length; j++) {
+                let optionQuery = {
+                    "rank": j,
+                    "id": optionValue[j].id
+                }
+                await productOptionService.updateDataOptionValue(optionQuery, "id")
+            }
             for (let j = 0; j < valueStatus.length; j++) {
                 let optionQuery = valueStatus[j]
                 optionQuery.option_id = optionId
@@ -85,6 +123,8 @@ exports.updateProduct = async (req, res) => {
                 let optionUpdateStatus = optionQuery.update
                 delete optionQuery["update"]
                 if (optionUpdateStatus == "Add") {
+                    optionQuery.rank = countOptionValue
+                    countOptionValue++
                     const newOptionValue = await productOptionService.createDataOptionValue(optionQuery)
                 }
                 else if (optionUpdateStatus == "Change") {
@@ -139,12 +179,19 @@ exports.updateProduct = async (req, res) => {
                 }
                 const deleteVariant = await productVariantService.deleteVariant(query)
             }
-            let updateQuery = {
-                "id": productId,
-                "inventory": quantity
-            }
-            const updateValue = await productService.updateProduct(updateQuery)
+            
         }
+        
+        quantity = 0
+        const product = await productVariantService.getVariant(productId)
+        for (let i = 0; i < product.length;i++){
+            quantity += product[i].quantity
+        }
+        let updateQuery = {
+            "id": productId,
+            "inventory": quantity
+        }
+        const updateValue = await productService.updateProduct(updateQuery)
 
     }
 

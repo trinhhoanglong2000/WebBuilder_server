@@ -91,7 +91,7 @@ exports.getData = async (query) => {
 
     condition.push({ store_id: query.store_id })
     if (query.name)
-        condition.push({ name: { "OP.ILIKE": "%" + query.name + "%" } })
+        condition.push({ 'UPPER(name)': { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" } })
     let config = {
         where: {
             "OP.AND": condition,

@@ -48,8 +48,17 @@ exports.findAll = async () => {
 
 exports.getProductsByStoreId = async (query) => {
     let condition = [];
+    let offset = query.offset
+    let limit = query.limit
     let store_Query = {
         store_id: query.store_id
+    }
+    if (query.offset){
+        delete query["offset"]
+    }
+
+    if (query.limit){
+        delete query["limit"]
     }
     delete query["store_id"]
     let arr = Object.keys(query)
@@ -60,7 +69,7 @@ exports.getProductsByStoreId = async (query) => {
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] == "title" || arr[i] == "type") {
             let queryTemp = {}
-            queryTemp[`${arr[i]}`] = { "OP.ILIKE": "%" + arr1[i] + "%" }
+            queryTemp[`UPPER(${arr[i]})`] = { "OP.ILIKE": "%" + arr1[i].toUpperCase().trim() + "%" }
             condition.push(queryTemp)
         }
         else {
@@ -79,8 +88,8 @@ exports.getProductsByStoreId = async (query) => {
         where: {
             "OP.AND": conditionQuery,
         },
-        limit: query.limit,
-        offset: query.offset
+        limit: limit,
+        offset: offset
     }
 
     // let config = {

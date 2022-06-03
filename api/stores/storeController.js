@@ -22,17 +22,17 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    let page = await pageService.createPage({store_id : storeId, name: "Home"});
+    let page = await pageService.createPage({store_id : storeId, name: "Home"},"");
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }
 
-    page = await pageService.createPage({store_id : storeId, name: "Products"});
+    page = await pageService.createPage({store_id : storeId, name: "Products"},"");
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }
 
-    page = await pageService.createPage({store_id : storeId, name: "Cart"});
+    page = await pageService.createPage({store_id : storeId, name: "Cart"},"");
     if (page) {
         await pageService.createHTMLFile(storeId,page.rows[0].id)
     }
@@ -522,7 +522,8 @@ exports.createProduct = async (req, res) => {
         for (let i = 0; i < productOptionQuery.length; i++) {
             let query = {
                 "name": productOptionQuery[i].name,
-                "product_id": productId
+                "product_id": productId,
+                "rank" : i
             }
             const newOption = await productOptionService.createDataOption(query)
 
@@ -532,7 +533,8 @@ exports.createProduct = async (req, res) => {
                     "name": productOptionQuery[i].name,
                     "value": productOptionQuery[i].value[j],
                     "product_id": productId,
-                    "option_id": newOption.rows[0].id
+                    "option_id": newOption.rows[0].id,
+                    "rank" : j
                 }
                 const newOptionValue = await productOptionService.createDataOptionValue(optionQuery)
             }
@@ -550,6 +552,7 @@ exports.createProduct = async (req, res) => {
 
                 query.product_id = productId
                 const findOptionValue = await productOptionService.findDataOptionValue(query)
+                //console.log(findOptionValue)
                 option_value_id.push(findOptionValue[0].id)
             }
             quantity += createVariantQuery.quantity
