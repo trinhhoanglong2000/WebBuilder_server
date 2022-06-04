@@ -39,10 +39,6 @@
     padding: 10px;
 }
 
-[name="header"] .offcanvas .nav-pills .nav-link {
-    border-radius: 0;
-}
-
 [name="header"].navbar .navbar-brand img {
     max-width: 100px;
 }
@@ -50,6 +46,56 @@
 [name="header"].navbar i.fa-shopping-bag span {
     padding: 0.25em 0.25em;
     font-size: .6em;
+}
+
+[name="header"].navbar .search-bound {
+    position: absolute;
+    background-color: white;
+    right: 20px;
+    width: 350px;
+    height: 45px;
+    border: 2px solid #666666;
+    border-radius: 5px;
+    padding: 10px;
+    justify-content: center;
+    display: none;
+    animation-name: displaySearch;
+    animation-duration: 0.5s;
+}
+
+@keyframes displaySearch {
+    0%   {width: 80px;}
+    100% {width: 350px;}
+}
+
+[name="header"].navbar .search-bound button {
+    border: none;
+    width: 25px;
+    background: transparent;
+}
+
+[name="header"].navbar .search-bound button i {
+    position: relative;
+    padding: 0px;
+    left: -5px;
+    font-size: 20px;
+}
+
+[name="header"].navbar .search-bound input{
+    border: none;
+    outline: none;
+    position: relative;
+    width: 100%;
+    padding-right: 5px;
+}
+
+[name="header"].navbar .search-bound span{
+    position: relative;
+    top: -3px;
+}
+
+[name="header"].navbar .search-bound span i{
+    padding: 0px;
 }
 
 /* Css header trait */
