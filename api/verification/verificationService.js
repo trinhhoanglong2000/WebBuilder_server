@@ -14,7 +14,6 @@ exports.verify = async (user_id, unique_string) => {
         let message = ''
         let success = true
         const data = await DBHelper.getData('verification', { user_id: user_id })
-        console.log(data)
         if (data && data.length > 0) {
             const hashedUniqueString = data[0].unique_string;
             const isEqual = bcrypt.compare(unique_string, hashedUniqueString);

@@ -128,3 +128,40 @@ exports.createAccount = async (req, res) => {
     }
 }
 
+exports.requestResetPassword = async (req, res) => {
+    const email = req.body.email
+    const result = await emailService.sendResetPasswordEmail(email)
+    if (result) {
+        let statusCode = http.Success
+        if (!result.success) statusCode = http.NotAcceptable
+        res.status(statusCode).json({
+            statusCode: statusCode,
+            message: result.message
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.resetPassword = async (req, res) => {
+    const { user_id, reset_string, new_password } = req.body
+    const result = await accountService.resetPassword(user_id, reset_string, new_password);
+    if (result) {
+        let statusCode = http.Success
+        if (!result.success) statusCode = http.NotAcceptable
+        res.status(statusCode).json({
+            statusCode: statusCode,
+            message: result.message
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}

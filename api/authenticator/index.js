@@ -10,6 +10,9 @@ router.post("/login", authController.signIn);
 
 router.post('/register', authController.createAccount);
 
+router.post('/request-reset-password', authController.requestResetPassword);
+
+router.put('/reset-password', authController.resetPassword);
 
 
 module.exports = router;

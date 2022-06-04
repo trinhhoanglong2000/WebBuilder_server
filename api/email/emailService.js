@@ -4,14 +4,61 @@
 const transporter = require('../../config/email');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('../../helper/genSalt');
-const verificationService = require('../verification/verificationService')
+const verificationService = require('../verification/verificationService');
+const accountService = require('../accounts/accountService');
+const passwordResetService = require('../password_reset/passwordResetService');
 
+
+exports.sendResetPasswordEmail = async (email) => {
+    const user = await accountService.getUserByEmail(email);
+    if (!user) return {
+        success: false,
+        message: "No account with the supplied email exists!"
+    }
+    if (!user.verified) return {
+        success: false,
+        message: "Email hasn't been verified yet. Check your inbox."
+    }
+
+    let success = true,
+    message = ''
+    const uniqueString = uuidv4() + user.id;
+    const redirectURL = process.env.MANAGEMENT_CLIENT_URL + `/reset-password/${user.id}/${uniqueString}`;
+    await passwordResetService.delete(user.id);
+
+    const Options = {
+        from: `"EASYMALL" ${process.env.AUTH_MAIL_USER}`, // sender address
+        to: [email], // list of receivers
+        subject: "[EASYMALL PASSWORD RESET]", // Subject line
+        html: 
+            `<p>We heard that you lost the password.</p>
+            <p>Don't worry, use the link below to reset it.</p>
+            <p>Press <a href=${redirectURL}>here</a> to proceed.</p>
+            ` // plain text body
+    }
+
+    const hashedUniqueString = bcrypt.hashString(uniqueString)
+    const createVerificationResult = await passwordResetService.createPasswordReset(user.id, hashedUniqueString)
+
+    await transporter.sendMail(Options)
+    .then(() => {
+        success = true
+        message = 'Password reset email sent.'
+    })
+    .catch((err) => {
+        console.log(err)
+        success = false
+        message = 'Password reset email failed.'
+    })
+
+    return { success, message };
+}
 
 exports.sendVerifyEmail = async (email, id) => {
     let result = true;
     const uniqueString = uuidv4() + id;
     const Options = {
-        from: '"EASYMALL" bestlophoc@gmail.com', // sender address
+        from: `"EASYMALL" ${process.env.AUTH_MAIL_USER}`, // sender address
         to: [email], // list of receivers
         subject: "[EASYMALL VERIFY]", // Subject line
         html: 
@@ -23,7 +70,7 @@ exports.sendVerifyEmail = async (email, id) => {
     const hashedUniqueString = bcrypt.hashString(uniqueString)
     const createVerificationResult = await verificationService.createVerification(id, hashedUniqueString)
 
-    transporter.sendMail(Options)
+    await transporter.sendMail(Options)
     .then(() => {
         result = true
     })
@@ -33,7 +80,6 @@ exports.sendVerifyEmail = async (email, id) => {
     })
 
     return result;
-    
 }
 
 

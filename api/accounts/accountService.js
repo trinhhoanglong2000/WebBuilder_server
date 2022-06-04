@@ -44,25 +44,73 @@ exports.updateUser = async (data) => {
 
 exports.updatePassword = async (id, currentPassword, newPassword) => {
     //get old password
-    const res = await db.query(`
-        SELECT password
-        FROM account 
-        WHERE (id = '${id}')
-    `)
-    const password = res.rows[0].password
+    try {
+        const res = await db.query(`
+            SELECT password
+            FROM account 
+            WHERE (id = '${id}')
+        `)
+        const password = res.rows[0].password
 
-    // check correct current password
-    if (!genSalt.compare(currentPassword, password)) {
-        return { message: "Password is incorrect." }
+        // check correct current password
+        if (!genSalt.compare(currentPassword, password)) {
+            return { message: "Password is incorrect." }
+        }
+
+        const valid = validate.validatePassword(newPassword);
+        if (valid.error) return { message: valid.error.details[0].message }
+
+        newPassword = genSalt.hashPassword(newPassword);
+        const data = {
+            id: id,
+            password: newPassword
+        }
+        return DBHelper.updateData(data, "account", "id")
+    } catch (error) {
+        console.log(error)
+        return null
     }
+}
 
-    const valid = validate.validatePassword(newPassword);
-    if (valid.error) return { message: valid.error.details[0].message }
-
-    newPassword = genSalt.hashPassword(newPassword);
-    const data = {
-        id: id,
-        password: newPassword
+exports.resetPassword = async (user_id, reset_string, new_password) => {
+    try {
+        const resetPasswordData = await DBHelper.getData('password_reset', { user_id: user_id })
+        if (resetPasswordData && resetPasswordData.length > 0) {
+            const reset_token = resetPasswordData[0].reset_token;
+            const isEqual = genSalt.compare(reset_string, reset_token);
+            if (isEqual) {
+                const valid = validate.validatePassword(new_password);
+                if (valid.error) return {
+                    success: false,
+                    message: valid.error.details[0].message
+                }
+                await DBHelper.deleteData('password_reset', { user_id })
+                new_password = genSalt.hashPassword(new_password);
+                const data = {
+                    id: user_id,
+                    password: new_password
+                }
+                await DBHelper.updateData(data, "account", "id")
+                return {
+                    success: true,
+                    message: "Password has been reset successfully."
+                }
+            }
+            else {
+                return {
+                    success: true,
+                    message: "Invalid password reset request."
+                }
+            }
+        }
+        else {
+            return {
+                success: false,
+                message: 'Password reset request not found.'
+            }
+        }
+    } catch (error) {
+        console.log(error)
+        return null
     }
-    return DBHelper.updateData(data, "account", "id")
 }
