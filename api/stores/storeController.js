@@ -342,6 +342,11 @@ exports.getProductCollectionsByStoreId = async (req, res) => {
     const query = req.query
     query.store_id = storeId
     const result = await productcollectionService.getData(query)
+    
+    for (let i = 0 ; i < result.length ; i ++){
+        const content = await productcollectionService.getDescription(result[i].id)
+        result[i].description = content
+    }
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -359,7 +364,9 @@ exports.getProductCollectionsByStoreId = async (req, res) => {
 
 exports.getBannerCollectionsByStoreId = async (req, res) => {
     const storeId = req.params.id;
-    const result = await bannercollectionService.getCollectionsByStoreId(storeId);
+    const query = req.query
+    query.store_id = storeId
+    const result = await bannercollectionService.getCollectionsByStoreId(query);
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

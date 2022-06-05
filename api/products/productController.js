@@ -259,8 +259,14 @@ exports.getProductById = async (req, res) => {
     const id = req.params.id;
     const result = await productService.findById(id);
     let returnData = {}
-    if (result[0]) {
+    if (result.length > 0) {
+        
+        if (result[0].description){
+            const content = await productService.getDescription(result[0].id)
+            result[0].description = content
+        }
         returnData.product = result
+
         let resultOption = await productOptionService.getOptionFromProductId(id)
         if (resultOption) {
             for (let i = 0; i < resultOption.length; i++) {

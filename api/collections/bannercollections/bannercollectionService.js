@@ -51,19 +51,23 @@ exports.findAll = async () => {
     }
 }
 
-exports.getCollectionsByStoreId = async (storeId, filter) => {
-    try {
-        const result = await db.query(`
-            SELECT * 
-            FROM bannercollections 
-            WHERE ("storeId" = '${storeId}')
-        `)
-    
-        return result.rows;
-    } catch (error) {
-        console.log(error);
-        return null;
+exports.getCollectionsByStoreId = async (query, filter) => {
+    //name
+
+    let condition = [];
+
+    condition.push({ store_id: query.store_id })
+    if (query.name)
+        condition.push({ 'UPPER(name)': { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" } })
+    let config = {
+        where: {
+            "OP.AND": condition,
+        },
+        limit: query.limit,
+        offset: query.offset
     }
+    // return DBHelper.getData("productcollections",query)  
+    return DBHelper.FindAll("bannercollections", config)
 }
 
 exports.findById = async (id) => {

@@ -61,7 +61,7 @@ exports.deleteProductCollection = async (req, res) => {
     productQuery.id = id
 
     let productRelativeQuery = {
-        productcollection_id : id
+        productcollection_id: id
     }
     const deleteProduct_ProductCollection = await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
     const newProduct = await collectionService.deleteProduct(productQuery)
@@ -103,11 +103,15 @@ exports.getcollectionById = async (req, res) => {
     const result = await collectionService.findById(query)
     let productQuery = req.query
     let resultQuery = {}
-    if (result[0].id) {
-        resultQuery.collection = result[0]
-        const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);
-        if (listProducts) {
-            resultQuery.products = listProducts
+    if (result.length > 0) {
+        const content = await collectionService.getDescription(result[0].id)
+        result[0].description  = content
+        if (result[0].id) {
+            resultQuery.collection = result[0]
+            const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);
+            if (listProducts) {
+                resultQuery.products = listProducts
+            }
         }
     }
     if (result) {
