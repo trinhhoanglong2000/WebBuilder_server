@@ -11,7 +11,7 @@ exports.create = async (req, res) => {
         })
         return
     }
-    const page = await pageService.createPage(pageBody,"");
+    const page = await pageService.createPage(pageBody,"",false,"template-default");
     if (page) {
         await pageService.createHTMLFile(pageBody.store_id,page.rows[0].id)
     }
