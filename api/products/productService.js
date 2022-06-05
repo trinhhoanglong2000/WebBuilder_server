@@ -85,7 +85,7 @@ exports.getProductsByStoreId = async (query) => {
 
     let conditionQuery = [store_Query]
     if (condition.length > 0) {
-        conditionQuery.push({ "OP.OR": condition })
+        conditionQuery.push({ "OP.AND": condition })
     }
     let config = {
         where: {
