@@ -28,6 +28,8 @@ exports.updateProduct = async (productObj) => {
     return DBHelper.updateData(productObj, "products", "id")
 }
 exports.deleteProduct = async (productObj) => {
+    const key = `richtext/product/${productObj.id}.json`;
+    await fileService.deleteObjectByKey(key)
     return DBHelper.deleteData("products", productObj)
 }
 exports.deleteProductRelative = async (name, productObj) => {

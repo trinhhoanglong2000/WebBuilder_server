@@ -52,6 +52,8 @@ exports.updateProductCollection = async (query) => {
     
 
 exports.deleteProduct = async (productObj) => {
+    const key = `richtext/productcollection/${productObj.id}.json`;
+    await fileService.deleteObjectByKey(key)
     return DBHelper.deleteData("productcollections",productObj)
 }
 

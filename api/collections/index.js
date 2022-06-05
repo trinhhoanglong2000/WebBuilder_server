@@ -25,4 +25,7 @@ router.post('/banner/create', authenticator.Authenticate, bannercollectionContro
 // DELETE 
 router.delete('/product/:id',authenticator.Authenticate, productcollectionController.deleteProductCollection)
 router.put('/product/:id',authenticator.Authenticate,productcollectionController.updateProductCollection)
+
+router.delete('/banner/:id',authenticator.Authenticate, bannercollectionController.deleteBannerCollection)
+router.put('/banner/:id',authenticator.Authenticate, bannercollectionController.updateBannerCollection)
 module.exports = router;

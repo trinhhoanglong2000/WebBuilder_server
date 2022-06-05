@@ -3,6 +3,7 @@ const pageService = require('../page/pageService');
 const productService = require('../products/productService');
 const productcollectionService = require('../collections/productcollections/productcollectionService');
 const bannercollectionService = require('../collections/bannercollections/bannercollectionService');
+const bannerService = require('../banners/bannerService')
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const menuService = require('../menu/menuService');
@@ -369,6 +370,13 @@ exports.getBannerCollectionsByStoreId = async (req, res) => {
     const query = req.query
     query.store_id = storeId
     const result = await bannercollectionService.getCollectionsByStoreId(query);
+    console.log(result)
+    for (let i = 0; i < result.length; i++) {
+        if (result[i].description) {
+            const content = await bannercollectionService.getDescription(result[i].id)
+            result[i].description = content
+        }
+    }
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -622,6 +630,45 @@ exports.createCollection = async (req, res) => {
             statusCode: http.Created,
             data: newCollection,
             message: "Create product successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.createBannerCollection = async (req, res) => {
+    let check = {
+        id: req.params.id,
+        user_id: req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req, res, check)
+    if (!authen) {
+        return
+    }
+
+    // create collection
+    let collectionQuery = req.body.collection
+    let bannerQuery = req.body.banners
+    const newCollection = await bannercollectionService.createBannerCollection(collectionQuery)
+
+    let collectionId = newCollection.rows[0].id
+    //Create Collection
+    if (bannerQuery) {
+        for (let i = 0; i < bannerQuery.length; i++) {
+            let query = bannerQuery[i]
+            query.bannercollection_id = collectionId
+            const newBanner = await bannerService.createBanner(query)
+        }
+    }
+    if (newCollection) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newCollection,
+            message: "Create banner Collection successfully!"
         })
     }
     else {
