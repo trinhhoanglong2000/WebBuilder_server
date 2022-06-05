@@ -20,7 +20,7 @@ exports.createPage = async (pageBody, url = "", isDefault = false, templateName 
       Key: `templates/${templateName}/${templateType}.json`
     }).promise();
     const id_store_content = data.Body.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
-    const content = JSON.parse(data.Body.toString('utf-8').replaceAll(id_store_content,`${pageBody.store_id}`));
+    const content = JSON.parse(data.Body.toString('utf-8').toString().replaceAll(id_store_content,`${pageBody.store_id}`));
    
     const s3Result = await s3.upload({
       Body: JSON.stringify(content, null, '\t'),
