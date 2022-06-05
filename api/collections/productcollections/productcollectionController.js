@@ -104,8 +104,10 @@ exports.getcollectionById = async (req, res) => {
     let productQuery = req.query
     let resultQuery = {}
     if (result.length > 0) {
-        const content = await collectionService.getDescription(result[0].id)
-        result[0].description  = content
+        if (result[0].description) {
+            const content = await collectionService.getDescription(result[0].id)
+            result[0].description = content
+        }
         if (result[0].id) {
             resultQuery.collection = result[0]
             const listProducts = await productService.getProductsByCollectionId(result[0].id, productQuery);

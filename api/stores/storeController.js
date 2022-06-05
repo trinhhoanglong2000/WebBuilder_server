@@ -16,27 +16,27 @@ exports.createStore = async (req, res) => {
     const storeObj = req.body;
     storeObj.user_id = req.user.id;
     const newStore = await storeService.createStore(storeObj);
-    
+
     const storeId = newStore ? newStore.rows[0].id : ""
     // CREATE CONFIG fILE
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    let page = await pageService.createPage({store_id : storeId, name: "Home"},"",true);
+    let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true);
     if (page) {
-        await pageService.createHTMLFile(storeId,page.rows[0].id)
+        await pageService.createHTMLFile(storeId, page.rows[0].id)
     }
 
-    page = await pageService.createPage({store_id : storeId, name: "Products"},"",true);
+    page = await pageService.createPage({ store_id: storeId, name: "Products" }, "", true);
     if (page) {
-        await pageService.createHTMLFile(storeId,page.rows[0].id)
+        await pageService.createHTMLFile(storeId, page.rows[0].id)
     }
 
-    page = await pageService.createPage({store_id : storeId, name: "Cart"},"",true);
+    page = await pageService.createPage({ store_id: storeId, name: "Cart" }, "", true);
     if (page) {
-        await pageService.createHTMLFile(storeId,page.rows[0].id)
+        await pageService.createHTMLFile(storeId, page.rows[0].id)
     }
-    
+
     //CREATE HEADER AND FOOTER
 
     if (newStore) {
@@ -58,13 +58,13 @@ exports.getCustomType = async (req, res) => {
     // create new store
     const storeId = req.params.id;
     let query = {
-        store_id : storeId,
-        custom_type : true
+        store_id: storeId,
+        custom_type: true
     }
     const newStore = await productService.getAllCustomType(query)
-    let returnData =[]
-    if (newStore){
-        for (let i = 0; i < newStore.length; i++){
+    let returnData = []
+    if (newStore) {
+        for (let i = 0; i < newStore.length; i++) {
             returnData.push(newStore[i].type)
         }
     }
@@ -87,12 +87,12 @@ exports.getVendor = async (req, res) => {
     // create new store
     const storeId = req.params.id;
     let query = {
-        store_id : storeId,
+        store_id: storeId,
     }
     const newStore = await productService.getVendor(query)
-    let returnData =[]
-    if (newStore){
-        for (let i = 0; i < newStore.length; i++){
+    let returnData = []
+    if (newStore) {
+        for (let i = 0; i < newStore.length; i++) {
             returnData.push(newStore[i].vendor)
         }
     }
@@ -207,8 +207,8 @@ exports.getPageByName = async (req, res) => {
 exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
     const storeId = req.params.storeId;
-    const result = await pageService.savePageContent(storeId, pageId, req.body); 
-    await pageService.saveHTMLFile(storeId,pageId,req.body)
+    const result = await pageService.savePageContent(storeId, pageId, req.body);
+    await pageService.saveHTMLFile(storeId, pageId, req.body)
     //console.log(req.body)
     if (result) {
         res.status(http.Success).json({
@@ -342,10 +342,12 @@ exports.getProductCollectionsByStoreId = async (req, res) => {
     const query = req.query
     query.store_id = storeId
     const result = await productcollectionService.getData(query)
-    
-    for (let i = 0 ; i < result.length ; i ++){
-        const content = await productcollectionService.getDescription(result[i].id)
-        result[i].description = content
+
+    for (let i = 0; i < result.length; i++) {
+        if (result[i].description) {
+            const content = await productcollectionService.getDescription(result[i].id)
+            result[i].description = content
+        }
     }
     if (result) {
         res.status(http.Success).json({
@@ -419,7 +421,7 @@ exports.getInitDataStore = async (req, res) => {
             data: {
                 logoURL: result[0].logo_url,
                 listPagesId: result[1],
-                template : result[2]
+                template: result[2]
             },
             message: "Get data successfully!"
         })
@@ -440,7 +442,7 @@ exports.getHeaderData = async (req, res) => {
     const logoURL = storeService.getStoreLogoById(storeId);
     const storeName = storeService.getStoreNameById(storeId);
     const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
-    
+
     const result = await Promise.all([logoURL, storeName, menuItems]);
 
     if (result) {
@@ -466,7 +468,7 @@ exports.updateStoreData = async (req, res) => {
     const storeId = req.params.storeId;
     const logoUrl = req.body.logoUrl;
     const storeComponents = req.body.storeComponents;
-    
+
     const task1 = DBHelper.updateData({ id: storeId, logo_url: logoUrl }, "stores", "id");
     const task2 = storeService.uploadStoreComponentsFile(storeId, storeComponents);
 
@@ -530,7 +532,7 @@ exports.createProduct = async (req, res) => {
             let query = {
                 "name": productOptionQuery[i].name,
                 "product_id": productId,
-                "rank" : i
+                "rank": i
             }
             const newOption = await productOptionService.createDataOption(query)
 
@@ -541,7 +543,7 @@ exports.createProduct = async (req, res) => {
                     "value": productOptionQuery[i].value[j],
                     "product_id": productId,
                     "option_id": newOption.rows[0].id,
-                    "rank" : j
+                    "rank": j
                 }
                 const newOptionValue = await productOptionService.createDataOptionValue(optionQuery)
             }
