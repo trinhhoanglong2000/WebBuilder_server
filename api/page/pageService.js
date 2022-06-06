@@ -78,10 +78,9 @@ exports.getPageByName = async (name, store_id) => {
 
 exports.getPagesByStoreId = async (query) => {
   let condition = [];
-
   condition.push({ store_id: query.store_id })
   if (query.name) {
-    condition.push({ name: query.name })
+    condition.push({ [`UPPER(name)`] : { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" }})
   }
   if (query.is_default) {
     condition.push({ is_default: query.is_default })
