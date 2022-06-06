@@ -4,6 +4,7 @@
 }
 
 [name="footer"].footer-section a {
+    cursor: pointer;
     color: black;
 }
 

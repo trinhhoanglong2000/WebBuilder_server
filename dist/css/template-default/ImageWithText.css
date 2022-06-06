@@ -7,12 +7,21 @@
     padding: 2%;
 } 
 
-[name="imageWithText"] .text-part button{
-    background-color: rgb(216, 247, 166);
-    padding: 10px;
+[name="imageWithText"] .text-part a {
     border-radius: 5px;
-    border: 1px solid grey;
+    text-decoration: none;
+    cursor: pointer;
+    color: white;
+    border: 1px solid white;
+    background-color: #121212;
+    padding: 15px 35px;
 } 
+
+[name="imageWithText"] .text-part a:hover {
+    color: #121212;
+    background-color: white;
+    border: 1px solid #121212;
+}
 
 [name="imageWithText"] h1,
 [name="imageWithText"] p {

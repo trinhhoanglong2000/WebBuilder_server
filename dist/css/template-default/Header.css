@@ -52,20 +52,14 @@
     position: absolute;
     background-color: white;
     right: 20px;
-    width: 350px;
+    width: 80px;
     height: 45px;
     border: 2px solid #666666;
     border-radius: 5px;
     padding: 10px;
     justify-content: center;
     display: none;
-    animation-name: displaySearch;
     animation-duration: 0.5s;
-}
-
-@keyframes displaySearch {
-    0%   {width: 80px;}
-    100% {width: 350px;}
 }
 
 [name="header"].navbar .search-bound button {
@@ -81,7 +75,7 @@
     font-size: 20px;
 }
 
-[name="header"].navbar .search-bound input{
+[name="header"].navbar .search-bound input {
     border: none;
     outline: none;
     position: relative;
@@ -89,12 +83,13 @@
     padding-right: 5px;
 }
 
-[name="header"].navbar .search-bound span{
+[name="header"].navbar .search-bound span {
     position: relative;
     top: -3px;
+    left: 2px;
 }
 
-[name="header"].navbar .search-bound span i{
+[name="header"].navbar .search-bound span i {
     padding: 0px;
 }
 
