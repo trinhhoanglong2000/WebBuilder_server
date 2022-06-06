@@ -99,4 +99,16 @@ app.use(function (err, req, res, next) {
 //     });
 // }
 
+// const srcDir = `stores/new`;
+// const destDir = `stores/long`;
+
+// fse.copySync(srcDir, destDir, {
+//   overwrite: true
+// }, (err) => {
+//   if (err) {
+//     console.error(err);
+//   } else {
+//     console.log("success!");
+//   }
+// });
 module.exports = app;

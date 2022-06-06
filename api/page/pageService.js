@@ -11,12 +11,19 @@ const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const fse = require('fs-extra')
 
-exports.createPage = async (pageBody,url="",isDefault=false) => {
+exports.createPage = async (pageBody, url = "", isDefault = false, templateName = null, templateType = "_index") => {
   try {
     pageBody.id = uuidv4();
 
+    const data = await s3.getObject({
+      Bucket: "ezmall-bucket",
+      Key: `templates/${templateName}/${templateType}.json`
+    }).promise();
+    const id_store_content = data.Body.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
+    const content = JSON.parse(data.Body.toString('utf-8').replace(id_store_content,`${pageBody.store_id}`).replace(id_store_content,`${pageBody.store_id}`));
+    
     const s3Result = await s3.upload({
-      Body: JSON.stringify("", null, '\t'),
+      Body: JSON.stringify(content, null, '\t'),
       Bucket: "ezmall-bucket",
       ACL: 'public-read',
       ContentType: 'text/json',
@@ -24,9 +31,9 @@ exports.createPage = async (pageBody,url="",isDefault=false) => {
     }).promise();
 
     pageBody.content_url = s3Result ? s3Result.Location : "";
-    if (url ==="")
+    if (url === "")
       pageBody.page_url = '/' + URLParser.generateURL(pageBody.name);
-    else{
+    else {
       pageBody.page_url = '/' + url
     }
 
@@ -34,7 +41,7 @@ exports.createPage = async (pageBody,url="",isDefault=false) => {
             INSERT INTO pages (id, store_id, name, content_url, page_url, is_default) 
             VALUES ($1, $2, $3, $4, $5 , $6)
             returning id, content_url, page_url;
-            `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url,isDefault]);
+            `, [pageBody.id, pageBody.store_id, pageBody.name, pageBody.content_url, pageBody.page_url, isDefault]);
 
 
     return result;
@@ -71,11 +78,13 @@ exports.getPageByName = async (name, store_id) => {
 
 exports.getPagesByStoreId = async (query) => {
   let condition = [];
-
   condition.push({ store_id: query.store_id })
-  if (query.name)
-    condition.push({ name: query.name })
-
+  if (query.name) {
+    condition.push({ [`UPPER(name)`] : { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" }})
+  }
+  if (query.is_default) {
+    condition.push({ is_default: query.is_default })
+  }
   let config = {
     where: {
       "OP.AND": condition
@@ -101,17 +110,17 @@ exports.savePageContent = async (storeId, pageId, content) => {
   }
 };
 exports.saveHTMLFile = async (storeId, pageId, content) => {
-  URLParser.saveHTMLFile(storeId,pageId,content)
+  URLParser.saveHTMLFile(storeId, pageId, content)
 };
 exports.createHTMLFile = async (storeId, pageId, content) => {
-  URLParser.createHTMLFile(storeId,pageId,content)
+  URLParser.createHTMLFile(storeId, pageId, content)
 };
 exports.removeHTMLFile = async (pageId) => {
   URLParser.removeHTMLFile(pageId)
 }
 
 exports.renameHTMLFile = async (pageId, newName) => {
-  URLParser.renameHTMLFile(pageId,newName)
+  URLParser.renameHTMLFile(pageId, newName)
 }
 
 var getPagesByStoreIdAndId = exports.getPagesByStoreIdAndId = async (query) => {
