@@ -60,10 +60,10 @@ exports.deleteProductCollection = async (req, res) => {
     let productQuery = {}
     productQuery.id = id
 
-    let productRelativeQuery = {
-        productcollection_id: id
-    }
-    const deleteProduct_ProductCollection = await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
+    // let productRelativeQuery = {
+    //     productcollection_id: id
+    // }
+    // const deleteProduct_ProductCollection = await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
     const newProduct = await collectionService.deleteProduct(productQuery)
     if (newProduct) {
         res.status(http.Created).json({
@@ -116,7 +116,7 @@ exports.getcollectionById = async (req, res) => {
             }
         }
     }
-    if (result) {
+    if (result.length > 0) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: resultQuery,

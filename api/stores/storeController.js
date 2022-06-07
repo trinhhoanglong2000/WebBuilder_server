@@ -23,17 +23,17 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true,"template-default");
+    let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true, "template-default");
     if (page) {
         await pageService.createHTMLFile(storeId, page.rows[0].id)
     }
 
-    page = await pageService.createPage({ store_id: storeId, name: "Products" }, "", true,"template-default");
+    page = await pageService.createPage({ store_id: storeId, name: "Products" }, "", true, "template-default");
     if (page) {
         await pageService.createHTMLFile(storeId, page.rows[0].id)
     }
 
-    page = await pageService.createPage({ store_id: storeId, name: "Cart" }, "", true,"template-default");
+    page = await pageService.createPage({ store_id: storeId, name: "Cart" }, "", true, "template-default");
     if (page) {
         await pageService.createHTMLFile(storeId, page.rows[0].id)
     }
@@ -669,6 +669,75 @@ exports.createBannerCollection = async (req, res) => {
             statusCode: http.Created,
             data: newCollection,
             message: "Create banner Collection successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.deleteStore = async (req, res) => {
+    const id = req.params.id
+    let check = {
+        id: req.params.id,
+        user_id: req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req, res, check)
+    if (!authen) {
+        return
+    }
+
+    let query = {
+        store_id: id
+    }
+    //Get Data Collections
+    const bannerCollection = await bannercollectionService.getCollectionsByStoreId(query);
+    const productCollection = await productcollectionService.getData(query)
+    const products = await productService.getProductsByStoreId(query)
+    const pages = await pageService.getPagesByStoreId(query)
+
+    //Delete Data Collection
+    if (bannerCollection.length > 0) {
+        for (let i = 0; i < bannerCollection.length; i++) {
+            await bannercollectionService.deleteBanner({ id: bannerCollection[i].id })
+        }
+    }
+    if (productCollection.length > 0) {
+        for (let i = 0; i < productCollection.length; i++) {
+            await productcollectionService.deleteProduct({ id: productCollection[i].id })
+        }
+    }
+
+    if (products.length > 0) {
+        for (let i = 0; i < products.length; i++) {
+            let productQuery = {}
+            productQuery.id = products[i].id
+
+            let productRelativeQuery = {}
+            productRelativeQuery.product_id = products[i].id
+            await productService.deleteProductRelative("product_variant", productRelativeQuery)
+            await productService.deleteProductRelative("product_optionvalue", productRelativeQuery)
+            await productService.deleteProductRelative("product_option", productRelativeQuery)
+            await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
+            await productService.deleteProduct(productQuery)
+        }
+    }
+
+    if (pages.length > 0) {
+        for (let i = 0; i < pages.length; i++) {
+            await pageService.deletePage({ id: pages[i].id })
+        }
+    }
+   
+    let deleteStore = await storeService.deleteStores({ id: id })
+    if (deleteStore) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: deleteStore,
+            message: "Delete Stores successfully!"
         })
     }
     else {

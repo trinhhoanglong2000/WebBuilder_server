@@ -5,7 +5,7 @@ const s3 = new AWS.S3();
 const fileService = require('../../files/fileService')
 const DBHelper = require('../../../helper/DBHelper/DBHelper');
 const { query } = require('express');
-
+const productService = require('../../products/productService')
 
 exports.createCollection = async (collectionObj) => {
     try {
@@ -52,6 +52,11 @@ exports.updateProductCollection = async (query) => {
     
 
 exports.deleteProduct = async (productObj) => {
+    let productRelativeQuery = {
+        productcollection_id: productObj.id
+    }
+    await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
+
     const key = `richtext/productcollection/${productObj.id}.json`;
     await fileService.deleteObjectByKey(key)
     return DBHelper.deleteData("productcollections",productObj)

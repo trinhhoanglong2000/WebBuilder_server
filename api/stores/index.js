@@ -29,4 +29,7 @@ router.post('/save-store-data/:storeId', authenticator.Authenticate, storeContro
 router.post('/:id/products', authenticator.Authenticate, storeController.createProduct);
 router.post('/:id/collections', authenticator.Authenticate, storeController.createCollection);
 router.post('/:id/bannercollections', authenticator.Authenticate, storeController.createBannerCollection);
+
+//DELETE STORE
+router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
 module.exports = router;

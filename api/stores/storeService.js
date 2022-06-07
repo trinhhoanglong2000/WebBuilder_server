@@ -163,3 +163,7 @@ exports.FindUserAndStore = async (query) => {
 exports.FindStoreByQuery = async (query) => {
     return DBHelper.getData("stores",query)
 }
+
+exports.deleteStores = async (productObj) => {
+    return DBHelper.deleteData("stores", productObj)
+}

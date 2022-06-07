@@ -74,10 +74,10 @@ exports.deleteBannerCollection = async (req, res) => {
     let bannerQuery = {}
     bannerQuery.id = id
 
-    let bannerRelativeQuery = {
-        bannercollection_id: id
-    }
-    await bannerService.deleteBannerRelative("banners", bannerRelativeQuery)
+    // let bannerRelativeQuery = {
+    //     bannercollection_id: id
+    // }
+    // await bannerService.deleteBannerRelative("banners", bannerRelativeQuery)
     const newProduct = await collectionService.deleteBanner(bannerQuery)
     if (newProduct) {
         res.status(http.Created).json({

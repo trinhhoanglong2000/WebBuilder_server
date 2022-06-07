@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const fileService = require('../../files/fileService')
 const s3 = new AWS.S3();
 const DBHelper = require('../../../helper/DBHelper/DBHelper');
+const bannerService = require('../../banners/bannerService')
 exports.createCollection = async (collectionObj) => {
     collectionObj.id = uuidv4();
     try {
@@ -110,6 +111,11 @@ exports.getDescription = async (collectionId) => {
 };
 
 exports.deleteBanner= async (productObj) => {
+    let bannerRelativeQuery = {
+        bannercollection_id: productObj.id
+    }
+    await bannerService.deleteBannerRelative("banners", bannerRelativeQuery)
+
     const key = `richtext/bannercollection/${productObj.id}.json`;
     await fileService.deleteObjectByKey(key)
     return DBHelper.deleteData("bannercollections", productObj)
