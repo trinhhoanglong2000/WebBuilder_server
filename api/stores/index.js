@@ -32,4 +32,7 @@ router.post('/:id/bannercollections', authenticator.Authenticate, storeControlle
 
 //DELETE STORE
 router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
+
+//ROUTER PUBLISH STORE
+router.post('/:id/publish',authenticator.Authenticate, storeController.publishStore)
 module.exports = router;

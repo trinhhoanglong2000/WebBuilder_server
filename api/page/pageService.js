@@ -20,8 +20,8 @@ exports.createPage = async (pageBody, url = "", isDefault = false, templateName 
       Key: `templates/${templateName}/${templateType}.json`
     }).promise();
     const id_store_content = data.Body.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
-    const content = JSON.parse(data.Body.toString('utf-8').replace(id_store_content,`${pageBody.store_id}`).replace(id_store_content,`${pageBody.store_id}`));
-    
+    const content = JSON.parse(data.Body.toString('utf-8').replace(id_store_content, `${pageBody.store_id}`).replace(id_store_content, `${pageBody.store_id}`));
+
     const s3Result = await s3.upload({
       Body: JSON.stringify(content, null, '\t'),
       Bucket: "ezmall-bucket",
@@ -37,6 +37,7 @@ exports.createPage = async (pageBody, url = "", isDefault = false, templateName 
       pageBody.page_url = '/' + url
     }
 
+    pageBody.page_url = await createValidURL(pageBody.page_url, pageBody.store_id)
     const result = await db.query(`
             INSERT INTO pages (id, store_id, name, content_url, page_url, is_default) 
             VALUES ($1, $2, $3, $4, $5 , $6)
@@ -53,9 +54,41 @@ exports.createPage = async (pageBody, url = "", isDefault = false, templateName 
 
 };
 
+var createValidURL = exports.createValidURL = async (name, storeId) => {
+  const data = await FindPageByIdOnly({ store_id: storeId, page_url: name })
+  if (data.length == 0) {
+    return name
+  }
+  else {
+    var count = 1
+    var newName = name + "-" + count
+    var newdata = await FindPageByIdOnly({ store_id: storeId, page_url: newName })
+    while (newdata.length > 0) {
+      count += 1
+      newName = name + "-" + count
+      newdata = await FindPageByIdOnly({ store_id: storeId, page_url: newName })
+    }
+    return newName
+  }
+}
+
+
 exports.updatePage = async (data) => {
   data.name = data.name.trim();
-  data.page_url = '/' + URLParser.generateURL(data.name);
+
+  data.page_url = URLParser.generateURL(data.page_url.trim())
+
+  const pageData = await FindPageByIdOnly({ id: data.id })
+
+  if (pageData) {
+    if (pageData[0].page_url !== data.page_url) {
+      data.page_url = await createValidURL(data.page_url, data.store_id)
+    }
+  }
+  else {
+    data.page_url = await createValidURL(data.page_url, data.store_id)
+  }
+
   return DBHelper.updateData(data, "pages", "id")
 }
 
@@ -76,11 +109,11 @@ exports.getPageByName = async (name, store_id) => {
   return result.rows;
 }
 
-exports.getPagesByStoreId = async (query) => {
+var getPagesByStoreId = exports.getPagesByStoreId = async (query) => {
   let condition = [];
   condition.push({ store_id: query.store_id })
   if (query.name) {
-    condition.push({ [`UPPER(name)`] : { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" }})
+    condition.push({ [`UPPER(name)`]: { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" } })
   }
   if (query.is_default) {
     condition.push({ is_default: query.is_default })

@@ -226,6 +226,25 @@ exports.changeContent = async (req, res) => {
     }
 };
 
+exports.publishStore = async (req, res) => {
+
+    const storeId = req.params.id;
+    const result = await storeService.publishStore(storeId)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: true,
+            message: "Publish Store successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.loadContent = async (req, res) => {
     const storeId = req.params.storeId;
     const pageId = req.params.pageId;

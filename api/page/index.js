@@ -9,6 +9,7 @@ router.put('/', authenticator.Authenticate, pageController.update);
 
 router.get('/:id/content-url', pageController.getPageContentURL);
 
+router.post('/check-url', pageController.checkURL);
 router.delete('/:id', authenticator.Authenticate, pageController.delete);
 
 

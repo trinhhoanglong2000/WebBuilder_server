@@ -22,6 +22,12 @@ exports.generateCode = () => {
 
     return token;
 }
+
+exports.checkValidURL = (data) => {
+  const check = data.match(/^\/[/.a-zA-Z0-9-]+$/gm)
+  return check;
+}
+
 exports.saveHTMLFile = async (storeId, pageId, content) => {
     const storeName = await storeService.findById(storeId)
   
