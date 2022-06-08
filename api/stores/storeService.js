@@ -64,7 +64,13 @@ var findById = exports.findById = async (id) => {
             WHERE (id = '${id}')
         `)
 
-        return result.rows[0];
+        if (result.rows.length > 0){
+            return result.rows[0];
+        }
+        else {
+            return null
+        }
+        
     } catch (error) {
         console.log(error);
         return null;
@@ -192,6 +198,9 @@ exports.deleteStores = async (productObj) => {
 
 exports.publishStore = async (storeId) => {
     const storeName = await findById(storeId)
+    if (!storeName){
+        return null
+    }
     const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
 
 
@@ -204,9 +213,8 @@ exports.publishStore = async (storeId) => {
         });
     const allPages = await pageService.getPagesByStoreId({ store_id: storeId })
     for (let i = 0; i < allPages.length; i++) {
-        console.log(allPages[i].id)
-        console.log(allPages[i].name)
         const content = await pageService.findPageById(storeId, allPages[i].id)
         await pageService.saveHTMLFile(storeId, allPages[i].id, content)
     }
+    return true
 }

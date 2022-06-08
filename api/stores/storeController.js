@@ -209,7 +209,7 @@ exports.changeContent = async (req, res) => {
     const pageId = req.params.pageId;
     const storeId = req.params.storeId;
     const result = await pageService.savePageContent(storeId, pageId, req.body);
-    await pageService.saveHTMLFile(storeId, pageId, req.body)
+    //await pageService.saveHTMLFile(storeId, pageId, req.body)
     //console.log(req.body)
     if (result) {
         res.status(http.Success).json({
@@ -229,6 +229,8 @@ exports.changeContent = async (req, res) => {
 exports.publishStore = async (req, res) => {
 
     const storeId = req.params.id;
+
+    const store = await storeService.findById(storeId)
     const result = await storeService.publishStore(storeId)
     if (result) {
         res.status(http.Success).json({

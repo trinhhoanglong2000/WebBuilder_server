@@ -42,7 +42,7 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
     }
     const templateName = await templateService.getTemplateById(queryTemplate)
     const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
-    const pageNameConvert = PageName[0] ? generateURL(PageName[0].name) : null;
+    const pageNameConvert = PageName[0] ? generateURL(PageName[0].page_url) : null;
   
     //Create HTML FOOTER HEADER AND BODY
   
