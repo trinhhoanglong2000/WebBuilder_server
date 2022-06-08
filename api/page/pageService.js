@@ -77,7 +77,11 @@ exports.updatePage = async (data) => {
   data.name = data.name.trim();
 
   data.page_url = URLParser.generateURL(data.page_url.trim())
-
+  const result = URLParser.checkValidURL(data.page_url)
+  console.log(result)
+  if (!result){
+    return null
+  }
   const pageData = await FindPageByIdOnly({ id: data.id })
 
   if (pageData) {
