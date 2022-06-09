@@ -75,16 +75,17 @@ var createValidURL = exports.createValidURL = async (name, storeId) => {
 
 exports.updatePage = async (data) => {
   data.name = data.name.trim();
-
+  data.page_url = "/pages" + data.page_url
   data.page_url = URLParser.generateURL(data.page_url.trim())
   const result = URLParser.checkValidURL(data.page_url)
-  console.log(result)
-  if (!result){
+  if (!result) {
     return null
   }
   const pageData = await FindPageByIdOnly({ id: data.id })
-
   if (pageData) {
+    if (pageData[0].is_default) {
+      return null
+    }
     if (pageData[0].page_url !== data.page_url) {
       data.page_url = await createValidURL(data.page_url, data.store_id)
     }
