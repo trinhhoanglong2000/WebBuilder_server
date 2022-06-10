@@ -41,7 +41,7 @@ function Render(data,itemID,e){
       link: "/",
     }
   ]
-  let listBanners = data == null ? [] : data.listBanners;
+  let listBanners = data == null ? [] : data.banners;
   let carouselIndicators =$(e).find('.carousel-indicators')[0];
   let carouselInner =  $(e).find('.carousel-inner')[0]
   carouselIndicators.innerHTML = "";
