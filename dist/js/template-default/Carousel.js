@@ -13,7 +13,10 @@ async function CarouselsGenerateCodeItem(e) {
       }
     }).then( res =>res.json()).then(myJson => myJson.data).then(data =>{
       Render(data,itemID,e)
-    })
+    }).catch(error => {
+      console.log(error)
+      insertCarouselData(defaultData, carouselIndicators, carouselInner)
+  })
   }
 }
 
@@ -43,7 +46,10 @@ function Render(data,itemID,e){
   let carouselInner =  $(e).find('.carousel-inner')[0]
   carouselIndicators.innerHTML = "";
   carouselInner.innerHTML = "";
-  if (listBanners.length == 0) {
+  if (listBanners == null || typeof listBanners == "undefined"){
+    listBanners = [...defaultData]
+  }
+  else if (listBanners.length == 0) {
     listBanners = [...defaultData]
   } 
   listBanners.forEach((item, index) => {
