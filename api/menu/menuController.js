@@ -6,7 +6,7 @@ exports.createMenu = async (req, res) => {
     // create new store
     const menuObj = {
         store_id: req.body.store_id,
-        title: req.body.title
+        name: req.body.name
     };
     const newMenu = await menuService.createMenu(menuObj);
     if (newMenu) {

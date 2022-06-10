@@ -1,13 +1,22 @@
 //const sgMail = require('@sendgrid/mail')
 //const apiKey = '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';
 
-const transporter = require('../../config/email');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('../../helper/genSalt');
 const verificationService = require('../verification/verificationService');
 const accountService = require('../accounts/accountService');
 const passwordResetService = require('../password_reset/passwordResetService');
+const nodemailer = require('nodemailer');
+const ggAuth = require('google-auth-library');
 
+const myOAuth2Client = new ggAuth.OAuth2Client(
+    process.env.GOOGLE_MAILER_CLIENT_ID,
+    process.env.GOOGLE_MAILER_CLIENT_SECRET
+)
+
+myOAuth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN
+})
 
 exports.sendResetPasswordEmail = async (email) => {
     const user = await accountService.getUserByEmail(email);
@@ -22,12 +31,27 @@ exports.sendResetPasswordEmail = async (email) => {
 
     let success = true,
     message = ''
+
+    const myAccessTokenObject = await myOAuth2Client.getAccessToken()
+    const myAccessToken = myAccessTokenObject?.token
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          type: 'OAuth2',
+          user: process.env.ADMIN_EMAIL_ADDRESS,
+          clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
+          refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+          accessToken: myAccessToken
+        }
+    })
+
     const uniqueString = uuidv4() + user.id;
     const redirectURL = process.env.MANAGEMENT_CLIENT_URL + `/reset-password/${user.id}/${uniqueString}`;
     await passwordResetService.delete(user.id);
 
     const Options = {
-        from: `"EASYMALL" ${process.env.AUTH_MAIL_USER}`, // sender address
+        from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`, // sender address
         to: [email], // list of receivers
         subject: "[EASYMALL PASSWORD RESET]", // Subject line
         html: 
@@ -57,8 +81,22 @@ exports.sendResetPasswordEmail = async (email) => {
 exports.sendVerifyEmail = async (email, id) => {
     let result = true;
     const uniqueString = uuidv4() + id;
+
+    const myAccessTokenObject = await myOAuth2Client.getAccessToken()
+    const myAccessToken = myAccessTokenObject?.token
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          type: 'OAuth2',
+          user: process.env.ADMIN_EMAIL_ADDRESS,
+          clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
+          refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+          accessToken: myAccessToken
+        }
+    })
     const Options = {
-        from: `"EASYMALL" ${process.env.AUTH_MAIL_USER}`, // sender address
+        from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`, // sender address
         to: [email], // list of receivers
         subject: "[EASYMALL VERIFY]", // Subject line
         html: 

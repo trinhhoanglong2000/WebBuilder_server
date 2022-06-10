@@ -78,7 +78,6 @@ exports.updatePage = async (data) => {
 
   data.page_url = URLParser.generateURL(data.page_url.trim())
   const result = URLParser.checkValidURL(data.page_url)
-  console.log(result)
   if (!result){
     return null
   }
