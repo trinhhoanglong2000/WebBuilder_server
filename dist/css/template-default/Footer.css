@@ -4,6 +4,7 @@
 }
 
 [name="footer"].footer-section a {
+    cursor: pointer;
     color: black;
 }
 
@@ -42,6 +43,20 @@
     border-radius: 8px;
 }
 
+[name="footer"].footer-section div[name="QuickLink"].one-row h5 {
+    text-align: center;
+}
+
+[name="footer"].footer-section div[name="QuickLink"].one-row ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+[name="footer"].footer-section div[name="QuickLink"].one-row ul li {
+    min-width: 25%;
+}
+
 /* Css header trait */
 [name='footer'][theme='white'].footer-section { 
     background-color: white;
@@ -58,7 +73,7 @@
 } 
 
 [name='footer'][theme='black'].footer-section a { 
-    color: #cccbe9;
+    color: white;
 }
 
 [name='footer'][theme='lGreen'].footer-section { 

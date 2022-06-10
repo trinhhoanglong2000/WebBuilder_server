@@ -4,7 +4,6 @@ const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const productCollectionSerice = require('../collections/productcollections/productcollectionService');
-const { collection } = require('../accounts/accountModel');
 exports.updateProduct = async (req, res) => {
     // update produt
     const productId = req.params.id;
@@ -260,8 +259,14 @@ exports.getProductById = async (req, res) => {
     const id = req.params.id;
     const result = await productService.findById(id);
     let returnData = {}
-    if (result[0]) {
+    if (result.length > 0) {
+        
+        if (result[0].description){
+            const content = await productService.getDescription(result[0].id)
+            result[0].description = content
+        }
         returnData.product = result
+
         let resultOption = await productOptionService.getOptionFromProductId(id)
         if (resultOption) {
             for (let i = 0; i < resultOption.length; i++) {

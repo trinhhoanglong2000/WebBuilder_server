@@ -6,13 +6,16 @@ const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 const URLParser = require('../../helper/common')
 const templateService = require('../template/templateService')
+const pageService = require('../page/pageService')
+const fse = require('fs-extra')
+
 exports.createStore = async (storeObj) => {
     if (storeObj.name) {
         storeObj.name = storeObj.name.trim();
-        storeObj.store_link =  URLParser.generateURL(storeObj.name) + '.myeasymall.site';
+        storeObj.store_link = URLParser.generateURL(storeObj.name) + '.myeasymall.site';
     }
-    let template = await templateService.getTemplate({name : "template-default"})
-    if (template){
+    let template = await templateService.getTemplate({ name: "template-default" })
+    if (template) {
         storeObj.template_id = template[0].id
     }
     return DBHelper.insertData(storeObj, "stores", true)
@@ -53,7 +56,7 @@ exports.getStoreByName = async (name) => {
     return result.rows;
 }
 
-exports.findById = async (id) => {
+var findById = exports.findById = async (id) => {
     try {
         const result = await db.query(`
             SELECT * 
@@ -61,7 +64,13 @@ exports.findById = async (id) => {
             WHERE (id = '${id}')
         `)
 
-        return result.rows[0];
+        if (result.rows.length > 0){
+            return result.rows[0];
+        }
+        else {
+            return null
+        }
+        
     } catch (error) {
         console.log(error);
         return null;
@@ -134,14 +143,14 @@ exports.getTemplate = async (id) => {
             "template": {
                 condition: {
                     "stores.template_id": "template.id",
-                }   
+                }
             }
         },
         select: "template.name",
         where: {
             "stores.id": id
         },
-        
+
     }
     const data = await DBHelper.FindAll("stores", config);
     return data[0].name;
@@ -157,9 +166,55 @@ exports.getTemplate = async (id) => {
 //   }
 // }
 exports.FindUserAndStore = async (query) => {
-    return DBHelper.getData("stores",query)
+    return DBHelper.getData("stores", query)
 }
 
 exports.FindStoreByQuery = async (query) => {
-    return DBHelper.getData("stores",query)
+    return DBHelper.getData("stores", query)
+}
+
+exports.deleteStores = async (productObj) => {
+    const storeName = await findById(productObj.id)
+    const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+
+
+    fse.rm(`views/partials/${storeNameConvert}`, { recursive: true, force: true })
+        .then(() => {
+            console.log('The file has been deleted!');
+        })
+        .catch(err => {
+            console.error(err)
+        });
+
+    fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true })
+        .then(() => {
+            console.log('The file has been deleted!');
+        })
+        .catch(err => {
+            console.error(err)
+        });
+    return DBHelper.deleteData("stores", productObj)
+}
+
+exports.publishStore = async (storeId) => {
+    const storeName = await findById(storeId)
+    if (!storeName){
+        return null
+    }
+    const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+
+
+    fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true })
+        .then(() => {
+            console.log('The file has been deleted!');
+        })
+        .catch(err => {
+            console.error(err)
+        });
+    const allPages = await pageService.getPagesByStoreId({ store_id: storeId })
+    for (let i = 0; i < allPages.length; i++) {
+        const content = await pageService.findPageById(storeId, allPages[i].id)
+        await pageService.saveHTMLFile(storeId, allPages[i].id, content)
+    }
+    return true
 }

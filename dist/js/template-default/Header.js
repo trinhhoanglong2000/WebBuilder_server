@@ -31,6 +31,24 @@ function embedHeaderData() {
         }
         
         $('nav[name="header"] .navbar-nav').html(generateHeaderMenu(data.menuItems));
+
+        let searchBound = `<div id="searchBound" class="search-bound">
+                                <button type="button" id="closeSearchBound"><i class="fa fa-arrow-right fa-xs" aria-hidden="true"></i></button>
+                                <input type="text" placeholder="Search...">
+                                <span><i class="fa fa-search"></i></span>
+                            </div>`
+        $('nav[name="header"]').append(searchBound);
+
+        $('#closeSearchBound').on('click', function() {
+            $('#searchBound').animate({width: '85px'}, function() {
+                $('#searchBound').hide();
+            });
+        })
+        
+        $('i.fa.fa-search').on('click', function() {
+            $('#searchBound').css('display', 'flex');
+            $('#searchBound').animate({width: '350px'});
+        })
     });
 }
 

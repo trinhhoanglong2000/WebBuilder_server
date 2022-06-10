@@ -24,7 +24,7 @@ passport.use(
           return done(null, { id: acc.id, email: email });
         }
       }
-      return done(null, false, { message: "incorect usernanme or password!" });
+      return done(null, false, { message: "Incorect email or password!" });
     }
   )
 );

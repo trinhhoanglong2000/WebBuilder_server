@@ -6,9 +6,8 @@ function embedFooterData() {
     $('div[name="QuickLink"]').each(function() {
         const menu = $(this).find('.quicklinks-menu');
         const id = $(this).attr('menu-collection')
-        if (!id) return;
         
-        fetch(`${serverURL}/menu/${id}`)
+        id && fetch(`${serverURL}/menu/${id}`)
         .then((response) => response.json())
         .then((response) => {
             if (response.data?.listMenuItem) {

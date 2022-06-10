@@ -1,11 +1,11 @@
 const db = require('../../../database');
 const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 const fileService = require('../../files/fileService')
 const DBHelper = require('../../../helper/DBHelper/DBHelper');
-const { collection } = require('../../accounts/accountModel');
 const { query } = require('express');
-const s3 = new AWS.S3();
+const productService = require('../../products/productService')
 
 exports.createCollection = async (collectionObj) => {
     try {
@@ -52,6 +52,13 @@ exports.updateProductCollection = async (query) => {
     
 
 exports.deleteProduct = async (productObj) => {
+    let productRelativeQuery = {
+        productcollection_id: productObj.id
+    }
+    await productService.deleteProductRelative("product_productcollection", productRelativeQuery)
+
+    const key = `richtext/productcollection/${productObj.id}.json`;
+    await fileService.deleteObjectByKey(key)
     return DBHelper.deleteData("productcollections",productObj)
 }
 
@@ -142,3 +149,17 @@ exports.getProductCollectionByProductId = async(id) => {
     }
     return DBHelper.FindAll("productcollections",config)
 }
+
+exports.getDescription = async (collectionId) => {
+    try {
+      const data = await s3.getObject({
+        Bucket: "ezmall-bucket",
+        Key: `richtext/productcollection/${collectionId}.json`
+      }).promise();
+      const content = JSON.parse(data.Body.toString('utf-8'));
+      return content;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };

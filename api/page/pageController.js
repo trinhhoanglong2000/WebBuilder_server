@@ -1,9 +1,29 @@
 const pageService = require('./pageService');
 const http = require('../../const')
-
+const URLParser = require('../../helper/common/index')
+exports.checkURL = async (req,res) => {
+    const result = URLParser.checkValidURL(req.body.url)
+    
+    //const result = await pageService.deletePage(query);
+  
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "A valid URL Path"
+        })
+    }
+    else {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "A invalid URL Path"
+        })
+    }
+}
 exports.create = async (req, res) => {
     const pageBody = req.body;
-    const isExist = await pageService.getPageByName(pageBody.name)
+    const isExist = await pageService.getPageByName(pageBody.name,pageBody.store_id)
     if (isExist && isExist.rows) {
         res.status(http.Conflict).json({
             statusCode: http.Conflict,
@@ -11,9 +31,10 @@ exports.create = async (req, res) => {
         })
         return
     }
-    const page = await pageService.createPage(pageBody,"");
+
+    const page = await pageService.createPage(pageBody,"",false,"template-default");
     if (page) {
-        await pageService.createHTMLFile(pageBody.store_id,page.rows[0].id)
+        //await pageService.createHTMLFile(pageBody.store_id,page.rows[0].id)
     }
     if (page) {
         res.status(http.Created).json({
@@ -32,7 +53,7 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     const pageBody = req.body;
-    await pageService.renameHTMLFile(req.body.id,req.body.name)
+    //await pageService.renameHTMLFile(req.body.id,req.body.name)
     const result = await pageService.updatePage(pageBody);
   
     if (result) {
@@ -52,7 +73,7 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     const query = { id: req.params.id };
-    await pageService.removeHTMLFile(req.params.id)
+    //await pageService.removeHTMLFile(req.params.id)
     
     const result = await pageService.deletePage(query);
   

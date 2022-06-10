@@ -2,7 +2,8 @@ const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 const fileService = require('../files/fileService')
-
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 exports.createProduct = async (productObj) => {
     productObj.id = uuidv4();
 
@@ -27,6 +28,8 @@ exports.updateProduct = async (productObj) => {
     return DBHelper.updateData(productObj, "products", "id")
 }
 exports.deleteProduct = async (productObj) => {
+    const key = `richtext/product/${productObj.id}.json`;
+    await fileService.deleteObjectByKey(key)
     return DBHelper.deleteData("products", productObj)
 }
 exports.deleteProductRelative = async (name, productObj) => {
@@ -82,7 +85,7 @@ exports.getProductsByStoreId = async (query) => {
 
     let conditionQuery = [store_Query]
     if (condition.length > 0) {
-        conditionQuery.push({ "OP.OR": condition })
+        conditionQuery.push({ "OP.AND": condition })
     }
     let config = {
         where: {
@@ -174,3 +177,17 @@ exports.getVendor = async (query) => {
 
     return DBHelper.FindAll("products",config)
 }
+
+exports.getDescription = async (productId) => {
+    try {
+      const data = await s3.getObject({
+        Bucket: "ezmall-bucket",
+        Key: `richtext/product/${productId}.json`
+      }).promise();
+      const content = JSON.parse(data.Body.toString('utf-8'));
+      return content;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
