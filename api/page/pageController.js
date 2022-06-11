@@ -1,11 +1,9 @@
 const pageService = require('./pageService');
 const http = require('../../const')
 const URLParser = require('../../helper/common/index')
-exports.checkURL = async (req,res) => {
+exports.checkURL = (req,res) => {
     const result = URLParser.checkValidURL(req.body.url)
     
-    //const result = await pageService.deletePage(query);
-  
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -14,8 +12,8 @@ exports.checkURL = async (req,res) => {
         })
     }
     else {
-        res.status(http.Success).json({
-            statusCode: http.Success,
+        res.status(http.NotAcceptable).json({
+            statusCode: http.NotAcceptable,
             data: result,
             message: "A invalid URL Path"
         })
@@ -24,7 +22,7 @@ exports.checkURL = async (req,res) => {
 exports.create = async (req, res) => {
     const pageBody = req.body;
     const isExist = await pageService.getPageByName(pageBody.name,pageBody.store_id)
-    if (isExist && isExist.rows) {
+    if (isExist && isExist.length) {
         res.status(http.Conflict).json({
             statusCode: http.Conflict,
             message: "This page already exist!"
