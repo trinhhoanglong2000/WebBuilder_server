@@ -18,6 +18,7 @@ const collectionRouter = require('./api/collections');
 const bannerRouter = require('./api/banners');
 const authRouter = require('./api/authenticator');
 const variantsRouter = require('./api/variants');
+const templateRouter = require('./api/template');
 const menuRouter = require('./api/menu');
 const menuItemRouter = require('./api/menuItem');
 const productOptionRouter = require('./api/products_option')
@@ -64,6 +65,7 @@ app.use('/collections', collectionRouter);
 app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
+app.use('/template', templateRouter)
 app.get('/',function (req,res) {
   res.send("Hi")
 })

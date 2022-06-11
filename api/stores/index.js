@@ -19,7 +19,8 @@ router.get('/:id/init-data', authenticator.Authenticate, storeController.getInit
 router.get('/:id/products/custom-type',authenticator.Authenticate, storeController.getCustomType);
 router.get('/:id/products/vendor', authenticator.Authenticate, storeController.getVendor);
 router.get('/:id/headerData', storeController.getHeaderData);
-
+router.get('/:id/template', authenticator.Authenticate, storeController.getTemplateByStore);
+router.get('/:id/paid-template', authenticator.Authenticate, storeController.getPaidTemplateByStore);
 /* POST create account. */
 router.post('/', authenticator.Authenticate, storeController.createStore);
 router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);

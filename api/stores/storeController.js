@@ -1,5 +1,6 @@
 const storeService = require('./storeService');
 const pageService = require('../page/pageService');
+const templateService = require('../template/templateService')
 const productService = require('../products/productService');
 const productcollectionService = require('../collections/productcollections/productcollectionService');
 const bannercollectionService = require('../collections/bannercollections/bannercollectionService');
@@ -810,5 +811,41 @@ exports.AuthenticateUserAndStore = async (req, res, check) => {
         else {
             return authenticateUser
         }
+    }
+}
+
+exports.getTemplateByStore = async (req,res) => {
+    const result = await templateService.getStoreTemplate({store_id : req.params.id})
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get pages successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getPaidTemplateByStore = async (req,res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await templateService.getPaidStoreTemplate(query)
+    if (result.length > 0) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Paid Template Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
     }
 }
