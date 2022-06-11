@@ -535,7 +535,6 @@ exports.createProduct = async (req, res) => {
     let productQuery = req.body.product
     productQuery.store_id = id
 
-
     let productOptionQuery = req.body.option
     let variantQuery = req.body.variant
     let collectionQuery = req.body.collection
