@@ -31,7 +31,8 @@
 }
 
 [name="footer"].footer-section .footer-navigation div img {
-    max-width: 100px;
+    max-width: 130px;
+    max-height: 160px;
 }
 
 [name="footer"].footer-section .fa-instagram:before {
