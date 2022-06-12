@@ -814,7 +814,7 @@ exports.AuthenticateUserAndStore = async (req, res, check) => {
     }
 }
 
-exports.getTemplateByStore = async (req,res) => {
+exports.getCurrentTemplateByStore = async (req,res) => {
     const result = await templateService.getStoreTemplate({store_id : req.params.id})
     if (result) {
         res.status(http.Success).json({
@@ -834,12 +834,53 @@ exports.getTemplateByStore = async (req,res) => {
 exports.getPaidTemplateByStore = async (req,res) => {
     const query = req.query;
     query.store_id = req.params.id;
+    query.user_id = req.user.id
     const result = await templateService.getPaidStoreTemplate(query)
-    if (result.length > 0) {
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
             message: "Get Paid Template Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getFreeTemplateByStore = async (req,res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    query.user_id = req.user.id
+    const result = await templateService.getFreeStoreTemplate(query)
+    if (result.length) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Free Template Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getTemplatesByStore = async (req,res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    query.user_id = req.user.id
+    const result = await templateService.getAllTemplatesAccount(query)
+    if (result.length) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Template Successfully!"
         })
     }
     else {
