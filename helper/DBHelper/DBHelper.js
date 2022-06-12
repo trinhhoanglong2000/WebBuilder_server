@@ -160,7 +160,8 @@ function LoopForOP(data) {
         "OP.GTE",
         "OP.GT",
         "OP.LT",
-        "OP.LTE"
+        "OP.LTE",
+        "OP.NOT"
     ]
 
     // a = {
@@ -187,6 +188,9 @@ function LoopForOP(data) {
             query = query + " AND " + LoopForOP(arr1[0][i])
         }
         query += ")"
+    }
+    else if (arr[0] == "OP.NOT"){
+        query += " NOT (" + LoopForOP(arr1[0]) + ")"
     }
     else if (arr[0] == "OP.LIKE") {
         query += ` LIKE '${arr1[0]}'`
