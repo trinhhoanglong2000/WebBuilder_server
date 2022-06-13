@@ -35,6 +35,8 @@ router.post('/:id/products', authenticator.Authenticate, storeController.createP
 router.post('/:id/collections', authenticator.Authenticate, storeController.createCollection);
 router.post('/:id/bannercollections', authenticator.Authenticate, storeController.createBannerCollection);
 
+// POST CREATE ORDER
+router.post('/:id/order',storeController.createOrder)
 //DELETE STORE
 router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
 

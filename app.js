@@ -25,6 +25,7 @@ const productOptionRouter = require('./api/products_option')
 const authenticator = require('./middleware/authentication');
 const emailRouter = require('./api/email');
 const verificationRouter = require('./api/verification');
+const orderRouter = require('./api/order');
 const userStoreRouter = require('./stores')
 const app = express();
 
@@ -66,6 +67,7 @@ app.use('/banners', bannerRouter);
 app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
 app.use('/template', templateRouter)
+app.use('/order', orderRouter)
 app.get('/',function (req,res) {
   res.send("Hi")
 })

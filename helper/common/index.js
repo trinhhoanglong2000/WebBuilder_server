@@ -10,7 +10,6 @@ var generateURL = exports.generateURL = (s) => {
 
 exports.generateCode = () => {
     const now = Date.now(); 
-
     let cur = now;
     let token = "";
 
