@@ -4,6 +4,6 @@ const orderController = require('./orderController')
 const authenticator = require('../../middleware/authentication');
 
 
-//router.get('/free', authenticator.Authenticate, templateController.getFreeTemplate);
+router.post('/:id/change-status', authenticator.Authenticate, orderController.changeOrderStatus);
 
 module.exports = router;

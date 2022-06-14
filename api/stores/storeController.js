@@ -1017,3 +1017,22 @@ exports.createOrder = async (req, res) => {
     }
 
 }
+
+exports.getOrderByStore = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await orderService.getAllStoreOrder(query)
+    if (result.length) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Order Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}

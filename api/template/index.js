@@ -6,5 +6,5 @@ const authenticator = require('../../middleware/authentication');
 router.post('/:id/use-template', authenticator.Authenticate, templateController.useTemplate);
 router.post('/:id/buy-template', authenticator.Authenticate, templateController.buyTemplate);
 
-router.post('/create-template', authenticator.Authenticate, templateController.createTemplate);
+router.post('/create-template', templateController.createTemplate);
 module.exports = router;

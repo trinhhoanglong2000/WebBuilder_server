@@ -182,7 +182,8 @@ exports.createTemplate = async (query) => {
             for (let i = 0; i < query.name.length; i++){
                 const newQuery = {
                     template_id : templateId,
-                    name : query.name[i]
+                    name : query.name[i].name,
+                    is_default : query.name[i].is_default,
                 }
                 await DBHelper.insertData(newQuery,"template_init",true)
             }
@@ -220,8 +221,8 @@ exports.useTemplate = async (query) => {
             store_id: query.store_id, 
             name: allNewPages[i].name 
         }
-        await pageService.createPage(createPagesQuery, "", true, templateName);
-        //await pageService.createPage(createPagesQuery, "", true, "template-default");
+        //await pageService.createPage(createPagesQuery, "", allNewPages[i].is_default, templateName);
+        await pageService.createPage(createPagesQuery, "", allNewPages[i].is_default, "template-default");
     }
 
     return DBHelper.updateData({template_id : query.template_id, id : query.store_id},"stores","id")
