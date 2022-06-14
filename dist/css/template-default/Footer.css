@@ -35,15 +35,6 @@
     max-height: 160px;
 }
 
-[name="footer"].footer-section .fa-instagram:before {
-    content: "\f16d";
-    color: white;
-    background: #222222;
-    font-size: 30px;
-    padding: 1px 4px;
-    border-radius: 8px;
-}
-
 [name="footer"].footer-section div[name="QuickLink"].one-row h5 {
     text-align: center;
 }
@@ -103,4 +94,3 @@
 [name='footer'][theme='sand'].footer-section a { 
     color: black;
 }
-

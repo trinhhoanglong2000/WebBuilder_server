@@ -1,0 +1,30 @@
+[name='pageNotFound'] .container {
+    height: 350px;
+}
+
+[name='pageNotFound'] .container .row,
+[name='pageNotFound'] .container .col {
+    height: inherit;
+}
+
+[name='pageNotFound'] .container .col-8 > div {
+    text-align: right;
+}
+[name='pageNotFound'] .container h1 {
+    margin: 10px 0px;
+    color: coral;
+}
+
+[name='pageNotFound'] .container h2,
+[name='pageNotFound'] .container a {
+    margin: 20px 0px;
+}
+
+[name='pageNotFound'] .container a {
+    background-color: palegreen;
+    text-decoration: none;
+    padding: 10px;
+    color: #121212;
+    border-radius: 5px;
+    padding: 10px 30px;
+}
