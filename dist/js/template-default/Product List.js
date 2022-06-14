@@ -1,4 +1,4 @@
-let urlProductList = null;
+var urlProductList = null;
 
 function productData(e) {
     let products_data=[];
@@ -14,7 +14,7 @@ function productData(e) {
     fetch(`${urlProductList}/collections/product/${id}`)
     .then((response) => response.json())
     .then((data) => {
-      if (data.data.products.length!=0) {
+      if (data.data.products && data.data.products.length!=0) {
         products_data = data.data.products;
       }
       else{
