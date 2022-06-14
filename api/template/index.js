@@ -3,6 +3,8 @@ const router = express.Router();
 const templateController = require('./templateController')
 const authenticator = require('../../middleware/authentication');
 
-//router.get('/free', authenticator.Authenticate, templateController.getFreeTemplate);
+router.post('/:id/use-template', authenticator.Authenticate, templateController.useTemplate);
+router.post('/:id/buy-template', authenticator.Authenticate, templateController.buyTemplate);
 
+router.post('/create-template', authenticator.Authenticate, templateController.createTemplate);
 module.exports = router;

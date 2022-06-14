@@ -4,6 +4,7 @@ const storeService = require('../stores/storeService')
 const { v4: uuidv4 } = require('uuid');
 const { query } = require('express');
 const { config } = require('dotenv');
+const pageService = require('../page/pageService')
 exports.getTemplate = async (query) => {
 
     let config = {
@@ -171,4 +172,73 @@ exports.getAllTemplatesAccount = async (query) => {
     else {
         return []
     }
+}
+
+exports.createTemplate = async (query) => {
+    const newTemplate  = await DBHelper.insertData(query.template,"template",true)
+    if (newTemplate){
+        const templateId = newTemplate.rows[0].id
+        if (query.name){
+            for (let i = 0; i < query.name.length; i++){
+                const newQuery = {
+                    template_id : templateId,
+                    name : query.name[i]
+                }
+                await DBHelper.insertData(newQuery,"template_init",true)
+            }
+        }
+    }
+
+    return newTemplate
+}
+exports.useTemplate = async (query) => {
+    //GET TEMPLATE INFO
+    const template = await getTemplateById({id : query.template_id})
+    let templateName
+    if (template){
+        if (template.length > 0){
+            templateName = template[0].name
+        }
+        else {
+            return null
+        }
+    }
+    else {
+         return null
+    }
+
+    //DELETE ALL PAGES
+    const allPages = await pageService.getPagesByStoreId({store_id : query.store_id})
+    for (let i = 0 ; i < allPages.length; i++){
+        await pageService.deletePage({id : allPages[i].id})
+    }
+
+    //INSERT NEW PAGES 
+    const allNewPages = await getAllTemplateInit({template_id : query.template_id})
+    for (let i = 0 ; i < allNewPages.length ; i++){
+        let  createPagesQuery = { 
+            store_id: query.store_id, 
+            name: allNewPages[i].name 
+        }
+        await pageService.createPage(createPagesQuery, "", true, templateName);
+        //await pageService.createPage(createPagesQuery, "", true, "template-default");
+    }
+
+    return DBHelper.updateData({template_id : query.template_id, id : query.store_id},"stores","id")
+}   
+
+exports.buyTemplate = async (query) => {
+    const insertQuery = {
+        user_id : query.user_id,
+        template_id : query.template_id
+    }
+    return DBHelper.insertData(insertQuery,"account_template",false,"template_id")
+}
+
+exports.getTemplateByAccount = async (query) => {
+    return DBHelper.getData("account_template", query)
+}
+
+var getAllTemplateInit = exports.getAllTemplateInit = async (query) => {
+    return DBHelper.getData("template_init",query)
 }
