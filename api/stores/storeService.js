@@ -64,13 +64,13 @@ var findById = exports.findById = async (id) => {
             WHERE (id = '${id}')
         `)
 
-        if (result.rows.length > 0){
+        if (result.rows.length > 0) {
             return result.rows[0];
         }
         else {
             return null
         }
-        
+
     } catch (error) {
         console.log(error);
         return null;
@@ -153,7 +153,12 @@ exports.getTemplate = async (id) => {
 
     }
     const data = await DBHelper.FindAll("stores", config);
-    return data[0].name;
+    if (data.length > 0) {
+        return data[0].name;
+    }
+    else {
+        return null
+    }
 }
 // join:{
 //   template:{
@@ -198,7 +203,7 @@ exports.deleteStores = async (productObj) => {
 
 exports.publishStore = async (storeId) => {
     const storeName = await findById(storeId)
-    if (!storeName){
+    if (!storeName) {
         return null
     }
     const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;

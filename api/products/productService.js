@@ -2,6 +2,8 @@ const db = require('../../database');
 const { v4: uuidv4 } = require('uuid');
 const DBHelper = require('../../helper/DBHelper/DBHelper')
 const fileService = require('../files/fileService')
+
+const variantService = require('../variants/VariantsService')
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 exports.createProduct = async (productObj) => {
@@ -17,7 +19,7 @@ exports.createProduct = async (productObj) => {
     }
     return DBHelper.insertData(productObj, "products", false, "id")
 }
-exports.updateProduct = async (productObj) => {
+var updateProduct = exports.updateProduct = async (productObj) => {
     if (productObj.description) {
         const body = JSON.stringify(productObj.description, null, '/t');
         const key = `richtext/product/${productObj.id}`
@@ -191,3 +193,12 @@ exports.getDescription = async (productId) => {
       return null;
     }
   };
+
+exports.updateInventoryFromVariants = async (id) => {
+    const variant = await variantService.getVariant(id)
+    let total = 0
+    for (let i = 0 ; i < variant.length; i++){
+        total += variant[i].quantity
+    }
+    await updateProduct({id : id, inventory : total})
+}

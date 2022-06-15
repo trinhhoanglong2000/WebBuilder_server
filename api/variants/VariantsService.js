@@ -19,3 +19,13 @@ exports.getVariant = async (id) => {
     }
     return DBHelper.FindAll("product_variant",query)
 }
+
+exports.getVariantById = async (id) => {
+    let query = {
+        select : "id,name,price,quantity,option_value_id",
+        where : {
+            id : id
+        }
+    }
+    return DBHelper.FindAll("product_variant",query)
+}

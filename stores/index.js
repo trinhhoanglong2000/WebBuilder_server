@@ -59,6 +59,7 @@ router.get('/', async (req, res, next) => {
             // })
             res.render(`bodies/${subdomain[0]}${wordPath[0]}/index`,
             {
+                pageConfig : function() { return `${subdomain[0]}/pages${wordPath[0]}/index`},
                 header : function() { return `${subdomain[0]}/header`},
                 footer : function() { return `${subdomain[0]}/footer`},
                 config : function() { return `${subdomain[0]}/config`}

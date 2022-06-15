@@ -13,6 +13,7 @@ const http = require('../../const');
 const DBHelper = require('../../helper/DBHelper/DBHelper');
 const { createAccountWithSocialLogin } = require('../accounts/accountService');
 const URLParser = require('../../helper/common/index')
+const orderService = require('../order/orderService')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -752,7 +753,7 @@ exports.deleteStore = async (req, res) => {
             await pageService.deletePage({ id: pages[i].id })
         }
     }
-   
+
     let deleteStore = await storeService.deleteStores({ id: id })
     if (deleteStore) {
         res.status(http.Created).json({
@@ -814,8 +815,8 @@ exports.AuthenticateUserAndStore = async (req, res, check) => {
     }
 }
 
-exports.getTemplateByStore = async (req,res) => {
-    const result = await templateService.getStoreTemplate({store_id : req.params.id})
+exports.getCurrentTemplateByStore = async (req, res) => {
+    const result = await templateService.getStoreTemplate({ store_id: req.params.id })
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -831,15 +832,201 @@ exports.getTemplateByStore = async (req,res) => {
     }
 }
 
-exports.getPaidTemplateByStore = async (req,res) => {
+exports.getPaidTemplateByStore = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
+    query.user_id = req.user.id
     const result = await templateService.getPaidStoreTemplate(query)
-    if (result.length > 0) {
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
             message: "Get Paid Template Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getFreeTemplateByStore = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    query.user_id = req.user.id
+    const result = await templateService.getFreeStoreTemplate(query)
+    if (result.length) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Free Template Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getTemplatesByStore = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    query.user_id = req.user.id
+    console.log(URLParser.generateCode())
+    const result = await templateService.getAllTemplatesAccount(query)
+    if (result.length) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Template Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.createOrder = async (req, res) => {
+    // create order
+    let productQuery = req.body.products
+    let orderQuery = req.body.order
+    let originalPrice = 0
+    let checkOutOfStock = false
+    if (!productQuery) {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+        return
+    }
+
+    //CREATE ID
+    const orderId = await orderService.createOrderId()
+    
+    //CHECK PRODUCT QUANTITY EXIST
+    for (let i = 0; i < productQuery.length; i++) {
+        const query = productQuery[i]
+        if (query.is_variant) {
+            const variant = await productVariantService.getVariantById(query.variant_id)
+            const product = await productService.findById(query.id)
+           
+            if (variant.length > 0 && product.length > 0) {
+                const remainQuantity = variant[0].quantity - query.quantity
+                if (remainQuantity < 0) {
+                    if (!product[0].continue_sell) {
+                        res.status(http.ServerError).json({
+                            statusCode: http.ServerError,
+                            message: "Create Order Unsuccesfully!"
+                        })
+                        return
+                    }
+                    else {
+                        checkOutOfStock = true
+                    }
+                }
+
+            } else {
+                res.status(http.ServerError).json({
+                    statusCode: http.ServerError,
+                    message: "Create Order Unsuccesfully!"
+                })
+                return
+            }
+        }
+        else {
+            const product = await productService.findById(query.id)
+            
+            if (product.length > 0) {
+                const remainQuantity = product[0].inventory - query.quantity
+                if (remainQuantity < 0) {
+                    if (!product[0].continue_sell) {
+                        res.status(http.ServerError).json({
+                            statusCode: http.ServerError,
+                            message: "Create Order Unsuccesfully!"
+                        })
+                        return
+                    }
+                    else {
+                        checkOutOfStock = true
+                    }
+                }
+            }
+        }
+    }
+
+    //CREATE PRODUCT_ORDER
+    for (let i = 0; i < productQuery.length; i++) {
+        const query = productQuery[i]
+        const product_id = productQuery[i].id
+        delete query["id"]
+        if (product_id) {
+            query.product_id = product_id
+        }
+        query.order_id = orderId
+        let remainquantity = 0
+        
+        if (query.is_variant) {
+            const variant = await productVariantService.getVariantById(query.variant_id)
+            remainquantity = variant[0].quantity - query.quantity
+            originalPrice += query.quantity * query.price
+            if (!checkOutOfStock) {
+                await productVariantService.updateVariant({id : variant[0].id, quantity: remainquantity})
+                await productService.updateInventoryFromVariants(query.product_id)
+            }
+        }
+        else {
+            const product = await productService.findById(query.product_id)
+            remainquantity = product[0].inventory - query.quantity
+            if (!checkOutOfStock) {
+                await productService.updateProduct({id : product[0].id, inventory : remainquantity})
+            }
+        }
+        await orderService.createOrderProduct(query)
+    }
+
+    //CREATE ORDER STATUS
+    const statusQuery = {
+        order_id : orderId,
+        status : checkOutOfStock? "RESTOCK" : "CREATED",
+    }
+    await orderService.createOrderStatus(statusQuery)
+
+    //CREATE ORDER
+    orderQuery.id = orderId
+    orderQuery.original_price = originalPrice
+    const newOrder = await orderService.createOrder(orderQuery)
+    if (newOrder) {
+        res.status(http.Created).json({
+            statusCode: http.Created,
+            data: newOrder.rows,
+            message: "Create Order successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+
+}
+
+exports.getOrderByStore = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await orderService.getAllStoreOrder(query)
+    if (result.length) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Order Successfully!"
         })
     }
     else {

@@ -19,8 +19,12 @@ router.get('/:id/init-data', authenticator.Authenticate, storeController.getInit
 router.get('/:id/products/custom-type',authenticator.Authenticate, storeController.getCustomType);
 router.get('/:id/products/vendor', authenticator.Authenticate, storeController.getVendor);
 router.get('/:id/headerData', storeController.getHeaderData);
-router.get('/:id/template', authenticator.Authenticate, storeController.getTemplateByStore);
-router.get('/:id/paid-template', authenticator.Authenticate, storeController.getPaidTemplateByStore);
+router.get('/:id/orders',authenticator.Authenticate, storeController.getOrderByStore)
+//TEMPLATE
+router.get('/:id/current-template', authenticator.Authenticate, storeController.getCurrentTemplateByStore);
+router.get('/:id/paid-templates', authenticator.Authenticate, storeController.getPaidTemplateByStore);
+router.get('/:id/free-templates',authenticator.Authenticate, storeController.getFreeTemplateByStore);
+router.get('/:id/stores-templates',authenticator.Authenticate, storeController.getTemplatesByStore)
 /* POST create account. */
 router.post('/', authenticator.Authenticate, storeController.createStore);
 router.post('/:storeId/:pageId/content', authenticator.Authenticate, storeController.changeContent);
@@ -31,6 +35,8 @@ router.post('/:id/products', authenticator.Authenticate, storeController.createP
 router.post('/:id/collections', authenticator.Authenticate, storeController.createCollection);
 router.post('/:id/bannercollections', authenticator.Authenticate, storeController.createBannerCollection);
 
+// POST CREATE ORDER
+router.post('/:id/order',storeController.createOrder)
 //DELETE STORE
 router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
 

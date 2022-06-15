@@ -10,7 +10,6 @@ var generateURL = exports.generateURL = (s) => {
 
 exports.generateCode = () => {
     const now = Date.now(); 
-
     let cur = now;
     let token = "";
 
@@ -41,14 +40,16 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
       id: storeName.template_id
     }
     const templateName = await templateService.getTemplateById(queryTemplate)
+    
     const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
     const pageNameConvert = PageName[0] ? generateURL(PageName[0].page_url) : null;
   
     //Create HTML FOOTER HEADER AND BODY
-  
-    const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
+
     const footer = content.html.match(/(?<=<\/main>)(?:.|\n)*/gm)[0]
     const header = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
+    const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
+    
     
     
   
@@ -73,13 +74,16 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
     if (storeNameConvert && pageNameConvert) {
       const HTML =
         `
+        <body >
+            ${main}
+        </body>
+      
+        `
+        const pageConfig = `
         ${css}
         <style>
           ${content.css}
         </style>
-        <body >
-            ${main}
-        </body>
         ${js}
         `
       //HEADER HTML
@@ -104,6 +108,15 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
       fse.outputFile(`views/bodies/${storeNameConvert}/${pageNameConvert}/index.hbs`, HTML)
       .then(() => {
         console.log('Body Main File has been saved!');
+      })
+      .catch(err => {
+        console.error(err)
+      });
+
+      //CONFIG HTML
+      fse.outputFile(`views/partials/${storeNameConvert}/pages/${pageNameConvert}/index.hbs`, pageConfig)
+      .then(() => {
+        console.log('Body Config File has been saved!');
       })
       .catch(err => {
         console.error(err)
