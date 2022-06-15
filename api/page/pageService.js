@@ -14,10 +14,10 @@ const fse = require('fs-extra')
 exports.createPage = async (pageBody, url = "", isDefault = false, templateName = null, templateType = "_index") => {
   try {
     pageBody.id = uuidv4();
-
+    const templateNewName = templateName ?  URLParser.generateURL(templateName) : "template-default"
     const data = await s3.getObject({
       Bucket: "ezmall-bucket",
-      Key: `templates/${templateName}/${templateType}.json`
+      Key: `templates/${templateNewName}/${templateType}.json`
     }).promise();
     const id_store_content = data.Body.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
     const content = JSON.parse(data.Body.toString('utf-8').replace(id_store_content, `${pageBody.store_id}`).replace(id_store_content, `${pageBody.store_id}`));

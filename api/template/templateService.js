@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const { query } = require('express');
 const { config } = require('dotenv');
 const pageService = require('../page/pageService')
+const URLParser = require('../../helper/common/index')
 exports.getTemplate = async (query) => {
 
     let config = {
@@ -91,8 +92,8 @@ var getAllPaidStoreTemplate = exports.getAllPaidStoreTemplate = async (query) =>
         where: {
             "is_paid": true,
         },
-        offset : query.offset,
-        limit : query.limit
+        offset: query.offset,
+        limit: query.limit
     }
     return DBHelper.FindAll("template", config)
 }
@@ -106,7 +107,7 @@ var getAllFreeStoreTemplate = exports.getAllFreeStoreTemplate = async (query) =>
                 where: {
                     "OP.AND": [
                         { "level": 1 },
-                        { "is_paid" : false }
+                        { "is_paid": false }
                     ]
                 },
                 offset: query.offset,
@@ -119,7 +120,7 @@ var getAllFreeStoreTemplate = exports.getAllFreeStoreTemplate = async (query) =>
                 where: {
                     "OP.AND": [
                         { "level": { "OP.LTE": storeData.level } },
-                        { "is_paid" : false }
+                        { "is_paid": false }
                     ]
                 },
                 offset: query.offset,
@@ -175,17 +176,27 @@ exports.getAllTemplatesAccount = async (query) => {
 }
 
 exports.createTemplate = async (query) => {
-    const newTemplate  = await DBHelper.insertData(query.template,"template",true)
-    if (newTemplate){
+    const newTemplate = await DBHelper.insertData(query.template, "template", true)
+    if (newTemplate) {
         const templateId = newTemplate.rows[0].id
-        if (query.name){
-            for (let i = 0; i < query.name.length; i++){
+        if (query.name) {
+            for (let i = 0; i < query.name.length; i++) {
                 const newQuery = {
-                    template_id : templateId,
-                    name : query.name[i].name,
-                    is_default : query.name[i].is_default,
+                    template_id: templateId,
+                    name: query.name[i].name,
+                    is_default: query.name[i].is_default,
                 }
-                await DBHelper.insertData(newQuery,"template_init",true)
+                if (query.name[i].page_url) {
+                    newQuery.page_url = query.name[i].page_url
+                }
+                else {
+                    if (query.name[i].page_url !== "")
+                    newQuery.page_url = query.name[i].page_url
+                    else {
+                        newQuery.page_url = '/' + URLParser.generateURL(query.name[i].name);
+                    }
+                }
+                await DBHelper.insertData(newQuery, "template_init", true)
             }
         }
     }
@@ -194,10 +205,10 @@ exports.createTemplate = async (query) => {
 }
 exports.useTemplate = async (query) => {
     //GET TEMPLATE INFO
-    const template = await getTemplateById({id : query.template_id})
+    const template = await getTemplateById({ id: query.template_id })
     let templateName
-    if (template){
-        if (template.length > 0){
+    if (template) {
+        if (template.length > 0) {
             templateName = template[0].name
         }
         else {
@@ -205,35 +216,36 @@ exports.useTemplate = async (query) => {
         }
     }
     else {
-         return null
+        return null
     }
 
     //DELETE ALL PAGES
-    const allPages = await pageService.getPagesByStoreId({store_id : query.store_id})
-    for (let i = 0 ; i < allPages.length; i++){
-        await pageService.deletePage({id : allPages[i].id})
+    const allPages = await pageService.getPagesByStoreId({ store_id: query.store_id })
+    for (let i = 0; i < allPages.length; i++) {
+        await pageService.deletePage({ id: allPages[i].id })
     }
 
     //INSERT NEW PAGES 
-    const allNewPages = await getAllTemplateInit({template_id : query.template_id})
-    for (let i = 0 ; i < allNewPages.length ; i++){
-        let  createPagesQuery = { 
-            store_id: query.store_id, 
-            name: allNewPages[i].name 
+    const allNewPages = await getAllTemplateInit({ template_id: query.template_id })
+    for (let i = 0; i < allNewPages.length; i++) {
+        let createPagesQuery = {
+            store_id: query.store_id,
+            name: allNewPages[i].name
+           
         }
-        //await pageService.createPage(createPagesQuery, "", allNewPages[i].is_default, templateName);
-        await pageService.createPage(createPagesQuery, "", allNewPages[i].is_default, "template-default");
+        await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, templateName,URLParser.generateURL(allNewPages[i].name));
+        //await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, "template-default");
     }
 
-    return DBHelper.updateData({template_id : query.template_id, id : query.store_id},"stores","id")
-}   
+    return DBHelper.updateData({ template_id: query.template_id, id: query.store_id }, "stores", "id")
+}
 
 exports.buyTemplate = async (query) => {
     const insertQuery = {
-        user_id : query.user_id,
-        template_id : query.template_id
+        user_id: query.user_id,
+        template_id: query.template_id
     }
-    return DBHelper.insertData(insertQuery,"account_template",false,"template_id")
+    return DBHelper.insertData(insertQuery, "account_template", false, "template_id")
 }
 
 exports.getTemplateByAccount = async (query) => {
@@ -241,5 +253,5 @@ exports.getTemplateByAccount = async (query) => {
 }
 
 var getAllTemplateInit = exports.getAllTemplateInit = async (query) => {
-    return DBHelper.getData("template_init",query)
+    return DBHelper.getData("template_init", query)
 }
