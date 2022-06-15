@@ -59,34 +59,48 @@ var getAllOrder = exports.getAllOrder = async (query) => {
     return DBHelper.FindAll("orders", config)
 }
 
+exports.getAllOrderStatus = async (query) => {
+    const config = {
+        where: {
+            "order_id": query.order_id
+        },
+        order : [{create_at : "DESC"}]
+    }
+    return DBHelper.FindAll("order_status", config)
+}
+
 exports.createOrderStatus = async (query) => {
     let newStatus
     if (query.status == "RESTOCK") {
         const allProduct = await getOrderProduct({ order_id: query.order_id })
         for (let i = 0; i < allProduct.length; i++) {
-            if (allProduct[i].is_variant){
+            if (allProduct[i].is_variant) {
                 const variant = await variantService.getVariantById(allProduct[i].variant_id)
-                let remainQuantity = variant[0].quantity - allProduct[i].quantity
-                remainQuantity = remainQuantity < 0 ? 0 : remainQuantity
-                await variantService.updateVariant({id : variant[0].id, quantity: remainQuantity})
-                await productService.updateInventoryFromVariants(allProduct[i].product_id)
+                if (variant.length > 0) {
+                    let remainQuantity = variant[0].quantity - allProduct[i].quantity
+                    remainQuantity = remainQuantity < 0 ? 0 : remainQuantity
+                    await variantService.updateVariant({ id: variant[0].id, quantity: remainQuantity })
+                    await productService.updateInventoryFromVariants(allProduct[i].product_id)
+                }
             }
             else {
                 const product = await productService.findById(allProduct[i].product_id)
-                let remainQuantity = product[0].inventory - allProduct[i].quantity
-                remainQuantity = remainQuantity < 0 ? 0 : remainQuantity
-                await productService.updateProduct({id : product[0].id, inventory : remainQuantity})
+                if (product.length > 0) {
+                    let remainQuantity = product[0].inventory - allProduct[i].quantity
+                    remainQuantity = remainQuantity < 0 ? 0 : remainQuantity
+                    await productService.updateProduct({ id: product[0].id, inventory: remainQuantity })
+                }
             }
         }
         newStatus = "CREATED"
     }
-    else if (query.status == "CREATED"){
+    else if (query.status == "CREATED") {
         newStatus = "CONFIRMED"
     }
-    else if (query.status == "CONFIRMED"){
+    else if (query.status == "CONFIRMED") {
         newStatus = "SHIPPING"
     }
-    else if (query.status == "SHIPPING"){
+    else if (query.status == "SHIPPING") {
         newStatus = "COMPLETED"
     }
     else {
@@ -94,8 +108,8 @@ exports.createOrderStatus = async (query) => {
     }
 
     const createQuery = {
-        order_id : query.order_id,
-        status : newStatus
+        order_id: query.order_id,
+        status: newStatus
     }
     return DBHelper.insertData(createQuery, "order_status", true, "id")
 }
