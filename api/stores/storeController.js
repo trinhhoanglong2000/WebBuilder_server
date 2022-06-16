@@ -314,7 +314,24 @@ exports.getPagesByStoreId = async (req, res) => {
         })
     }
 };
-
+exports.getPagesPolicy = async (req, res) => {
+    const query = req.query;
+    query.store_id = req.params.id;
+    const result = await pageService.getPagesPolicy(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get pages successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
 exports.getMenuByStoreId = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
