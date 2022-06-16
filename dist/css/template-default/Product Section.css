@@ -102,6 +102,8 @@
 [name="products-section"] .single-new-arrival {
   margin-bottom: 50px;
   text-align: center;
+  box-shadow: rgb(0 0 0 / 20%) 0px 4px 16px, rgb(68 49 54 / 30%) 0px 8px 32px;
+
 }
 
 [name="products-section"] .single-new-arrival-bg {
