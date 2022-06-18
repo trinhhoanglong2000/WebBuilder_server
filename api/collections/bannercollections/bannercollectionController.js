@@ -49,7 +49,7 @@ exports.updateBannerCollection = async (req, res) => {
                 await bannerService.updateBanners(query)
             }
             else if (update == "Delete"){
-                let deleteQuery = { bannercollection_id : collectionId}
+                let deleteQuery = { bannercollection_id : collectionId, id : bannerQuery[i].id }
                 await bannerService.deleteBannerRelative("banners",deleteQuery)
             }
         }
