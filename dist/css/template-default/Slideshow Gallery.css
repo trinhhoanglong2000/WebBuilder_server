@@ -69,10 +69,16 @@
   clear: both;
 }
 
+
 [name="slideshowGallery"] .column {
   float: left;
   width: 16.66%;
-  align-self: center;
+}
+
+[name="slideshowGallery"] .column img {
+  width: 100%;
+  min-height: 100%;
+  object-fit: cover;
 }
 
 [name="slideshowGallery"] .option-image {
