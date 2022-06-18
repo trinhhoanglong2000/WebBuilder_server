@@ -32,18 +32,24 @@ exports.sendResetPasswordEmail = async (email) => {
     let success = true,
     message = ''
 
-    const myAccessTokenObject = await myOAuth2Client.getAccessToken()
-    const myAccessToken = myAccessTokenObject?.token
+    // const myAccessTokenObject = await myOAuth2Client.getAccessToken()
+    // const myAccessToken = myAccessTokenObject?.token
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        // service: 'gmail',
+        // auth: {
+        //   type: 'OAuth2',
+        //   user: process.env.ADMIN_EMAIL_ADDRESS,
+        //   clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
+        //   clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
+        //   refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+        //   accessToken: myAccessToken
+        // }
+        host: "smtp.gmail.com",
+        port: 465,
         auth: {
-          type: 'OAuth2',
-          user: process.env.ADMIN_EMAIL_ADDRESS,
-          clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
-          refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
-          accessToken: myAccessToken
-        }
+            user: process.env.AUTH_MAIL_USER,
+            pass: process.env.GOOGLE_SMTP_PASSWORD,
+        },
     })
 
     const uniqueString = uuidv4() + user.id;
@@ -82,18 +88,24 @@ exports.sendVerifyEmail = async (email, id) => {
     let result = true;
     const uniqueString = uuidv4() + id;
 
-    const myAccessTokenObject = await myOAuth2Client.getAccessToken()
-    const myAccessToken = myAccessTokenObject?.token
+    // const myAccessTokenObject = await myOAuth2Client.getAccessToken()
+    // const myAccessToken = myAccessTokenObject?.token
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        // service: 'gmail',
+        // auth: {
+        //   type: 'OAuth2',
+        //   user: process.env.ADMIN_EMAIL_ADDRESS,
+        //   clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
+        //   clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
+        //   refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+        //   accessToken: myAccessToken
+        // }
+        host: "smtp.gmail.com",
+        port: 465,
         auth: {
-          type: 'OAuth2',
-          user: process.env.ADMIN_EMAIL_ADDRESS,
-          clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
-          refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
-          accessToken: myAccessToken
-        }
+            user: process.env.AUTH_MAIL_USER,
+            pass: process.env.GOOGLE_SMTP_PASSWORD,
+        },
     })
     const Options = {
         from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`, // sender address
