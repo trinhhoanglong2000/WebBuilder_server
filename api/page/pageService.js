@@ -130,7 +130,20 @@ var getPagesByStoreId = exports.getPagesByStoreId = async (query) => {
   }
   return DBHelper.FindAll("pages", config)
 };
-
+exports.getPagesPolicy = async (query) => {
+  let condition = [];
+  condition.push({ store_id: query.store_id })
+  let condition1=[]
+  condition1.push({ [`name`]: "Terms Of Service" })
+  condition1.push({ [`name`]:  "Refund Policy" })
+  condition.push({"OP.OR":condition1})
+  let config = {
+    where: {
+      "OP.AND": condition
+    }
+  }
+  return DBHelper.FindAll("pages", config)
+};
 exports.savePageContent = async (storeId, pageId, content) => {
 
   try {
