@@ -14,6 +14,7 @@ const DBHelper = require('../../helper/DBHelper/DBHelper');
 const { createAccountWithSocialLogin } = require('../accounts/accountService');
 const URLParser = require('../../helper/common/index')
 const orderService = require('../order/orderService')
+const emailService = require('../email/emailService')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -25,24 +26,40 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true, "template-default");
-    if (page) {
-        await pageService.createHTMLFile(storeId, page.rows[0].id)
-    }
+    const template = await templateService.getTemplate({name : "template-default"})
+    await templateService.useTemplate({user_id :req.user.id, store_id : storeId, template_id : template[0].id})
+    // let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true, "template-default");
+    // if (page) {
+    //     await pageService.createHTMLFile(storeId, page.rows[0].id)
+    // }
 
-    page = await pageService.createPage({ store_id: storeId, name: "Products" }, "", true, "template-default");
-    if (page) {
-        await pageService.createHTMLFile(storeId, page.rows[0].id)
-    }
+    // page = await pageService.createPage({ store_id: storeId, name: "Products" }, "", true, "template-default");
+    // if (page) {
+    //     await pageService.createHTMLFile(storeId, page.rows[0].id)
+    // }
 
-    page = await pageService.createPage({ store_id: storeId, name: "Cart" }, "", true, "template-default");
-    if (page) {
-        await pageService.createHTMLFile(storeId, page.rows[0].id)
-    }
+    // page = await pageService.createPage({ store_id: storeId, name: "Cart" }, "", true, "template-default");
+    // if (page) {
+    //     await pageService.createHTMLFile(storeId, page.rows[0].id)
+    // }
 
     //CREATE HEADER AND FOOTER
 
     if (newStore) {
+         // //query { 
+    //     subject
+    //     text
+    //     store_id
+    //     receiver
+    // }
+            
+        let query  = {
+            store_id : storeId,
+            subject: "New Store Created",
+            receiver : 'ttlgame123@gmail.com',
+            html : `<p>Verify your email address to complete the signup and login to your account.</p>`
+        }
+        await emailService.sendMailFromStore(query)
         res.status(http.Created).json({
             statusCode: http.Created,
             data: newStore,
@@ -874,7 +891,7 @@ exports.getFreeTemplateByStore = async (req, res) => {
     query.store_id = req.params.id;
     query.user_id = req.user.id
     const result = await templateService.getFreeStoreTemplate(query)
-    if (result.length) {
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
@@ -895,7 +912,7 @@ exports.getTemplatesByStore = async (req, res) => {
     query.user_id = req.user.id
     console.log(URLParser.generateCode())
     const result = await templateService.getAllTemplatesAccount(query)
-    if (result.length) {
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,

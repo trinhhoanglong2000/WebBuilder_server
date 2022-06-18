@@ -7,6 +7,9 @@ const { query } = require('express');
 const { config } = require('dotenv');
 const productService = require("../products/productService")
 const variantService = require("../variants/VariantsService")
+const nodemailer = require('nodemailer');
+const ggAuth = require('google-auth-library');
+const emailService = require('../email/emailService')
 exports.createOrder = async (query) => {
     if (query.discount_id) {
         //DO STH
@@ -56,6 +59,36 @@ var getAllOrder = exports.getAllOrder = async (query) => {
         offset: query.offset,
         limit: query.limit
     }
+
+    const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        auth: {
+            user: process.env.ADMIN_EMAIL_ADDRESS,
+            pass: process.env.GOOGLE_SMTP_PASSWORD,
+        },
+    });
+
+    const mailQuery = { 
+        subject : `Long`,
+        html : `Long`,
+        store_id : '661456b8-8b07-4e92-b385-f1fcc3d827a8',
+        receiver : 'ttlgame123@gmail.com'
+    }
+    await emailService.sendMailFromStore(mailQuery)
+    // await transporter.sendMail({
+    //     from: `"Long" long@myeasymall.site`,
+    //     to: `ttlgame123@gmail.com`,
+    //     subject: `Long`,
+    //     html: `Long`
+    // }).then(() => {
+    //     console.log("Sent a mail successfully")
+     
+    // })
+    //     .catch((err) => {
+    //         console.log(err)
+
+    //     })
     return DBHelper.FindAll("orders", config)
 }
 
@@ -64,7 +97,7 @@ exports.getAllOrderStatus = async (query) => {
         where: {
             "order_id": query.order_id
         },
-        order : [{create_at : "DESC"}]
+        order: [{ create_at: "DESC" }]
     }
     return DBHelper.FindAll("order_status", config)
 }

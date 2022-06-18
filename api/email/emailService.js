@@ -6,8 +6,19 @@ const bcrypt = require('../../helper/genSalt');
 const verificationService = require('../verification/verificationService');
 const accountService = require('../accounts/accountService');
 const passwordResetService = require('../password_reset/passwordResetService');
+const storeService = require('../stores/storeService')
 const nodemailer = require('nodemailer');
 const ggAuth = require('google-auth-library');
+const { text } = require('body-parser');
+
+const AllURL = [
+    "https://admin.googleapis.com/admin/directory/v1/users/:id",
+    "https://www.googleapis.com/gmail/v1/users/me/settings/sendAs",
+    "https://www.googleapis.com/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
+    "https://gmail.googleapis.com/gmail/v1/users/{userId}/profile"
+
+]
+const sendCredential = require('../../credential.json')
 
 const myOAuth2Client = new ggAuth.OAuth2Client(
     process.env.GOOGLE_MAILER_CLIENT_ID,
@@ -120,6 +131,94 @@ exports.sendVerifyEmail = async (email, id) => {
     return result;
 }
 
+exports.sendMailFromStore = async (query) => {
+    // //query { 
+    //     subject
+    //     html
+    //     store_id
+    //     receiver
+    // }
+    const myAccessTokenObject = await myOAuth2Client.getAccessToken()
+    const myAccessToken = myAccessTokenObject?.token
+    const Auth = new ggAuth.GoogleAuth({
+        scopes: [
+            'https://mail.google.com',
+            'https://www.googleapis.com/auth/gmail.settings.sharing',
+            'https://www.googleapis.com/auth/admin.directory.user'
+            ,
+        ],
+        clientOptions: { subject: 'admin@myeasymall.site' },
+        credentials : sendCredential,
+    });
+    const auth = await Auth.getClient()
+    let result
+    let storeMail = await storeService.findById(query.store_id)
+    if (storeMail){
+        await auth.request({
+            url: `https://admin.googleapis.com/admin/directory/v1/users/${process.env.GOOGLE_SEND_ACCOUNT_ID}`,
+           method: 'PUT',
+           data: {
+            "primaryEmail": storeMail.mail_link
+           }
+       }).then((status, data ) => {
+          console.log("Created In Admin")
+       }).catch((err) => {
+           console.log(err)
+       })
+
+        await auth.request({
+           url: 'https://www.googleapis.com/gmail/v1/users/me/settings/sendAs',
+          method: 'POST',
+          data: {
+              "sendAsEmail" : storeMail.mail_link,
+              "displayName": storeMail.mail_link,
+               "treatAsAlias": true,
+          }
+      }).then((status, data ) => {
+         console.log("Created")
+      }).catch((err) => {
+          console.log(err)
+      })
+   
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        auth: {
+            user: process.env.ADMIN_EMAIL_ADDRESS,
+            pass: process.env.GOOGLE_SMTP_PASSWORD,
+        },
+        });
+
+        await transporter.sendMail({
+            from: `"${storeMail.name}" ${storeMail.mail_link}`,
+            to: `${query.receiver}`,
+            subject: `${query.subject}`,
+            html: `${query.html}`
+        }).then(() => {
+            console.log("Sent a mail successfully")
+            result = true
+        })
+            .catch((err) => {
+                console.log(err)
+                result = false
+    
+            }) 
+
+        await auth.request({
+             url: `https://www.googleapis.com/gmail/v1/users/me/settings/sendAs/${storeMail.mail_link}`,
+            method: 'DELETE',
+               
+        }).then((status, data ) => {
+            console.log("Deleted")
+        }).catch((err) => {
+             console.log(err)
+        })
+    }
+    else {
+        result = false   
+    }
+    return result
+}
 
 // exports.sendEmail = async (recipient, invitelink, role) => {
 //     var result = true;
