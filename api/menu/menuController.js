@@ -49,7 +49,7 @@ exports.getMenuItem = async (req, res) => {
 exports.updateMenu = async (req, res) => {
     const menuObj = {
         id: req.body.id,
-        title: req.body.title
+        name: req.body.name
     };
     const result = await menuService.updateMenu(menuObj);
     if (result) {
