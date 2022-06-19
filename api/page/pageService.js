@@ -15,10 +15,19 @@ exports.createPage = async (pageBody, url = "", isDefault = false, templateName 
   try {
     pageBody.id = uuidv4();
     const templateNewName = templateName ?  URLParser.generateURL(templateName) : "template-default"
-    const data = await s3.getObject({
-      Bucket: "ezmall-bucket",
-      Key: `templates/${templateNewName}/${templateType}.json`
-    }).promise();
+    let data
+    try {
+      data = await s3.getObject({
+        Bucket: "ezmall-bucket",
+       Key: `templates/${templateNewName}/${templateType}.json`
+     }).promise();
+     }
+    catch (err) {
+      data = await s3.getObject({
+        Bucket: "ezmall-bucket",
+       Key: `templates/${templateNewName}/_index.json`
+     }).promise();
+    }
     const id_store_content = data.Body.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
     const content = JSON.parse(data.Body.toString('utf-8').replace(id_store_content, `${pageBody.store_id}`).replace(id_store_content, `${pageBody.store_id}`));
 
