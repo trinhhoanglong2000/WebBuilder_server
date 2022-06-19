@@ -4,16 +4,21 @@
 
 [name="slideshowGallery"] .container-fluid {
   position: relative;
+  background-color: #ced4da;
 }
 
 [name="slideshowGallery"] .mySlides {
-  display: none;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #adb5bd;
 }
 
-/* [name="slideshowGallery"] .mySlides img {
-  height: 500px;
-  object-fit
-} */
+[name="slideshowGallery"] .mySlides img {
+  width: 100%;
+  max-height: 700px;
+  object-fit: contain;
+}
 
 [name="slideshowGallery"] .cursor {
   cursor: pointer;
@@ -21,13 +26,13 @@
 
 [name="slideshowGallery"] .prev,
 [name="slideshowGallery"] .next {
-  cursor: pointer;
   position: absolute;
   top: 40%;
   width: auto;
   padding: 16px;
   margin-top: -50px;
   color: white;
+  background-color: rgba(203, 243, 240, 0.4);
   font-weight: bold;
   font-size: 20px;
   border-radius: 0 3px 3px 0;
@@ -45,22 +50,11 @@
 
 [name="slideshowGallery"] .prev:hover,
 [name="slideshowGallery"] .next:hover {
-  background-color: rgba(222, 235, 222, 0.8);
+  cursor: pointer;
 }
 
-[name="slideshowGallery"] .numbertext {
-  color: #f2f2f2;
-  font-size: 12px;
-  padding: 8px 12px;
-  position: absolute;
-  top: 0;
-}
-
-[name="slideshowGallery"] .caption-container {
-  text-align: center;
-  background-color: #222;
-  padding: 2px 16px;
-  color: white;
+[name="slideshowGallery"] .row {
+  padding: 2% 3%;
 }
 
 [name="slideshowGallery"] .row:after {
@@ -73,11 +67,12 @@
 [name="slideshowGallery"] .column {
   float: left;
   width: 16.66%;
+  max-height: 120px;
 }
 
 [name="slideshowGallery"] .column img {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   object-fit: cover;
 }
 

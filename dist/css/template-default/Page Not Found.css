@@ -1,5 +1,5 @@
 [name='pageNotFound'] .container {
-    height: 350px;
+    min-height: 270px;
 }
 
 [name='pageNotFound'] .container .row,
@@ -8,8 +8,10 @@
 }
 
 [name='pageNotFound'] .container .col-8 > div {
-    text-align: right;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
+
 [name='pageNotFound'] .container h1 {
     margin: 10px 0px;
     color: coral;
@@ -23,7 +25,6 @@
 [name='pageNotFound'] .container a {
     background-color: palegreen;
     text-decoration: none;
-    padding: 10px;
     color: #121212;
     border-radius: 5px;
     padding: 10px 30px;
