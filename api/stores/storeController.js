@@ -1056,7 +1056,7 @@ exports.getOrderByStore = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
     const result = await orderService.getAllStoreOrder(query)
-    if (result.length) {
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
