@@ -28,7 +28,10 @@
 
 [name="footer"].footer-section .footer-navigation div {
     min-width: 25%;
-    min-height: 100px;
+}
+
+[name="footer"].footer-section .footer-navigation {
+    min-height: 50px;
 }
 
 [name="footer"].footer-section .footer-navigation div img {
