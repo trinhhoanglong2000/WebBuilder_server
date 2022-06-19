@@ -60,22 +60,24 @@ var getAllOrder = exports.getAllOrder = async (query) => {
         limit: query.limit
     }
 
-    const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        auth: {
-            user: process.env.ADMIN_EMAIL_ADDRESS,
-            pass: process.env.GOOGLE_SMTP_PASSWORD,
-        },
-    });
+    // const transporter = nodemailer.createTransport({
+    //     host: "smtp.gmail.com",
+    //     port: 465,
+    //     auth: {
+    //         user: process.env.ADMIN_EMAIL_ADDRESS,
+    //         pass: process.env.GOOGLE_SMTP_PASSWORD,
+    //     },
+    // });
 
-    const mailQuery = { 
-        subject : `Long`,
-        html : `Long`,
-        store_id : '661456b8-8b07-4e92-b385-f1fcc3d827a8',
-        receiver : 'ttlgame123@gmail.com'
-    }
-    await emailService.sendMailFromStore(mailQuery)
+    // const mailQuery = { 
+    //     subject : `Long`,
+    //     html : `Long`,
+    //     store_id : '661456b8-8b07-4e92-b385-f1fcc3d827a8',
+    //     receiver : 'ttlgame123@gmail.com'
+    // }
+    // await emailService.sendMailFromStore(mailQuery)
+
+
     // await transporter.sendMail({
     //     from: `"Long" long@myeasymall.site`,
     //     to: `ttlgame123@gmail.com`,

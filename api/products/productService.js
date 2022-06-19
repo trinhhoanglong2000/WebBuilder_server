@@ -27,6 +27,11 @@ var updateProduct = exports.updateProduct = async (productObj) => {
 
         productObj.description = rest.Location;
     }
+    const today = new Date()
+    const date = today.getUTCFullYear() + '-' + (today.getUTCMonth() + 1) + '-' + today.getUTCDate();
+    const time = today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds();
+    const dateTime = date + ' ' + time;
+    productObj.update_at = dateTime
     return DBHelper.updateData(productObj, "products", "id")
 }
 exports.deleteProduct = async (productObj) => {
@@ -58,11 +63,11 @@ exports.getProductsByStoreId = async (query) => {
     let store_Query = {
         store_id: query.store_id
     }
-    if (query.offset){
+    if (query.offset) {
         delete query["offset"]
     }
 
-    if (query.limit){
+    if (query.limit) {
         delete query["limit"]
     }
     delete query["store_id"]
@@ -172,33 +177,33 @@ exports.getAllCustomType = async (query) => {
 
 exports.getVendor = async (query) => {
     let config = {
-        select : "DISTINCT vendor",
-        where : { store_id : query.store_id},
-        order : [{ vendor : "ASC"}]
+        select: "DISTINCT vendor",
+        where: { store_id: query.store_id },
+        order: [{ vendor: "ASC" }]
     }
 
-    return DBHelper.FindAll("products",config)
+    return DBHelper.FindAll("products", config)
 }
 
 exports.getDescription = async (productId) => {
     try {
-      const data = await s3.getObject({
-        Bucket: "ezmall-bucket",
-        Key: `richtext/product/${productId}.json`
-      }).promise();
-      const content = JSON.parse(data.Body.toString('utf-8'));
-      return content;
+        const data = await s3.getObject({
+            Bucket: "ezmall-bucket",
+            Key: `richtext/product/${productId}.json`
+        }).promise();
+        const content = JSON.parse(data.Body.toString('utf-8'));
+        return content;
     } catch (error) {
-      console.log(error);
-      return null;
+        console.log(error);
+        return null;
     }
-  };
+};
 
 exports.updateInventoryFromVariants = async (id) => {
     const variant = await variantService.getVariant(id)
     let total = 0
-    for (let i = 0 ; i < variant.length; i++){
+    for (let i = 0; i < variant.length; i++) {
         total += variant[i].quantity
     }
-    await updateProduct({id : id, inventory : total})
+    await updateProduct({ id: id, inventory: total })
 }

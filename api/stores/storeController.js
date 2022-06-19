@@ -957,7 +957,7 @@ exports.createOrder = async (req, res) => {
                     if (!product[0].continue_sell) {
                         res.status(http.ServerError).json({
                             statusCode: http.ServerError,
-                            message: "Create Order Unsuccesfully!"
+                            message: "Create Order Unsuccesfully, out of stock!"
                         })
                         return
                     }
@@ -1056,6 +1056,12 @@ exports.getOrderByStore = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
     const result = await orderService.getAllStoreOrder(query)
+    
+    for (let i = 0 ; i < result.length; i++){
+        const status = await orderService.getAllOrderStatus({order_id : result[i].id})
+        result[i].status_date = status[0].create_at,
+        result[i].status = status[0].status
+    }
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
