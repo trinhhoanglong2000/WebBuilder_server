@@ -161,7 +161,8 @@ function LoopForOP(data) {
         "OP.GT",
         "OP.LT",
         "OP.LTE",
-        "OP.NOT"
+        "OP.NOT",
+        "OP.NORMAL"
     ]
 
     // a = {
@@ -215,6 +216,9 @@ function LoopForOP(data) {
     }
     else if (arr[0] == "OP.LTE") {
         query += ` <= '${arr1[0]}'`
+    }
+    else if (arr[0] == "OP.NORMAL"){
+        query += ` = ${arr1[0]}`
     }
     else {
 

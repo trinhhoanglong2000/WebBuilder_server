@@ -60,6 +60,10 @@ exports.getProductsByStoreId = async (query) => {
     let condition = [];
     let offset = query.offset
     let limit = query.limit
+    const collectionId = query.collection_id
+    if (collectionId){
+        delete query["collection_id"]
+    }
     let store_Query = {
         store_id: query.store_id
     }
@@ -73,9 +77,7 @@ exports.getProductsByStoreId = async (query) => {
     delete query["store_id"]
     let arr = Object.keys(query)
     let arr1 = Object.values(query)
-    //condition.push({ store_id: query.store_id })
-    // if (query.title)
-    //     condition.push({ title: { "OP.ILIKE": "%" + query.title + "%" } })
+
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] == "title" || arr[i] == "type") {
             let queryTemp = {}
@@ -94,14 +96,29 @@ exports.getProductsByStoreId = async (query) => {
     if (condition.length > 0) {
         conditionQuery.push({ "OP.AND": condition })
     }
+    
+    if (collectionId){
+        conditionQuery.push({"products.id" : {"OP.NORMAL" : "product_productcollection.product_id"}})
+    }
+
+   
     let config = {
+        
         where: {
             "OP.AND": conditionQuery,
         },
         limit: limit,
         offset: offset
     }
-
+    if (collectionId){
+        config.join = {
+            "product_productcollection": {
+                condition: {
+                    "product_productcollection.productcollection_id": `'${collectionId}'`,
+                }   
+            }
+        }
+    }
     // let config = {
     //     where: {
     //         store_id : query.store_id

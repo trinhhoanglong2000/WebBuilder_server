@@ -427,7 +427,6 @@ exports.getBannerCollectionsByStoreId = async (req, res) => {
     const query = req.query
     query.store_id = storeId
     const result = await bannercollectionService.getCollectionsByStoreId(query);
-    console.log(result)
     for (let i = 0; i < result.length; i++) {
         if (result[i].description) {
             const content = await bannercollectionService.getDescription(result[i].id)
