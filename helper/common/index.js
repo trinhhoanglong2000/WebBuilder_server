@@ -7,7 +7,16 @@ const fse = require('fs-extra')
 var generateURL = exports.generateURL = (s) => {
     return  s.trim().toLowerCase().replace(/\s+/g,'-')
 }
+var capitalizeWord = (s)=>{
+  const arr = s.trim().toLowerCase().split("-")
+  let returnData = ""
+  for (let i = 0; i < arr.length; i++){
 
+    returnData += arr[i].charAt(0).toUpperCase() + arr[i].slice(1)+" ";
+  }
+  return returnData.trim()
+  
+}
 exports.generateCode = () => {
     const now = Date.now(); 
     let cur = now;
@@ -29,7 +38,7 @@ exports.checkValidURL = (data) => {
 
 exports.saveHTMLFile = async (storeId, pageId, content) => {
     const storeName = await storeService.findById(storeId)
-  
+
     //Get PageName
     let queryPage = {
       id: pageId,
@@ -50,25 +59,26 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
     const header = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
     const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
     
-    
-    
-  
     //Components
     let componentArr = []
     const _components = JSON.parse(content.components)
 
    
-    const Main = _components.filter((value) => value.name == "Main")
+    const Main = _components.filter((value) => value.type == "Main")
     const mainComponents = Main[0] ? (Main[0].components ? Main[0].components :[]) : []
 
-    componentArr = [..._components.map((value) => value.name), ...mainComponents.map((value) => value.name)]
+    componentArr = [..._components.map((value) => capitalizeWord(value.type)), ...mainComponents.map((value) => capitalizeWord(value.type))]
     let css = ""
     let js = ""
     componentArr.forEach(value => {
-      css += `<link id="${value}" href="${process.env.SERVER_URL}/css/${templateName[0].name}/${value}.css" rel="stylesheet">
+      css += `<link id="${value}" href="../css/${templateName[0].name}/${value}.css" rel="stylesheet">
       `
-      js += `<script type="text/javascript" src="${process.env.SERVER_URL}/js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
+      // css += `<link id="${value}" href="${process.env.SERVER_URL}/css/${templateName[0].name}/${value}.css" rel="stylesheet">
+      // `
+      js += `<script type="text/javascript" src="../js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
       `
+      // js += `<script type="text/javascript" src="${process.env.SERVER_URL}/js/${templateName[0].name}/${value}.js" id="${value}" class="ScriptClass"></script>
+      // `
     })
     // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
     if (storeNameConvert && pageNameConvert) {

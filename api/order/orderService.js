@@ -60,14 +60,7 @@ var getAllOrder = exports.getAllOrder = async (query) => {
         limit: query.limit
     }
 
-    // const transporter = nodemailer.createTransport({
-    //     host: "smtp.gmail.com",
-    //     port: 465,
-    //     auth: {
-    //         user: process.env.ADMIN_EMAIL_ADDRESS,
-    //         pass: process.env.GOOGLE_SMTP_PASSWORD,
-    //     },
-    // });
+  
 
     // const mailQuery = { 
     //     subject : `Long`,
