@@ -931,6 +931,9 @@ exports.createOrder = async (req, res) => {
     let productQuery = req.body.products
     let orderQuery = req.body.order
     let originalPrice = 0
+    const vndRate = 23000
+    const usdRate = 0.000043
+    let currency = req.body.order.currency
     let checkOutOfStock = false
     if (!productQuery) {
         res.status(http.ServerError).json({
@@ -1008,7 +1011,18 @@ exports.createOrder = async (req, res) => {
         if (query.is_variant) {
             const variant = await productVariantService.getVariantById(query.variant_id)
             remainquantity = variant[0].quantity - query.quantity
-            originalPrice += query.quantity * query.price
+            if (query.currency == currency){
+                originalPrice += query.quantity * query.price
+            }
+            else {
+                if (currency == 'VND'){
+                    originalPrice += query.quantity * query.price * vndRate
+                }
+                else {
+                    originalPrice += query.quantity * query.price * usdRate
+                }
+            }
+            
             if (!checkOutOfStock) {
                 await productVariantService.updateVariant({id : variant[0].id, quantity: remainquantity})
                 await productService.updateInventoryFromVariants(query.product_id)

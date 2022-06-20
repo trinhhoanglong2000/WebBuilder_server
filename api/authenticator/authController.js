@@ -115,7 +115,7 @@ exports.createAccount = async (req, res) => {
             else {
                 res.status(http.ServerError).json({
                     statusCode: http.ServerError,
-                    message: "Server error!"
+                    message: "Register successfully. Verifycation email was not sent."
                 })
             }
         }

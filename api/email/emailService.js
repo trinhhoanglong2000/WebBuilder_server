@@ -58,7 +58,7 @@ exports.sendResetPasswordEmail = async (email) => {
         host: "smtp.gmail.com",
         port: 465,
         auth: {
-            user: process.env.AUTH_MAIL_USER,
+            user: process.env.ADMIN_EMAIL_ADDRESS,
             pass: process.env.GOOGLE_SMTP_PASSWORD,
         },
     })
@@ -114,7 +114,7 @@ exports.sendVerifyEmail = async (email, id) => {
         host: "smtp.gmail.com",
         port: 465,
         auth: {
-            user: process.env.AUTH_MAIL_USER,
+            user: process.env.ADMIN_EMAIL_ADDRESS,
             pass: process.env.GOOGLE_SMTP_PASSWORD,
         },
     })
