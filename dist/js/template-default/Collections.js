@@ -14,6 +14,9 @@ const debounce_ProductPage = (fn, delay = 1000) => {
     };
 };
 var GetRequest_ProductPage = debounce_ProductPage(async (e,idStore,limit,name) => {
+    console.log($.urlParam('id'))
+    const id= $.urlParam('id')
+    const url = id ? `${urlProductList}/collections/product/${id}`:''
     fetch(`${urlProductSection}/stores/${idStore}/products?limit=${limit}&offset=${startProductSection}&title=${name}`)
     .then((response) => response.json())
     .then((data) => {
@@ -66,7 +69,15 @@ function productData(e) {
 function init() {
 
     const href = window.location != window.parent.location ? window.parent.location.href : window.location.href
-
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(href);
+        if (results == null) {
+            return null;
+        }
+        else {
+            return decodeURI(results[1]) || 0;
+        }
+    }
 
 
     if (!urlProductSection) {
@@ -90,15 +101,6 @@ function init() {
             }
         }
     });
-    $.urlParam = function (name) {
-        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(href);
-        if (results == null) {
-            return null;
-        }
-        else {
-            return decodeURI(results[1]) || 0;
-        }
-    }
 
     $("div[name='products-section']").each(function (i) {
         productData(this);
