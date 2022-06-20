@@ -15,6 +15,7 @@ const { createAccountWithSocialLogin } = require('../accounts/accountService');
 const URLParser = require('../../helper/common/index')
 const orderService = require('../order/orderService')
 const emailService = require('../email/emailService')
+const accountService = require('../accounts/accountService')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -52,12 +53,12 @@ exports.createStore = async (req, res) => {
     //     store_id
     //     receiver
     // }
-            
+        
         let query  = {
             store_id : storeId,
-            subject: "New Store Created",
-            receiver : 'ttlgame123@gmail.com',
-            html : `<p>Verify your email address to complete the signup and login to your account.</p>`
+            subject: `EASYMALL New Store Created`,
+            receiver : `${req.user.email}`,
+            html : `<p>Your new Store named ${storeObj.name} have been successfully create. Please check it out</p>`
         }
         await emailService.sendMailFromStore(query)
         res.status(http.Created).json({

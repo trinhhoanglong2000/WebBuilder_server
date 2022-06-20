@@ -6,6 +6,8 @@ const { query } = require('express');
 const { config } = require('dotenv');
 const pageService = require('../page/pageService')
 const URLParser = require('../../helper/common/index')
+const menuService = require('../menu/menuService')
+const menuItemService = require('../menuItem/menuItemService')
 exports.getTemplate = async (query) => {
 
     let config = {
@@ -237,6 +239,25 @@ exports.useTemplate = async (query) => {
         //await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, "template-default");
     }
 
+    //DELETE ALL MENU
+    const allMenu = await menuService.getMenuByStoreId({store_id : query.store_id})
+    for (let i = 0; i < allMenu.length; i++) {
+        await menuService.deleteMenu({id : allMenu[i].id })
+    }
+
+    //CREATE DEFAULT MENU 
+    //HEADER
+   
+    for (let i = 0; i < 2; i++){
+        const menuQuery = {
+            store_id : query.store_id, 
+            is_default : true
+        }
+        menuQuery.name = i == 0 ? "Header Menu" : "Footer Menu"
+        await menuService.createMenu(menuQuery)
+    }
+    
+    
     return DBHelper.updateData({ template_id: query.template_id, id: query.store_id }, "stores", "id")
 }
 
