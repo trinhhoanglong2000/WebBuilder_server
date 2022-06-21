@@ -98,6 +98,9 @@ exports.getAllOrderStatus = async (query) => {
 }
 
 exports.createOrderStatus = async (query) => {
+    return DBHelper.insertData(query, "order_status", true, "id")
+}
+exports.changeOrderStatus = async (query) => {
     let newStatus
     if (query.status == "RESTOCK") {
         const allProduct = await getOrderProduct({ order_id: query.order_id })
@@ -140,4 +143,14 @@ exports.createOrderStatus = async (query) => {
         status: newStatus
     }
     return DBHelper.insertData(createQuery, "order_status", true, "id")
+}
+
+exports.deleteOrderStatus = async (query) => {
+    return DBHelper.deleteData("order_status",query)
+}
+exports.deleteOrderProducts = async (query) => {
+    return DBHelper.deleteData("order_products",query)
+}
+exports.deleteOrder = async (query) => {
+    return DBHelper.deleteData("orders",query)
 }

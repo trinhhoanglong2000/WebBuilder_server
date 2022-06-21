@@ -1044,6 +1044,8 @@ exports.createOrder = async (req, res) => {
         order_id : orderId,
         status : checkOutOfStock? "RESTOCK" : "CREATED",
     }
+
+    console.log(statusQuery)
     await orderService.createOrderStatus(statusQuery)
 
     //CREATE ORDER
@@ -1073,9 +1075,12 @@ exports.getOrderByStore = async (req, res) => {
     
     for (let i = 0 ; i < result.length; i++){
         const status = await orderService.getAllOrderStatus({order_id : result[i].id})
+        const product = await orderService.getOrderProduct({order_id : result[i].id})
         result[i].status_date = status[0].create_at,
         result[i].status = status[0].status
+        result[i].total_item = product.length
     }
+    
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
