@@ -1012,18 +1012,7 @@ exports.createOrder = async (req, res) => {
         if (query.is_variant) {
             const variant = await productVariantService.getVariantById(query.variant_id)
             remainquantity = variant[0].quantity - query.quantity
-            if (query.currency == currency){
-                originalPrice += query.quantity * query.price
-            }
-            else {
-                if (currency == 'VND'){
-                    originalPrice += query.quantity * query.price * vndRate
-                }
-                else {
-                    originalPrice += query.quantity * query.price * usdRate
-                }
-            }
-            
+              
             if (!checkOutOfStock) {
                 await productVariantService.updateVariant({id : variant[0].id, quantity: remainquantity})
                 await productService.updateInventoryFromVariants(query.product_id)
@@ -1036,6 +1025,22 @@ exports.createOrder = async (req, res) => {
                 await productService.updateProduct({id : product[0].id, inventory : remainquantity})
             }
         }
+
+        if (query.currency == currency){
+            originalPrice += query.quantity * query.price
+        }
+        else {
+            if (currency == 'VND'){
+                originalPrice += query.quantity * query.price * vndRate
+                query.price = query.price * vndRate
+                query.currency = "VND"
+            }
+            else {
+                originalPrice += query.quantity * query.price * usdRate
+                query.price = query.price * vndRate
+                query.currency = "USD"
+            }
+        }
         await orderService.createOrderProduct(query)
     }
 
@@ -1045,7 +1050,6 @@ exports.createOrder = async (req, res) => {
         status : checkOutOfStock? "RESTOCK" : "CREATED",
     }
 
-    console.log(statusQuery)
     await orderService.createOrderStatus(statusQuery)
 
     //CREATE ORDER

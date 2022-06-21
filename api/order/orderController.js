@@ -32,7 +32,6 @@ exports.getOrder = async (req, res) => {
         if (order.length == 0) {
             res.status(http.NotAcceptable).json({
                 statusCode: http.NotAcceptable,
-                data: result,
                 message: "No data found"
             })
         }
