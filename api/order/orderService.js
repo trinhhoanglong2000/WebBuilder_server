@@ -41,9 +41,15 @@ var getOrderProduct = exports.getOrderProduct = async (query) => {
     return DBHelper.FindAll("order_products", config)
 }
 var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
+    const condition = []
+    if (query.id) {
+        condition.push({ [`UPPER(id)`]: { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } })
+    }
+    condition.push({"store_id": query.store_id})
+
     const config = {
         where: {
-            "store_id": query.store_id
+            "OP.AND": condition
         },
         offset: query.offset,
         limit: query.limit
@@ -60,7 +66,7 @@ var getAllOrder = exports.getAllOrder = async (query) => {
         limit: query.limit
     }
 
-  
+
 
     // const mailQuery = { 
     //     subject : `Long`,
@@ -78,7 +84,7 @@ var getAllOrder = exports.getAllOrder = async (query) => {
     //     html: `Long`
     // }).then(() => {
     //     console.log("Sent a mail successfully")
-     
+
     // })
     //     .catch((err) => {
     //         console.log(err)
@@ -146,11 +152,11 @@ exports.changeOrderStatus = async (query) => {
 }
 
 exports.deleteOrderStatus = async (query) => {
-    return DBHelper.deleteData("order_status",query)
+    return DBHelper.deleteData("order_status", query)
 }
 exports.deleteOrderProducts = async (query) => {
-    return DBHelper.deleteData("order_products",query)
+    return DBHelper.deleteData("order_products", query)
 }
 exports.deleteOrder = async (query) => {
-    return DBHelper.deleteData("orders",query)
+    return DBHelper.deleteData("orders", query)
 }
