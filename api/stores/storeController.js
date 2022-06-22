@@ -754,7 +754,7 @@ exports.deleteStore = async (req, res) => {
     const productCollection = await productcollectionService.getData(query)
     const products = await productService.getProductsByStoreId(query)
     const pages = await pageService.getPagesByStoreId(query)
-
+    const menuItem = await menuService.getMenuByStoreId(query)
     //Delete Data Collection
     if (bannerCollection.length > 0) {
         for (let i = 0; i < bannerCollection.length; i++) {
@@ -766,7 +766,7 @@ exports.deleteStore = async (req, res) => {
             await productcollectionService.deleteProduct({ id: productCollection[i].id })
         }
     }
-
+    //DELETE PRODUCT
     if (products.length > 0) {
         for (let i = 0; i < products.length; i++) {
             let productQuery = {}
@@ -781,13 +781,22 @@ exports.deleteStore = async (req, res) => {
             await productService.deleteProduct(productQuery)
         }
     }
-
+    //DELETE PAGES
     if (pages.length > 0) {
         for (let i = 0; i < pages.length; i++) {
             await pageService.deletePage({ id: pages[i].id })
         }
     }
+    //DELETE NAVIGATION
+    if (menuItem.length > 0) {
+        for (let i = 0; i < menuItem.length; i++){
+            await menuService.deleteMenu({id : menuItem[i].id})
+        }
+    }
+    
 
+
+    //DELETE STORE
     let deleteStore = await storeService.deleteStores({ id: id })
     if (deleteStore) {
         res.status(http.Created).json({

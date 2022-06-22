@@ -31,6 +31,6 @@ exports.updateMenu = async (menuObj) => {
 }
 
 exports.deleteMenu = async (menuObj) => {
-    menuItemService.deleteMenuItem({menu_id : menuObj.id})
+    await menuItemService.deleteMenuItem({menu_id : menuObj.id})
     return DBHelper.deleteData("menu",menuObj)
 }
