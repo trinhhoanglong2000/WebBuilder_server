@@ -21,6 +21,7 @@ router.get('/:id/products/custom-type',authenticator.Authenticate, storeControll
 router.get('/:id/products/vendor', authenticator.Authenticate, storeController.getVendor);
 router.get('/:id/headerData', storeController.getHeaderData);
 router.get('/:id/orders',authenticator.Authenticate, storeController.getOrderByStore)
+router.get('/:id/order/:orderId', storeController.getOrderById)
 //TEMPLATE
 router.get('/:id/current-template', authenticator.Authenticate, storeController.getCurrentTemplateByStore);
 router.get('/:id/paid-templates', authenticator.Authenticate, storeController.getPaidTemplateByStore);

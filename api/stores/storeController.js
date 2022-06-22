@@ -1099,3 +1099,59 @@ exports.getOrderByStore = async (req, res) => {
         })
     }
 }
+
+exports.getOrderById = async (req, res) => {
+    const orderId = req.params.orderId
+    const storeId = req.params.id
+    const returnData = {}
+    const order = await orderService.getAllOrder({ id: orderId , store_id : storeId})
+    if (order) {
+        if (order.length == 0) {
+            res.status(http.NotAcceptable).json({
+                statusCode: http.NotAcceptable,
+                message: "No data found"
+            })
+        }
+    }
+    returnData.order = order[0]
+
+    //GET STATUS
+    const status = await orderService.getAllOrderStatus({ order_id: orderId })
+    if (status) {
+        if (status.length == 0) {
+            res.status(http.NotAcceptable).json({
+                statusCode: http.NotAcceptable,
+                message: "No data found"
+            })
+        }
+    }
+    returnData.status = status
+
+    //GET PRODUCT
+    const allProduct = await orderService.getOrderProduct({ order_id: orderId })
+    for (let i = 0; i < allProduct.length; i++) {
+        const productFound = await productService.findById(allProduct[i].product_id)
+        if (productFound.length > 0) {
+            allProduct[i].existed = true
+        }
+        else {
+            allProduct[i].existed = false
+        }
+    }
+
+    returnData.products = allProduct
+
+    if (returnData) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: returnData,
+            message: "Successfully Get Order"
+        })
+    }
+    else {
+        res.status(http.NotAcceptable).json({
+            statusCode: http.NotAcceptable,
+            message: "No data found"
+        })
+    }
+}
