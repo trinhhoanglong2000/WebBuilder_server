@@ -6,7 +6,7 @@ const mailService = require('../email/emailService')
 const storeService = require('../stores/storeService')
 exports.changeOrderStatus = async (req, res) => {
 
-    if (!req.body.store_id || !req.body.status){
+    if (!req.body.store_id || !req.body.status) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
             message: "Bad Request"
@@ -43,6 +43,118 @@ exports.changeOrderStatus = async (req, res) => {
     }
 }
 
+exports.deleteOrderStatus = async (req, res) => {
+
+    if (!req.body.store_id) {
+        res.status(http.BadRequest).json({
+            statusCode: http.BadRequest,
+            message: "Bad Request"
+        })
+        return
+    }
+
+    let check = {
+        id: req.body.store_id,
+        user_id: req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req, res, check)
+    if (!authen) {
+        return
+    }
+    const query = req.body
+    delete query["store_id"]
+    query.order_id = req.params.id
+    query.status = "DELETED"
+    console.lo
+    const result = await orderService.CreateStatusdeleteOrder(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result.rows,
+            message: "Successfully Change Status"
+        })
+    }
+    else {
+        res.status(http.NotAcceptable).json({
+            statusCode: http.NotAcceptable,
+            data: result,
+            message: "No data found"
+        })
+    }
+}
+
+exports.restoreOrder = async (req, res) => {
+    if (!req.body.store_id) {
+        res.status(http.BadRequest).json({
+            statusCode: http.BadRequest,
+            message: "Bad Request"
+        })
+        return
+    }
+    let check = {
+        id: req.body.store_id,
+        user_id: req.user.id
+    }
+    let authen = await this.AuthenticateUserAndStore(req, res, check)
+    if (!authen) {
+        return
+    }
+
+    const query = req.body
+    delete query["store_id"]
+    query.order_id = req.params.id
+    let result
+    const status = await orderService.getAllOrderStatus({ order_id: req.params.id })
+    if (!status) {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server Error"
+        })
+        return
+    }
+
+    if (status.length > 1) {
+        if (status[0].status == "DELETED") {
+            if (status[1].status == "CREATE" || status[1].status == "RESTOCK"){
+                query.status = status[length-2]
+                result = await orderService.changeOrderStatus(query)
+            }
+            else {
+                query.status = "CONFIRMED"
+                result = await orderService.CreateStatusdeleteOrder(query)
+            }
+        }
+        else {
+            res.status(http.NotAcceptable).json({
+                statusCode: http.NotAcceptable,
+                message: "Not Acceptable"
+            })
+            return
+        }
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server Error"
+        })
+        return
+    }
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result.rows,
+            message: "Successfully Change Status"
+        })
+    }
+    else {
+        res.status(http.NotAcceptable).json({
+            statusCode: http.NotAcceptable,
+            message: "No data found"
+        })
+    }
+}
+
 exports.getOrder = async (req, res) => {
     const orderId = req.params.id
     const returnData = {}
@@ -63,7 +175,6 @@ exports.getOrder = async (req, res) => {
         if (status.length == 0) {
             res.status(http.NotAcceptable).json({
                 statusCode: http.NotAcceptable,
-                data: result,
                 message: "No data found"
             })
         }
@@ -94,14 +205,13 @@ exports.getOrder = async (req, res) => {
     else {
         res.status(http.NotAcceptable).json({
             statusCode: http.NotAcceptable,
-            data: result,
             message: "No data found"
         })
     }
 }
 
 exports.deleteOrder = async (req, res) => {
-    if (!req.body.store_id){
+    if (!req.body.store_id) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
             message: "Bad Request"
@@ -117,9 +227,9 @@ exports.deleteOrder = async (req, res) => {
         return
     }
     const orderId = req.params.id
-    await orderService.deleteOrderStatus({order_id : orderId})
-    await orderService.deleteOrderProducts({order_id : orderId})
-    const result = await orderService.deleteOrder({id : orderId})
+    await orderService.deleteOrderStatus({ order_id: orderId })
+    await orderService.deleteOrderProducts({ order_id: orderId })
+    const result = await orderService.deleteOrder({ id: orderId })
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -130,7 +240,6 @@ exports.deleteOrder = async (req, res) => {
     else {
         res.status(http.NotAcceptable).json({
             statusCode: http.NotAcceptable,
-            data: result,
             message: "No data found"
         })
     }
@@ -142,7 +251,6 @@ exports.AuthenticateUserAndStore = async (req, res, check) => {
             id: check.id,
             user_id: check.user_id
         }
-        console.log(query)
         const authenticateUser = await storeService.FindUserAndStore(query)
         if (!authenticateUser[0]) {
             res.status(http.Forbidden).json({

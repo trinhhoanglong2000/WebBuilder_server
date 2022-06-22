@@ -151,6 +151,9 @@ exports.changeOrderStatus = async (query) => {
     return DBHelper.insertData(createQuery, "order_status", true, "id")
 }
 
+exports.CreateStatusdeleteOrder = async (query) => {
+    return DBHelper.insertData(query, "order_status", true, "id")
+}
 exports.deleteOrderStatus = async (query) => {
     return DBHelper.deleteData("order_status", query)
 }
