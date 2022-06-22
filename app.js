@@ -27,6 +27,7 @@ const emailRouter = require('./api/email');
 const verificationRouter = require('./api/verification');
 const orderRouter = require('./api/order');
 const userStoreRouter = require('./stores')
+const dataRouter = require('./api/data')
 const app = express();
 
 var hbs = require('express-handlebars')
@@ -68,6 +69,7 @@ app.use('/variants', variantsRouter);
 app.use('/productoption', productOptionRouter)
 app.use('/template', templateRouter)
 app.use('/order', orderRouter)
+app.use('/data',dataRouter)
 app.get('/',function (req,res) {
   res.send("Hi")
 })
