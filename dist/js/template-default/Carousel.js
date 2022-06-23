@@ -42,6 +42,7 @@ function Render(data,itemID,e){
     }
   ]
   let listBanners = data == null ? [] : data.banners;
+  let carousel = $(e).find(`.carousel`)[0];
   let carouselIndicators =$(e).find('.carousel-indicators')[0];
   let carouselInner =  $(e).find('.carousel-inner')[0]
   carouselIndicators.innerHTML = "";
@@ -74,6 +75,11 @@ function Render(data,itemID,e){
   </div>
 `
     carouselInner.insertAdjacentHTML("beforeend", htmlCarouselItemInsert)
+  })
+  var myCarousel = document.querySelector(`#${$(carousel).attr("id")}`)
+  var carouselInit = new bootstrap.Carousel(myCarousel, {
+    interval: 4000,
+    cycle: true
   })
 }
 
