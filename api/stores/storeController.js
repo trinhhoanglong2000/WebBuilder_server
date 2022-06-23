@@ -967,8 +967,9 @@ exports.createOrder = async (req, res) => {
                 const remainQuantity = variant[0].quantity - query.quantity
                 if (remainQuantity < 0) {
                     if (!product[0].continue_sell) {
-                        res.status(http.ServerError).json({
-                            statusCode: http.ServerError,
+                        res.status(http.Success).json({
+                            statusCode: http.Success,
+                            data: null,
                             message: "Create Order Unsuccesfully, out of stock!"
                         })
                         return
@@ -993,9 +994,10 @@ exports.createOrder = async (req, res) => {
                 const remainQuantity = product[0].inventory - query.quantity
                 if (remainQuantity < 0) {
                     if (!product[0].continue_sell) {
-                        res.status(http.ServerError).json({
-                            statusCode: http.ServerError,
-                            message: "Create Order Unsuccesfully!"
+                        res.status(http.Success).json({
+                            statusCode: http.Success,
+                            data: null,
+                            message: "Create Order Unsuccesfully, out of stock!"
                         })
                         return
                     }
