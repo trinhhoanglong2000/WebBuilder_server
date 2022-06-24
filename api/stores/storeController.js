@@ -1067,6 +1067,8 @@ exports.createOrder = async (req, res) => {
     orderQuery.id = orderId
     orderQuery.original_price = originalPrice
     const newOrder = await orderService.createOrder(orderQuery)
+
+
     if (newOrder) {
         res.status(http.Created).json({
             statusCode: http.Created,

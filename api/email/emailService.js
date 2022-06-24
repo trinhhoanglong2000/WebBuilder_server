@@ -232,6 +232,33 @@ exports.sendMailFromStore = async (query) => {
     return result
 }
 
+
+exports.adminSendMail = async (query) => {
+    const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        auth: {
+            user: process.env.ADMIN_EMAIL_ADDRESS,
+            pass: process.env.GOOGLE_SMTP_PASSWORD,
+        },
+        });
+
+        await transporter.sendMail({
+            from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`,
+            to: `${query.receiver}`,
+            subject: `${query.subject}`,
+            html: `${query.html}`
+        }).then(() => {
+            console.log("Sent a mail successfully")
+            result = true
+        })
+            .catch((err) => {
+                console.log(err)
+                result = false
+    
+            }) 
+
+}
 // exports.sendEmail = async (recipient, invitelink, role) => {
 //     var result = true;
 //     var Options = {
