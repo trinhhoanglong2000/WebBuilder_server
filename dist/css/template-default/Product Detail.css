@@ -257,4 +257,9 @@
     border: solid 2px #ee4d2d !important;
     color: #ee4d2d !important;
 }
+
+.ezMall-options-container .disabled{
+   opacity: 0.2 !important;
+   cursor: not-allowed !important;
+}
  
