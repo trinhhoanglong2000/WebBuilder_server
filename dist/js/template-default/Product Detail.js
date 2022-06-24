@@ -38,9 +38,37 @@ if ($('[data-gjs-type="wrapper"]').length) {
 else {
     ProductDetailGenerateCodeStart();
 }
-function VariantCheck(optionsType,variantId,variantName){
-    console.log(optionsType);
-    console.log(variantId);
-    console.log(variantName);
-    localStorage.getItem('myCat');
+function VariantCheck(variantId, optionId){
+    let itemData = JSON.parse(localStorage.getItem('productData'));
+    let productData = itemData.product[0];
+    let variantData = itemData.variant;
+    let option =itemData.option;
+    let indexOption = option.findIndex((item)=>item.id === variantId)
+
+    let variantValid = variantData.filter( variant => variant.option_value.filter(option => option.id == optionId ).length > 0)
+    console.log(variantValid)
+    console.log($(`input[type=radio] + label`));
+    let removeAfterOptionFlag = false;
+    for (let i = indexOption+1; i< option.length; i++){
+        
+        let lastCheckInput=  $(`#${option[i].id} input[type=radio]:checked`);
+        console.log($(lastCheckInput))
+        $(`#${option[i].id} input[type=radio]`).prop("checked",false);
+        $(`#${option[i].id} input[type=radio] + label`).addClass("disabled");
+        variantValid.forEach(item =>{
+            item.option_value.forEach(optionValid => {
+               $(`#${option[i].id} #${optionValid.id} + label `).removeClass("disabled");
+               if(lastCheckInput !=null &&lastCheckInput.length >0 && removeAfterOptionFlag == false ){
+                if ($(lastCheckInput)[0].id == optionValid.id ){
+                    $(lastCheckInput).prop("checked",true);
+                }
+               }else{
+                removeAfterOptionFlag=true;
+               }
+            })
+        })
+    }
+
+    console.log(variantValid)
+
 }
