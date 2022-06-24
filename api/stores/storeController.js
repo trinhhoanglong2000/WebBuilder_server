@@ -314,6 +314,26 @@ exports.getProductsByStoreId = async (req, res) => {
     }
 };
 
+exports.getProductsWithVariantByStoreId = async (req, res) => {
+    const storeId = req.params.id;
+    const query = req.query
+    query.store_id = storeId
+    const result = await productService.getProductsWithVariantByStoreId(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get products successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.getPagesByStoreId = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;

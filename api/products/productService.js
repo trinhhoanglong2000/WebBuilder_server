@@ -129,6 +129,61 @@ exports.getProductsByStoreId = async (query) => {
     return DBHelper.FindAll("products", config)
 }
 
+exports.getProductsWithVariantByStoreId = async (query) => {
+    let condition = [];
+    let offset = query.offset
+    let limit = query.limit
+    
+    let store_Query = {
+        store_id: query.store_id
+    }
+    if (query.offset) {
+        delete query["offset"]
+    }
+
+    if (query.limit) {
+        delete query["limit"]
+    }
+    delete query["store_id"]
+    let arr = Object.keys(query)
+    let arr1 = Object.values(query)
+
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] == "title" || arr[i] == "type") {
+            let queryTemp = {}
+            queryTemp[`UPPER(${arr[i]})`] = { "OP.ILIKE": "%" + arr1[i].toUpperCase().trim() + "%" }
+            condition.push(queryTemp)
+        }
+        else {
+            let queryTemp = {}
+            queryTemp[`${arr[i]}`] = arr1[i]
+            condition.push(queryTemp)
+        }
+
+    }
+
+    let conditionQuery = [store_Query]
+    if (condition.length > 0) {
+        conditionQuery.push({ "OP.AND": condition })
+    }
+    
+    let config = {
+        
+        where: {
+            "OP.AND": conditionQuery,
+        },
+        limit: limit,
+        offset: offset
+    }
+   
+    const returnData = await DBHelper.FindAll("products", config)
+    for (let i = 0; i < returnData.length; i++){
+        const variant = await variantService.getVariant(returnData[i].id)
+        returnData[i].variants = variant
+    }
+    return returnData
+}
+
 exports.findById = async (id) => {
     let query = {
         id: id
