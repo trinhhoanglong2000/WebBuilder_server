@@ -1134,17 +1134,24 @@ exports.getOrderByStore = async (req, res) => {
 }
 
 exports.getOrderById = async (req, res) => {
+    const dataQuery = req.query
     const orderId = req.params.orderId
     const storeId = req.params.id
+    dataQuery.id = orderId
+    dataQuery.store_id = storeId
+
     const returnData = {}
-    const order = await orderService.getAllOrder({ id: orderId , store_id : storeId})
+    const order = await orderService.getAllOrder(dataQuery)
     if (order) {
         if (order.length == 0) {
-            res.status(http.NotAcceptable).json({
-                statusCode: http.NotAcceptable,
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data : order,
                 message: "No data found"
             })
+            return
         }
+       
     }
     returnData.order = order[0]
 
@@ -1152,10 +1159,12 @@ exports.getOrderById = async (req, res) => {
     const status = await orderService.getAllOrderStatus({ order_id: orderId })
     if (status) {
         if (status.length == 0) {
-            res.status(http.NotAcceptable).json({
-                statusCode: http.NotAcceptable,
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data : [],
                 message: "No data found"
             })
+            return
         }
     }
     returnData.status = status
@@ -1182,8 +1191,9 @@ exports.getOrderById = async (req, res) => {
         })
     }
     else {
-        res.status(http.NotAcceptable).json({
-            statusCode: http.NotAcceptable,
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: [],
             message: "No data found"
         })
     }

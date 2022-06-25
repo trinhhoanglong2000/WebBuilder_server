@@ -14,8 +14,10 @@ router.get('/:id/products-variant', storeController.getProductsWithVariantByStor
 router.get('/:id/pages', authenticator.Authenticate, storeController.getPagesByStoreId);
 router.get('/:id/pages/policy', authenticator.Authenticate, storeController.getPagesPolicy);
 router.get('/:id/page/:name', storeController.getPageByName);
+
 router.get('/:id/collections/product', storeController.getProductCollectionsByStoreId);
 router.get('/:id/collections/banner', storeController.getBannerCollectionsByStoreId);
+
 router.get('/:id/store-components', authenticator.Authenticate, storeController.getStoreComponents);
 router.get('/:id/menu', storeController.getMenuByStoreId);
 router.get('/:id/list-menu-items', storeController.getListMenuItems);
