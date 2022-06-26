@@ -49,4 +49,8 @@ router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
 
 //ROUTER PUBLISH STORE
 router.post('/:id/publish',authenticator.Authenticate, storeController.publishStore)
+
+//Update store info
+router.put('/', authenticator.Authenticate, storeController.updateStoreInfo);
+
 module.exports = router;

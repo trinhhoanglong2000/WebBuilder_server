@@ -225,3 +225,7 @@ exports.publishStore = async (storeId) => {
     }
     return true
 }
+
+exports.updateStoreInfo = (storeObj) => {
+    return DBHelper.updateData(storeObj, 'stores', 'id');
+}
