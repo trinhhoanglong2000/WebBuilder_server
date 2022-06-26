@@ -57,3 +57,21 @@ exports.convertMoney = async (req, res) => {
         })
     }
 };
+
+exports.getRate = async (req, res) => {
+    const result = await dataService.getRate()
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Rate"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};

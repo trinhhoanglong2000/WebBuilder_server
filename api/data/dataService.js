@@ -36,3 +36,7 @@ exports.changeMoney = async (query) => {
 var getCurreny = exports.getCurreny = async (name) => {
     return DBHelper.getData("currency", { currency: name })
 }
+
+exports.getRate = async () => {
+    return DBHelper.getData("currency")
+}
