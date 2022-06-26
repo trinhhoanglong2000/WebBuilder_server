@@ -18,10 +18,23 @@ var GetRequest_ProductPage = debounce_ProductPage(async (e, idStore, limit, name
     fetch(`${urlProductSection}/stores/${idStore}/products?limit=${limit}&offset=${startProductSection}&title=${name}${id ? `&collection_id=${id}` : ''}`)
         .then((response) => response.json())
         .then((data) => {
+
             $(".dots ").addClass("d-none")
             startProductSection += parseInt(limit);
             if (data.data.length < limit) canLoadProductSection = false
             data.data.forEach(element => {
+
+                //
+                let currency = ' $'
+                if (element.currency === "VND"){
+                  currency = ' VND'
+                }
+                else if (element.currency === "USD"){
+                  currency = ' $'
+                }
+                const price = element.currency ? Number(element.price).toLocaleString(`${element.currency}`) + currency: 
+                element.price
+                //
                 productHTML += ` <div class="col-md-3 col-sm-4">
         <div class="single-new-arrival">
             <div class="single-new-arrival-bg">
@@ -39,7 +52,7 @@ var GetRequest_ProductPage = debounce_ProductPage(async (e, idStore, limit, name
                 </div>
             </div>
             <h4><a href="#">${element.title}</a></h4>
-            <p class="arrival-product-price">${element.price}</p>
+            <p class="arrival-product-price">${price}</p>
         </div>
         </div>
 
