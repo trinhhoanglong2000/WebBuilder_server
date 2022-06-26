@@ -4,4 +4,5 @@ const dataController = require('./dataController')
 
 router.get('/city', dataController.getCity);
 router.get('/city/:id/district', dataController.getDistrict);
+router.post('/convert-money', dataController.convertMoney);
 module.exports = router;

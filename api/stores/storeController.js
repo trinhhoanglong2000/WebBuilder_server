@@ -16,6 +16,7 @@ const URLParser = require('../../helper/common/index')
 const orderService = require('../order/orderService')
 const emailService = require('../email/emailService')
 const accountService = require('../accounts/accountService')
+const dataService = require('../data/dataService')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -27,8 +28,8 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    const template = await templateService.getTemplate({name : "template-default"})
-    await templateService.useTemplate({user_id :req.user.id, store_id : storeId, template_id : template[0].id})
+    const template = await templateService.getTemplate({ name: "template-default" })
+    await templateService.useTemplate({ user_id: req.user.id, store_id: storeId, template_id: template[0].id })
     // let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true, "template-default");
     // if (page) {
     //     await pageService.createHTMLFile(storeId, page.rows[0].id)
@@ -47,18 +48,18 @@ exports.createStore = async (req, res) => {
     //CREATE HEADER AND FOOTER
 
     if (newStore) {
-         // //query { 
-    //     subject
-    //     text
-    //     store_id
-    //     receiver
-    // }
-        
-        let query  = {
-            store_id : storeId,
+        // //query { 
+        //     subject
+        //     text
+        //     store_id
+        //     receiver
+        // }
+
+        let query = {
+            store_id: storeId,
             subject: `EASYMALL New Store Created`,
-            receiver : `${req.user.email}`,
-            html : `<p>Your new Store named ${storeObj.name} have been successfully create. Please check it out</p>`
+            receiver: `${req.user.email}`,
+            html: `<p>Your new Store named ${storeObj.name} have been successfully create. Please check it out</p>`
         }
         await emailService.sendMailFromStore(query)
         res.status(http.Created).json({
@@ -809,11 +810,11 @@ exports.deleteStore = async (req, res) => {
     }
     //DELETE NAVIGATION
     if (menuItem.length > 0) {
-        for (let i = 0; i < menuItem.length; i++){
-            await menuService.deleteMenu({id : menuItem[i].id})
+        for (let i = 0; i < menuItem.length; i++) {
+            await menuService.deleteMenu({ id: menuItem[i].id })
         }
     }
-    
+
 
 
     //DELETE STORE
@@ -975,14 +976,14 @@ exports.createOrder = async (req, res) => {
 
     //CREATE ID
     const orderId = await orderService.createOrderId()
-    
+
     //CHECK PRODUCT QUANTITY EXIST
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
         if (query.is_variant) {
             const variant = await productVariantService.getVariantById(query.variant_id)
             const product = await productService.findById(query.id)
-           
+
             if (variant.length > 0 && product.length > 0) {
                 const remainQuantity = variant[0].quantity - query.quantity
                 if (remainQuantity < 0) {
@@ -1009,7 +1010,7 @@ exports.createOrder = async (req, res) => {
         }
         else {
             const product = await productService.findById(query.id)
-            
+
             if (product.length > 0) {
                 const remainQuantity = product[0].inventory - query.quantity
                 if (remainQuantity < 0) {
@@ -1039,13 +1040,13 @@ exports.createOrder = async (req, res) => {
         }
         query.order_id = orderId
         let remainquantity = 0
-        
+
         if (query.is_variant) {
             const variant = await productVariantService.getVariantById(query.variant_id)
             remainquantity = variant[0].quantity - query.quantity
-              
+
             if (!checkOutOfStock) {
-                await productVariantService.updateVariant({id : variant[0].id, quantity: remainquantity})
+                await productVariantService.updateVariant({ id: variant[0].id, quantity: remainquantity })
                 await productService.updateInventoryFromVariants(query.product_id)
             }
         }
@@ -1053,32 +1054,26 @@ exports.createOrder = async (req, res) => {
             const product = await productService.findById(query.product_id)
             remainquantity = product[0].inventory - query.quantity
             if (!checkOutOfStock) {
-                await productService.updateProduct({id : product[0].id, inventory : remainquantity})
+                await productService.updateProduct({ id: product[0].id, inventory: remainquantity })
             }
         }
 
-        if (query.currency == currency){
+        if (query.currency == currency) {
             originalPrice += query.quantity * query.price
         }
         else {
-            if (currency == 'VND'){
-                originalPrice += query.quantity * query.price * vndRate
-                query.price = query.price * vndRate
-                query.currency = "VND"
-            }
-            else {
-                originalPrice += query.quantity * query.price * usdRate
-                query.price = query.price * vndRate
-                query.currency = "USD"
-            }
+            const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price: query.price })
+            originalPrice += query.quantity * priceFixed
+            query.price = priceFixed
+            query.currency = currency
         }
         await orderService.createOrderProduct(query)
     }
 
     //CREATE ORDER STATUS
     const statusQuery = {
-        order_id : orderId,
-        status : checkOutOfStock? "RESTOCK" : "CREATED",
+        order_id: orderId,
+        status: checkOutOfStock ? "RESTOCK" : "CREATED",
     }
 
     await orderService.createOrderStatus(statusQuery)
@@ -1109,15 +1104,15 @@ exports.getOrderByStore = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
     const result = await orderService.getAllStoreOrder(query)
-    
-    for (let i = 0 ; i < result.length; i++){
-        const status = await orderService.getAllOrderStatus({order_id : result[i].id})
-        const product = await orderService.getOrderProduct({order_id : result[i].id})
+
+    for (let i = 0; i < result.length; i++) {
+        const status = await orderService.getAllOrderStatus({ order_id: result[i].id })
+        const product = await orderService.getOrderProduct({ order_id: result[i].id })
         result[i].status_date = status[0].create_at,
-        result[i].status = status[0].status
+            result[i].status = status[0].status
         result[i].total_item = product.length
     }
-    
+
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -1146,12 +1141,12 @@ exports.getOrderById = async (req, res) => {
         if (order.length == 0) {
             res.status(http.Success).json({
                 statusCode: http.Success,
-                data : order,
+                data: order,
                 message: "No data found"
             })
             return
         }
-       
+
     }
     returnData.order = order[0]
 
@@ -1161,7 +1156,7 @@ exports.getOrderById = async (req, res) => {
         if (status.length == 0) {
             res.status(http.Success).json({
                 statusCode: http.Success,
-                data : [],
+                data: [],
                 message: "No data found"
             })
             return

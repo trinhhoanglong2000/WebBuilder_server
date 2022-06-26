@@ -38,3 +38,22 @@ exports.getDistrict = async (req, res) => {
         })
     }
 };
+
+exports.convertMoney = async (req, res) => {
+    const query = req.body
+    const result = await dataService.changeMoney(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Money"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
