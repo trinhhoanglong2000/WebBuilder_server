@@ -60,6 +60,7 @@
     justify-content: center;
     display: none;
     animation-duration: 0.5s;
+    max-width: 90%;
 }
 
 [name="header"].navbar .search-bound button {
@@ -144,4 +145,25 @@
 
 [name='header'][logosize='large'].navbar .navbar-brand img { 
     max-width: 150px 
+}
+
+@media only screen and (max-width: 480px) {
+    [name="header"].navbar i {
+        font-size: 20px;
+    }
+
+    [name="header"].navbar .search-bound {
+        right: 10px;
+        top: 29px;
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+
+    [name="header"].navbar .search-bound span {
+        left: 0px;
+    }
+
+    [name="header"].navbar i.fa-shopping-bag span {
+        font-size: .65em;
+    }
 }
