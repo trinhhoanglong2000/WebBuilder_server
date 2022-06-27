@@ -1,16 +1,24 @@
 
+const { query } = require('express');
 const http = require('../../const');
 const discountService = require('./discountService')
+const dataService = require('../data/dataService')
 exports.useDiscount = async (req, res) => {
     const data = req.body
-    if (!data.store_id || !data.code) {
+    if (!data.store_id || !data.code || !data.total_price || !data.total_products || !data.currency) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
             message: "Bad Request"
         })
         return
     }
-    const result = await discountService.findDiscount(data)
+    const dataQuery = {
+        store_id : data.store_id,
+        code : data.code
+    }
+    
+    
+    const result = await discountService.findDiscount(dataQuery)
 
     if (result) {
         if (result.length == 1) {
@@ -27,11 +35,25 @@ exports.useDiscount = async (req, res) => {
 
             }
             else {
-                res.status(http.Success).json({
-                    statusCode: http.Success,
-                    data: result,
-                    message: "Use Discount Successfully"
-                })
+
+                const conditionPrice = await dataService.changeMoney({ from: result[0].currency, to: data.currency, price: result[0].condition })
+                if ((result[0].condition_type == 1 && data.total_price < conditionPrice) ||
+                    (result[0].condition_type == 2 && data.total_products < result[0].condition)) {
+
+                    res.status(http.Success).json({
+                        statusCode: http.Success,
+                        data: null,
+                        message: "Order isn't match with the discount requirement"
+                    })
+                }
+                else {
+                    res.status(http.Success).json({
+                        statusCode: http.Success,
+                        data: result,
+                        message: "Use Discount Successfully"
+                    })
+                }
+
             }
 
 
@@ -58,7 +80,7 @@ exports.updateDiscount = async (req, res) => {
     discount.id = req.params.id
 
     if (discount.code) {
-        const check = await discountService.findDiscount({ store_id : discount.store_id, code: discount.code })
+        const check = await discountService.findDiscount({ store_id: discount.store_id, code: discount.code })
         if (check) {
             if (check.length > 0) {
                 res.status(http.Success).json({

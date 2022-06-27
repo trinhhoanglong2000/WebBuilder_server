@@ -70,3 +70,7 @@ exports.generateCode = async (query) => {
     }
     return discountCode
 }
+
+exports.useDiscount = async(query) => {
+    
+}

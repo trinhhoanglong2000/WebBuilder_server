@@ -17,7 +17,8 @@ const orderService = require('../order/orderService')
 const emailService = require('../email/emailService')
 const accountService = require('../accounts/accountService')
 const dataService = require('../data/dataService')
-const discountService = require('../discount/discountService')
+const discountService = require('../discount/discountService');
+const { query } = require('express');
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -981,6 +982,8 @@ exports.createOrder = async (req, res) => {
     let productQuery = req.body.products
     let orderQuery = req.body.order
     let originalPrice = 0
+    let discountPrice = 0
+    let totalProduct = 0
     const vndRate = 23000
     const usdRate = 0.000043
     let currency = req.body.order.currency
@@ -999,12 +1002,26 @@ exports.createOrder = async (req, res) => {
     //CHECK PRODUCT QUANTITY EXIST
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
+
+        if (query.currency == currency) {
+            originalPrice += query.quantity * query.price
+        }
+        else {
+            const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price: query.price })
+            originalPrice += query.quantity * priceFixed
+            query.price = priceFixed
+            query.currency = currency
+        }
+
+        totalProduct += query.quantity
+        
         if (query.is_variant) {
             const variant = await productVariantService.getVariantById(query.variant_id)
             const product = await productService.findById(query.id)
 
             if (variant.length > 0 && product.length > 0) {
                 const remainQuantity = variant[0].quantity - query.quantity
+                
                 if (remainQuantity < 0) {
                     if (!product[0].continue_sell) {
                         res.status(http.Success).json({
@@ -1049,6 +1066,71 @@ exports.createOrder = async (req, res) => {
         }
     }
 
+
+    //CHECK DISSCOUNT 
+    if (orderQuery.discount_id) {
+        const discountResult = await discountService.findDiscount({id : orderQuery.discount_id})
+
+        if (discountResult) {
+            if (discountResult.length == 1) {
+                const currentTime = new Date()
+
+                if (currentTime < discountResult[0].start_at ||
+                    (currentTime > discountResult[0].end_at && discountResult[0].is_end) ||
+                    discountResult[0].quantity == 0) {
+                    res.status(http.Success).json({
+                        statusCode: http.Success,
+                        data: null,
+                        message: "No Discount Available"
+                    })
+                    return
+
+                }
+                else {
+
+                    const conditionPrice = await dataService.changeMoney({ from: discountResult[0].currency, to: currency, price: discountResult[0].condition })
+                    if ((discountResult[0].condition_type == 1 && originalPrice < conditionPrice) ||
+                        (discountResult[0].condition_type == 2 && totalProduct < discountResult[0].condition)) {
+
+                        res.status(http.Success).json({
+                            statusCode: http.Success,
+                            data: null,
+                            message: "Order isn't match with the discount requirement"
+                        })
+                        return
+                    }
+                    else {
+                        if (discountResult[0].type == 0){
+                            discountPrice = originalPrice*discountResult[0].amount
+                        }
+                        else{
+                            discountPrice = discountResult[0].amount
+                        }
+                        if (discountResult[0].quantity != -1){
+                            await discountService.updateDiscount({id: orderQuery.discount_id, quantity :discountResult[0].quantity - 1 })
+                        } 
+                    }
+                }
+            }
+            else {
+                res.status(http.Success).json({
+                    statusCode: http.Success,
+                    data: null,
+                    message: "No Discount Found"
+                })
+                return
+            }
+        }
+        else {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server error!"
+            })
+            return
+        }
+    }
+    //
+
     //CREATE PRODUCT_ORDER
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
@@ -1077,15 +1159,15 @@ exports.createOrder = async (req, res) => {
             }
         }
 
-        if (query.currency == currency) {
-            originalPrice += query.quantity * query.price
-        }
-        else {
-            const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price: query.price })
-            originalPrice += query.quantity * priceFixed
-            query.price = priceFixed
-            query.currency = currency
-        }
+        // if (query.currency == currency) {
+        //     originalPrice += query.quantity * query.price
+        // }
+        // else {
+        //     const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price: query.price })
+        //     originalPrice += query.quantity * priceFixed
+        //     query.price = priceFixed
+        //     query.currency = currency
+        // }
         await orderService.createOrderProduct(query)
     }
 
@@ -1100,6 +1182,8 @@ exports.createOrder = async (req, res) => {
     //CREATE ORDER
     orderQuery.id = orderId
     orderQuery.original_price = originalPrice
+    orderQuery.discount_price = discountPrice
+    orderQuery.total_products = totalProduct
     const newOrder = await orderService.createOrder(orderQuery)
 
 
@@ -1257,15 +1341,15 @@ exports.getActiveDiscountByStoreId = async (req, res) => {
     const currentTime = new Date()
 
     let interator = 0
-    while (interator < result.length){
+    while (interator < result.length) {
         if (currentTime < result[interator].start_at ||
             currentTime > result[interator].end_at && result[interator].is_end ||
             result[interator].quantity == 0) {
-                result.splice(interator,1)
+            result.splice(interator, 1)
         }
         else {
             result[interator].status = "Active"
-            interator ++
+            interator++
         }
     }
     if (result) {
