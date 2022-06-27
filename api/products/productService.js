@@ -271,11 +271,32 @@ exports.getDescription = async (productId) => {
     }
 };
 
-exports.updateInventoryFromVariants = async (id) => {
+var updateInventoryFromVariants = exports.updateInventoryFromVariants = async (id) => {
     const variant = await variantService.getVariant(id)
     let total = 0
     for (let i = 0; i < variant.length; i++) {
         total += variant[i].quantity
     }
     await updateProduct({ id: id, inventory: total })
+}
+
+exports.updateInventory = async (query) => {
+    let result
+    if (query.is_variant){
+        const variantQuery = {
+            id : query.variant_id,
+            quantity: query.quantity
+        }
+        result = await variantService.updateVariant(variantQuery)
+        await  updateInventoryFromVariants(query.id)
+    }
+    else {
+        const productQuery = {
+            id : query.id,
+            inventory : query.quantity
+        }
+        result = await updateProduct(productQuery)
+        
+    }
+    return result
 }

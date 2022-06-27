@@ -308,3 +308,20 @@ exports.getProductById = async (req, res) => {
     }
     console.log("Foo")
 }
+
+exports.updateInventory = async (req, res) => {
+    const result = await productService.updateInventory(req.body);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update products inventory successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}

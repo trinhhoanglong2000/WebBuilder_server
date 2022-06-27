@@ -29,7 +29,7 @@ router.get('/:id/orders',authenticator.Authenticate, storeController.getOrderByS
 router.get('/:id/order/:orderId', storeController.getOrderById)
 
 router.get('/:id/discounts',authenticator.Authenticate, storeController.getDiscountByStoreId)
-router.get('/:id/active-discounts',authenticator.Authenticate, storeController.getActiveDiscountByStoreId)
+router.post('/:id/active-discounts',authenticator.Authenticate, storeController.getActiveDiscountByStoreId)
 router.get('/:id/discount/:discountId', storeController.getDiscountById)
 //TEMPLATE
 router.get('/:id/current-template', authenticator.Authenticate, storeController.getCurrentTemplateByStore);
