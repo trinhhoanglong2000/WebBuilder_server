@@ -254,7 +254,18 @@ exports.useTemplate = async (query) => {
             is_default : true
         }
         menuQuery.name = i == 0 ? "Header Menu" : "Footer Menu"
-        await menuService.createMenu(menuQuery)
+        const newMenu = await menuService.createMenu(menuQuery)
+        if (i == 0){
+            let menuItemQuery = {
+                menu_id : newMenu.rows[0].id,
+                name : "Products", 
+                link :"/collections"
+            }
+            await menuItemService.createMenuItem(menuItemQuery)
+            menuItemQuery.name = "Home"
+            menuItemQuery.link = '/home'
+            await menuItemService.createMenuItem(menuItemQuery)
+        }
     }
     
     

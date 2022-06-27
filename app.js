@@ -28,6 +28,7 @@ const verificationRouter = require('./api/verification');
 const orderRouter = require('./api/order');
 const userStoreRouter = require('./stores')
 const dataRouter = require('./api/data')
+const discountRouter = require('./api/discount')
 const app = express();
 
 var hbs = require('express-handlebars')
@@ -70,6 +71,7 @@ app.use('/productoption', productOptionRouter)
 app.use('/template', templateRouter)
 app.use('/order', orderRouter)
 app.use('/data',dataRouter)
+app.use('/discount',discountRouter)
 app.get('/',function (req,res) {
   res.send("Hi")
 })

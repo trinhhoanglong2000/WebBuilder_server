@@ -17,6 +17,7 @@ const orderService = require('../order/orderService')
 const emailService = require('../email/emailService')
 const accountService = require('../accounts/accountService')
 const dataService = require('../data/dataService')
+const discountService = require('../discount/discountService')
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -1208,6 +1209,154 @@ exports.getOrderById = async (req, res) => {
             statusCode: http.Success,
             data: [],
             message: "No data found"
+        })
+    }
+}
+
+exports.getDiscountByStoreId = async (req, res) => {
+    let query = req.query
+    query.store_id = req.params.id
+    const result = await discountService.findAllDiscount(query)
+    const currentTime = new Date()
+    for (let i = 0; i < result.length; i++) {
+
+        if (currentTime < result[i].start_at) {
+            result[i].status = "Unavailable"
+            continue
+        }
+        if (currentTime > result[i].end_at && result[i].is_end) {
+            result[i].status = "Out Of Date"
+            continue
+        }
+        if (result[i].quantity == 0) {
+            result[i].status = "Out of stock"
+            continue
+        }
+        result[i].status = "Active"
+    }
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Discount Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getActiveDiscountByStoreId = async (req, res) => {
+    let query = req.query
+    query.store_id = req.params.id
+    const result = await discountService.findAllDiscount(query)
+    const currentTime = new Date()
+
+    let interator = 0
+    while (interator < result.length){
+        if (currentTime < result[interator].start_at ||
+            currentTime > result[interator].end_at && result[interator].is_end ||
+            result[interator].quantity == 0) {
+                result.splice(interator,1)
+        }
+        else {
+            result[interator].status = "Active"
+            interator ++
+        }
+    }
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Discount Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getDiscountById = async (req, res) => {
+    let query = req.query
+    query.store_id = req.params.id
+    query.id = req.params.discountId
+    const result = await discountService.findAllDiscount(query)
+    const currentTime = new Date()
+    for (let i = 0; i < result.length; i++) {
+        if (currentTime < result[i].start_at) {
+            result[i].status = "Unavailable"
+            continue
+        }
+        if (currentTime > result[i].end_at && result[i].is_end) {
+            result[i].status = "Out Of Date"
+            continue
+        }
+        if (result[i].quantity == 0) {
+            result[i].status = "Out of stock"
+            continue
+        }
+        result[i].status = "Active"
+    }
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Discount Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.createDiscount = async (req, res) => {
+    const query = req.body;
+    query.store_id = req.params.id;
+
+    const checkCode = {
+        store_id: query.store_id,
+        code: query.code
+    }
+    const checkId = await discountService.findDiscount(checkCode)
+    if (checkId) {
+        if (checkId.length > 0) {
+            res.status(http.NotAcceptable).json({
+                statusCode: http.NotAcceptable,
+                message: "Data Code Taken"
+            })
+            return
+        }
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+        return
+    }
+    const result = await discountService.createDiscount(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Order Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
         })
     }
 }

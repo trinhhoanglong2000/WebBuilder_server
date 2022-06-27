@@ -27,6 +27,10 @@ router.get('/:id/products/vendor', authenticator.Authenticate, storeController.g
 router.get('/:id/headerData', storeController.getHeaderData);
 router.get('/:id/orders',authenticator.Authenticate, storeController.getOrderByStore)
 router.get('/:id/order/:orderId', storeController.getOrderById)
+
+router.get('/:id/discounts',authenticator.Authenticate, storeController.getDiscountByStoreId)
+router.get('/:id/active-discounts',authenticator.Authenticate, storeController.getActiveDiscountByStoreId)
+router.get('/:id/discount/:discountId', storeController.getDiscountById)
 //TEMPLATE
 router.get('/:id/current-template', authenticator.Authenticate, storeController.getCurrentTemplateByStore);
 router.get('/:id/paid-templates', authenticator.Authenticate, storeController.getPaidTemplateByStore);
@@ -44,6 +48,7 @@ router.post('/:id/bannercollections', authenticator.Authenticate, storeControlle
 
 // POST CREATE ORDER
 router.post('/:id/order',storeController.createOrder)
+router.post('/:id/discount', authenticator.Authenticate, storeController.createDiscount)
 //DELETE STORE
 router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
 
