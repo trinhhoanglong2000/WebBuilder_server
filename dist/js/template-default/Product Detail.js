@@ -225,7 +225,7 @@ function addToCart() {
     let quantity = Number($(`input.ezMall-quantity-input`).first().val())
     let newItem = {
         "id": productData.id,
-        "quantity": quantity,
+        "quantity": Number(quantity),
         "price": is_variant ? variantSelected.price : productData.price,
         "product_name": productData.title,
         "currency": productData.currency,
