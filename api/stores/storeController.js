@@ -18,7 +18,9 @@ const emailService = require('../email/emailService')
 const accountService = require('../accounts/accountService')
 const dataService = require('../data/dataService')
 const discountService = require('../discount/discountService');
+const fse = require('fs-extra')
 const { query } = require('express');
+const { Query } = require('mongoose');
 exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
@@ -32,6 +34,7 @@ exports.createStore = async (req, res) => {
     //CREATE DEFAULT PAGE
     const template = await templateService.getTemplate({ name: "template-default" })
     await templateService.useTemplate({ user_id: req.user.id, store_id: storeId, template_id: template[0].id })
+    await storeService.publishStore(storeId)
     // let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true, "template-default");
     // if (page) {
     //     await pageService.createHTMLFile(storeId, page.rows[0].id)
@@ -787,15 +790,17 @@ exports.deleteStore = async (req, res) => {
         return
     }
 
-    let query = {
+    const query = {
         store_id: id
     }
+
     //Get Data Collections
     const bannerCollection = await bannercollectionService.getCollectionsByStoreId(query);
     const productCollection = await productcollectionService.getData(query)
     const products = await productService.getProductsByStoreId(query)
-    const pages = await pageService.getPagesByStoreId(query)
-    const menuItem = await menuService.getMenuByStoreId(query)
+
+    const pages = await pageService.getPagesByStoreId({ store_id: id })
+    const menuItem = await menuService.getMenuByStoreId({ store_id: id })
     //Delete Data Collection
     if (bannerCollection.length > 0) {
         for (let i = 0; i < bannerCollection.length; i++) {
@@ -837,7 +842,32 @@ exports.deleteStore = async (req, res) => {
 
 
     //DELETE EMAIL
-    await emailService.deleteStoreEmail({id : id})
+    await emailService.deleteStoreEmail({ id: id })
+
+
+    //DELETE HTML 
+    const storeName = await storeService.findById(id)
+    if (!storeName) {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+        return
+    }
+    const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
+
+
+    fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
+        console.log('The file has been deleted!');
+    }).catch(err => {
+        console.error(err)
+    });
+
+    fse.rm(`views/partials/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
+        console.log('The file has been deleted!');
+    }).catch(err => {
+        console.error(err)
+    });
     //DELETE STORE
     const deleteStore = await storeService.deleteStores({ id: id })
     if (deleteStore) {
@@ -1185,7 +1215,7 @@ exports.createOrder = async (req, res) => {
     orderQuery.original_price = originalPrice
     orderQuery.discount_price = discountPrice
 
-    if (discountPrice > originalPrice){
+    if (discountPrice > originalPrice) {
         orderQuery.discount_price = originalPrice
     }
     orderQuery.total_products = totalProduct
@@ -1361,7 +1391,7 @@ exports.getActiveDiscountByStoreId = async (req, res) => {
             result.splice(interator, 1)
             continue
         }
-        
+
         if (currentTime < result[interator].start_at ||
             currentTime > result[interator].end_at && result[interator].is_end ||
             result[interator].quantity == 0) {
@@ -1469,14 +1499,14 @@ exports.createDiscount = async (req, res) => {
 exports.sendContact = async (req, res) => {
     const query = req.body;
     query.store_id = req.params.id;
-    if (!query.store_id  || !query.name  || !query.email || !query.phone) {
+    if (!query.store_id || !query.name || !query.email || !query.phone) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
             message: "Bad Request"
         })
         return
     }
-    if (!query.comment){
+    if (!query.comment) {
         query.comment = "No comment"
     }
     //MAIL

@@ -130,7 +130,9 @@ exports.getPageByName = async (name, store_id) => {
 
 var getPagesByStoreId = exports.getPagesByStoreId = async (query) => {
   let condition = [];
+  console.log(query)
   condition.push({ store_id: query.store_id })
+  console.log(condition)
   if (query.name) {
     condition.push({ [`UPPER(name)`]: { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" } })
   }
