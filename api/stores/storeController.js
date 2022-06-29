@@ -1466,3 +1466,55 @@ exports.createDiscount = async (req, res) => {
         })
     }
 }
+exports.sendContact = async (req, res) => {
+    const query = req.body;
+    query.store_id = req.params.id;
+    if (!query.store_id  || !query.name  || !query.email || !query.phone) {
+        res.status(http.BadRequest).json({
+            statusCode: http.BadRequest,
+            message: "Bad Request"
+        })
+        return
+    }
+    if (!query.comment){
+        query.comment = "No comment"
+    }
+    //MAIL
+    const storeData = await storeService.findById(query.store_id)
+    let mailStoreQuery = {
+        store_id: query.store_id,
+        subject: `Contact Form's successfully created`,
+        receiver: `${query.email}`,
+        html: `<p>Your contact form to our store has been successfully subbmited</p>
+        `
+    }
+    const account = await accountService.getUserInfo(storeData.user_id)
+    let mailQuery = {
+        subject: `New Contact Form from ${storeData.name}`,
+        receiver: `${account[0].email}`,
+        html: `<p>A customer with these following informations has subbmited a form <br>
+            - Name  : ${query.name} <br>
+            - Email : ${query.email} <br>
+            - Phone : ${query.phone} <br>
+            - Comment on store : ${query.comment} <br>
+            Please check it out!</p>
+        `
+    }
+
+    await emailService.adminSendMail(mailQuery)
+    const result = await emailService.sendMailFromStore(mailStoreQuery)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Sent a mail"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
