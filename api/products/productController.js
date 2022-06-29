@@ -42,6 +42,13 @@ exports.updateProduct = async (req, res) => {
     if (productOptionQuery) {
        
         const option = await productOptionService.getOptionFromProductId(productId)
+        if (!option) {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server error!"
+            })
+            return
+        }
         let productOptionQueryWithoutDelete = productOptionQuery.filter((e) => e.update === "Delete")
         let countOption = 0
     

@@ -836,9 +836,10 @@ exports.deleteStore = async (req, res) => {
     }
 
 
-
+    //DELETE EMAIL
+    await emailService.deleteStoreEmail({id : id})
     //DELETE STORE
-    let deleteStore = await storeService.deleteStores({ id: id })
+    const deleteStore = await storeService.deleteStores({ id: id })
     if (deleteStore) {
         res.status(http.Created).json({
             statusCode: http.Created,
@@ -1183,6 +1184,10 @@ exports.createOrder = async (req, res) => {
     orderQuery.id = orderId
     orderQuery.original_price = originalPrice
     orderQuery.discount_price = discountPrice
+
+    if (discountPrice > originalPrice){
+        orderQuery.discount_price = originalPrice
+    }
     orderQuery.total_products = totalProduct
     const newOrder = await orderService.createOrder(orderQuery)
 
@@ -1336,7 +1341,7 @@ exports.getDiscountByStoreId = async (req, res) => {
 
 exports.getActiveDiscountByStoreId = async (req, res) => {
     const data = req.body
-    if (!data.total_price || !data.total_products || !data.currency) {
+    if (data.total_price == undefined || data.total_products == undefined || !data.currency) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
             message: "Bad Request"

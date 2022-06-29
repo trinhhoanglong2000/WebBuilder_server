@@ -6,9 +6,10 @@ const bcrypt = require('../../helper/genSalt');
 const verificationService = require('../verification/verificationService');
 const accountService = require('../accounts/accountService');
 const passwordResetService = require('../password_reset/passwordResetService');
-const storeService = require('../stores/storeService')
 const nodemailer = require('nodemailer');
 const ggAuth = require('google-auth-library');
+const DBHelper = require('../../helper/DBHelper/DBHelper')
+const storeService = require('../stores/storeService')
 const { text } = require('body-parser');
 
 const AllURL = [
@@ -41,7 +42,7 @@ exports.sendResetPasswordEmail = async (email) => {
     }
 
     let success = true,
-    message = ''
+        message = ''
 
     // const myAccessTokenObject = await myOAuth2Client.getAccessToken()
     // const myAccessToken = myAccessTokenObject?.token
@@ -71,7 +72,7 @@ exports.sendResetPasswordEmail = async (email) => {
         from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`, // sender address
         to: [email], // list of receivers
         subject: "[EASYMALL PASSWORD RESET]", // Subject line
-        html: 
+        html:
             `<p>We heard that you lost the password.</p>
             <p>Don't worry, use the link below to reset it.</p>
             <p>Press <a href=${redirectURL}>here</a> to proceed.</p>
@@ -82,15 +83,15 @@ exports.sendResetPasswordEmail = async (email) => {
     const createVerificationResult = await passwordResetService.createPasswordReset(user.id, hashedUniqueString)
 
     await transporter.sendMail(Options)
-    .then(() => {
-        success = true
-        message = 'Password reset email sent.'
-    })
-    .catch((err) => {
-        console.log(err)
-        success = false
-        message = 'Password reset email failed.'
-    })
+        .then(() => {
+            success = true
+            message = 'Password reset email sent.'
+        })
+        .catch((err) => {
+            console.log(err)
+            success = false
+            message = 'Password reset email failed.'
+        })
 
     return { success, message };
 }
@@ -122,7 +123,7 @@ exports.sendVerifyEmail = async (email, id) => {
         from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`, // sender address
         to: [email], // list of receivers
         subject: "[EASYMALL VERIFY]", // Subject line
-        html: 
+        html:
             `<p>Verify your email address to complete the signup and login to your account.</p>
             <p>Press <a href=${process.env.SERVER_URL + "/verify/" + id + "/" + uniqueString}>here</a> to proceed.</p>
             ` // plain text body
@@ -132,13 +133,13 @@ exports.sendVerifyEmail = async (email, id) => {
     const createVerificationResult = await verificationService.createVerification(id, hashedUniqueString)
 
     await transporter.sendMail(Options)
-    .then(() => {
-        result = true
-    })
-    .catch((err) => {
-        console.log(err)
-        result = false
-    })
+        .then(() => {
+            result = true
+        })
+        .catch((err) => {
+            console.log(err)
+            result = false
+        })
 
     return result;
 }
@@ -160,74 +161,115 @@ exports.sendMailFromStore = async (query) => {
             ,
         ],
         clientOptions: { subject: 'admin@myeasymall.site' },
-        credentials : sendCredential,
+        credentials: sendCredential,
     });
     const auth = await Auth.getClient()
     let result
     let storeMail = await storeService.findById(query.store_id)
-    if (storeMail){
-        await auth.request({
-            url: `https://admin.googleapis.com/admin/directory/v1/users/${process.env.GOOGLE_SEND_ACCOUNT_ID}`,
-           method: 'PUT',
-           data: {
-            "primaryEmail": storeMail.mail_link
-           }
-       }).then((status, data ) => {
-          console.log("Created In Admin")
-       }).catch((err) => {
-           console.log(err)
-       })
+    if (storeMail) {
+        if (storeMail.custom_mail) {
+            const storeMail = await getStoreEmail({ id: query.store_id })
+            
+            if (storeMail) {
+                if (storeMail.length == 1) {
+                    const transporter = nodemailer.createTransport({
+                        host: storeMail[0].smtp,
+                        port: 465,
+                        auth: {
+                            user: storeMail[0].email,
+                            pass: storeMail[0].password,
+                        },
+                    })
 
-        await auth.request({
-           url: 'https://www.googleapis.com/gmail/v1/users/me/settings/sendAs',
-          method: 'POST',
-          data: {
-              "sendAsEmail" : storeMail.mail_link,
-              "displayName": storeMail.mail_link,
-               "treatAsAlias": true,
-          }
-      }).then((status, data ) => {
-         console.log("Created")
-      }).catch((err) => {
-          console.log(err)
-      })
-   
-      const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        auth: {
-            user: process.env.ADMIN_EMAIL_ADDRESS,
-            pass: process.env.GOOGLE_SMTP_PASSWORD,
-        },
-        });
+                    await transporter.sendMail({
+                        from: `"${storeMail.name}" ${storeMail.mail_link}`,
+                        to: `${query.receiver}`,
+                        subject: `${query.subject}`,
+                        html: `${query.html}`
+                    }).then(() => {
+                        console.log("Sent a mail successfully")
+                        result = true
+                    }).catch((err) => {
+                        console.log(err)
+                        result = false
 
-        await transporter.sendMail({
-            from: `"${storeMail.name}" ${storeMail.mail_link}`,
-            to: `${query.receiver}`,
-            subject: `${query.subject}`,
-            html: `${query.html}`
-        }).then(() => {
-            console.log("Sent a mail successfully")
-            result = true
-        })
-            .catch((err) => {
+                    })
+                }
+                else {
+                    result = false
+                }
+
+            }
+            else {
+                result = false
+            }
+
+
+        }
+        else {
+            await auth.request({
+                url: `https://admin.googleapis.com/admin/directory/v1/users/${process.env.GOOGLE_SEND_ACCOUNT_ID}`,
+                method: 'PUT',
+                data: {
+                    "primaryEmail": storeMail.mail_link
+                }
+            }).then((status, data) => {
+                console.log("Created In Admin")
+            }).catch((err) => {
+                console.log(err)
+            })
+
+            await auth.request({
+                url: 'https://www.googleapis.com/gmail/v1/users/me/settings/sendAs',
+                method: 'POST',
+                data: {
+                    "sendAsEmail": storeMail.mail_link,
+                    "displayName": storeMail.mail_link,
+                    "treatAsAlias": true,
+                }
+            }).then((status, data) => {
+                console.log("Created")
+            }).catch((err) => {
+                console.log(err)
+            })
+
+            const transporter = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                auth: {
+                    user: process.env.ADMIN_EMAIL_ADDRESS,
+                    pass: process.env.GOOGLE_SMTP_PASSWORD,
+                },
+            });
+
+            await transporter.sendMail({
+                from: `"${storeMail.name}" ${storeMail.mail_link}`,
+                to: `${query.receiver}`,
+                subject: `${query.subject}`,
+                html: `${query.html}`
+            }).then(() => {
+                console.log("Sent a mail successfully")
+                result = true
+            }).catch((err) => {
                 console.log(err)
                 result = false
-    
-            }) 
 
-        await auth.request({
-             url: `https://www.googleapis.com/gmail/v1/users/me/settings/sendAs/${storeMail.mail_link}`,
-            method: 'DELETE',
-               
-        }).then((status, data ) => {
-            console.log("Deleted")
-        }).catch((err) => {
-             console.log(err)
-        })
+            })
+
+            await auth.request({
+                url: `https://www.googleapis.com/gmail/v1/users/me/settings/sendAs/${storeMail.mail_link}`,
+                method: 'DELETE',
+
+            }).then((status, data) => {
+                console.log("Deleted")
+            }).catch((err) => {
+                console.log(err)
+            })
+        }
+
     }
     else {
-        result = false   
+        result = false
     }
     return result
 }
@@ -241,69 +283,66 @@ exports.adminSendMail = async (query) => {
             user: process.env.ADMIN_EMAIL_ADDRESS,
             pass: process.env.GOOGLE_SMTP_PASSWORD,
         },
-        });
+    });
 
-        await transporter.sendMail({
-            from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`,
-            to: `${query.receiver}`,
-            subject: `${query.subject}`,
-            html: `${query.html}`
-        }).then(() => {
-            console.log("Sent a mail successfully")
-            result = true
+    await transporter.sendMail({
+        from: `"EASYMALL" ${process.env.ADMIN_EMAIL_ADDRESS}`,
+        to: `${query.receiver}`,
+        subject: `${query.subject}`,
+        html: `${query.html}`
+    }).then(() => {
+        console.log("Sent a mail successfully")
+        result = true
+    })
+        .catch((err) => {
+            console.log(err)
+            result = false
+
         })
-            .catch((err) => {
-                console.log(err)
-                result = false
-    
-            }) 
 
 }
-// exports.sendEmail = async (recipient, invitelink, role) => {
-//     var result = true;
-//     var Options = {
-//         from: '"CLASSROOM" bestlophoc@gmail.com', // sender address
-//         to: recipient, // list of receivers
-//         subject: "[CLASS INVITATION]", // Subject line
-//         text: 'You are invited to this class as a ' + role + ': ' + invitelink, // plain text body
-//         //html: "<b>Hello world?</b>", // html body
-//     }
 
-//     await transporter.sendMail(Options, (err, info) => {
-//         if (err) {
-//             result = false;
-//         }
-//     });
+exports.configEmail = async (query) => {
+    const result = await DBHelper.insertData(query, "store_email", false, "id")
+    if (result) {
+        await storeService.updateStoreInfo({ id: query.id, custom_mail: true, mail_link: query.email })
+        return result
+    }
+    else {
+        return null
+    }
+}
+exports.resetEmail = async (query) => {
 
-//     return result;
-    
-// }
+    const result = await deleteStoreEmail(query)
+    if (result) {
+        const store = await storeService.findById(query.id)
+        await storeService.updateStoreInfo({ id: query.id, custom_mail: false, mail_link: store.original_mail })
+        return result
+    }
+    else {
+        return null
+    }
+}
 
+var deleteStoreEmail = exports.deleteStoreEmail = async (query) => {
+    return DBHelper.deleteData("store_email", query)
+}
 
+exports.updateConfigEmail = async (query) => {
+    const result = await DBHelper.updateData(query, "store_email", "id")
+    if (result) {
+        if (query.email) {
+            await storeService.updateStoreInfo({ id: query.id, custom_mail: true, mail_link: query.email })
+        }
 
-// exports.sendEmail = async (recipient, invitelink, role) => {
-//     sgMail.setApiKey(apiKey)
-//     var result = false;
+        return result
+    }
+    else {
+        return null
+    }
+}
 
-//     const msg = {
-//         to: recipient,
-//         from: {
-//             name: 'CLASSROOM',
-//             email: '18127153@student.hcmus.edu.vn'
-//         },
-//         subject: '[CLASS INVITATION]',
-//         text: 'You are invited to this class as a ' + role + ': ' + invitelink,
-//         // html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-//       }
-      
-//     await sgMail
-//     .send(msg)
-//     .then(() => {
-//         result = true;
-//     })
-//     .catch((error) => {
-//         console.error(error)
-//     })
-
-//     return result;
-// }
+var getStoreEmail = exports.getStoreEmail = async (query) => {
+    return DBHelper.getData("store_email", query)
+}

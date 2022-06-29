@@ -5,7 +5,7 @@ const discountService = require('./discountService')
 const dataService = require('../data/dataService')
 exports.useDiscount = async (req, res) => {
     const data = req.body
-    if (!data.store_id || !data.code || !data.total_price || !data.total_products || !data.currency) {
+    if (!data.store_id || !data.code || data.total_price == undefined || data.total_products == undefined|| !data.currency) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
             message: "Bad Request"
@@ -40,9 +40,9 @@ exports.useDiscount = async (req, res) => {
                 if ((result[0].condition_type == 1 && data.total_price < conditionPrice) ||
                     (result[0].condition_type == 2 && data.total_products < result[0].condition)) {
 
-                    res.status(http.Success).json({
-                        statusCode: http.Success,
-                        data: null,
+                    res.status(http.NotAcceptable).json({
+                        statusCode: http.NotAcceptable,
+                        data: result,
                         message: "Order isn't match with the discount requirement"
                     })
                 }
