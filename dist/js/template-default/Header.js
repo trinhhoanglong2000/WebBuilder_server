@@ -15,6 +15,9 @@ function embedHeaderData() {
     $('nav[name="header"]').parent().css('overflow', 'initial')
     $('nav[name="header"]').parent().css('overflowX', 'initial')
 
+    $('nav[name="header"]').find('#cartIcon').attr('href', '/cart');
+    $('nav[name="header"]').find('#searchIcon').attr('href', '/collections')
+
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
     
