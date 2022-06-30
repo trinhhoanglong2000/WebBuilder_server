@@ -105,10 +105,20 @@ var getAllFreeStoreTemplate = exports.getAllFreeStoreTemplate = async (query) =>
     if (storeData) {
         const current = new Date();
         if (current > storeData.enroll_time) {
+            // const config = {
+            //     where: {
+            //         "OP.AND": [
+            //             { "level": 1 },
+            //             { "is_paid": false }
+            //         ]
+            //     },
+            //     offset: query.offset,
+            //     limit: query.limit
+            // }
             const config = {
                 where: {
                     "OP.AND": [
-                        { "level": 1 },
+                        { "level": { "OP.LTE": storeData.level } },
                         { "is_paid": false }
                     ]
                 },

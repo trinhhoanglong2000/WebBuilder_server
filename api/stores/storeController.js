@@ -1486,7 +1486,7 @@ exports.createDiscount = async (req, res) => {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: result,
-            message: "Get All Order Successfully!"
+            message: "Create Discount Successfully!"
         })
     }
     else {
@@ -1539,6 +1539,70 @@ exports.sendContact = async (req, res) => {
             statusCode: http.Success,
             data: result,
             message: "Sent a mail"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.totalOrder = async (req, res) => {
+    const query = {
+        store_id : req.params.id
+    }
+    const date = new Date()
+    
+    const pastTime = new Date(date.getFullYear(), date.getMonth() - 1 , date.getDate(), date.getHours(), date.getMinutes())
+    query.past_time = pastTime.toISOString()
+    query.current_time = date.toISOString()
+    const result = await orderService.getAllOrder(query)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get All Order Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.averageTotalOrder = async (req, res) => {
+    const query = {
+        store_id : req.params.id
+    }
+    const date = new Date()
+    
+    const pastTime = new Date(date.getFullYear(), date.getMonth() - 1 , date.getDate(), date.getHours(), date.getMinutes())
+    query.past_time = pastTime.toISOString()
+    query.current_time = date.toISOString()
+    let total = 0
+    const arr = []
+    const result = await orderService.getAllOrder(query)
+    for (let i = 0 ; i < result.length; i++){
+        let price = result[i].original_price - result[i].discount_price
+        if (result[i].currency != 'VND'){
+            price = await dataService.changeMoney({from : result[i].currency, to : 'VND', price : price})
+        }
+        total += price
+        arr.push({id : result[i].id, total_sale : price})
+    }
+    const resultData = {
+        total_sales : total,
+        orders : arr
+    }
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: resultData,
+            message: "Get All Order Successfully!"
         })
     }
     else {

@@ -83,13 +83,22 @@ var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
 
 var getAllOrder = exports.getAllOrder = async (query) => {
     let condition = [];
-  
+    
     let arr = Object.keys(query)
     let arr1 = Object.values(query)
 
     for (let i = 0; i < arr.length; i++) {
         let queryTemp = {}
-        queryTemp[`${arr[i]}`] = arr1[i]
+        if (arr[i] == "past_time"){
+            queryTemp[`create_at`] = { "OP.GTE":arr1[i] }
+        }
+        else if (arr[i] == "current_time"){
+            queryTemp[`create_at`] = { "OP.LTE":arr1[i] }
+        }
+        else {
+            queryTemp[`${arr[i]}`] = arr1[i]
+        }
+        
         condition.push(queryTemp)
     }
     const config = {

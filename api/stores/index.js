@@ -60,4 +60,8 @@ router.post('/:id/contact-form',authenticator.Authenticate, storeController.send
 //Update store info
 router.put('/', authenticator.Authenticate, storeController.updateStoreInfo);
 
+
+//GET ANALYST
+router.get('/:id/total-orders', authenticator.Authenticate, storeController.totalOrder)
+router.get('/:id/average-orders-value', authenticator.Authenticate, storeController.averageTotalOrder)
 module.exports = router;
