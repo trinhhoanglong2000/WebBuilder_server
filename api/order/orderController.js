@@ -45,7 +45,6 @@ exports.changeOrderStatus = async (req, res) => {
 }
 
 exports.deleteOrderStatus = async (req, res) => {
-
     if (!req.body.store_id) {
         res.status(http.BadRequest).json({
             statusCode: http.BadRequest,
@@ -54,14 +53,14 @@ exports.deleteOrderStatus = async (req, res) => {
         return
     }
 
-    let check = {
-        id: req.body.store_id,
-        user_id: req.user.id
-    }
-    let authen = await this.AuthenticateUserAndStore(req, res, check)
-    if (!authen) {
-        return
-    }
+    // let check = {
+    //     id: req.body.store_id,
+    //     user_id: req.user.id
+    // }
+    // let authen = await this.AuthenticateUserAndStore(req, res, check)
+    // if (!authen) {
+    //     return
+    // }
     const query = req.body
     const storeId = query.store_id
     delete query["store_id"]
@@ -71,25 +70,27 @@ exports.deleteOrderStatus = async (req, res) => {
 
     const storeData = await storeService.findById(storeId)
     const orderData = await orderService.getAllOrder({id: query.order_id})
-    let mailStoreQuery  = {
-        store_id : storeId,
-        subject: `Order #${query.order_id} has been delete`,
-        receiver : `${orderData[0].email}`,
-        html : `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders/" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
-        <p>You can still view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a>. We sorry for this inconvience</p>
-        `
+    if (orderData.length) {
+        let mailStoreQuery  = {
+            store_id : storeId,
+            subject: `Order #${query.order_id} has been delete`,
+            receiver : `${orderData[0].email}`,
+            html : `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders/" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
+            <p>You can still view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a>. We sorry for this inconvience</p>
+            `
+        }
+        const account = await accountService.getUserInfo(storeData.user_id)
+        let mailQuery  = {
+            subject: `Order #${query.order_id} successfully change delete status`,
+            receiver : `${account[0].email}`,
+            html : `<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
+            <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>
+            `
+        }
+    
+        await emailService.adminSendMail(mailQuery)
+        await emailService.sendMailFromStore(mailStoreQuery)
     }
-    const account = await accountService.getUserInfo(storeData.user_id)
-    let mailQuery  = {
-        subject: `Order #${query.order_id} successfully change delete status`,
-        receiver : `${account[0].email}`,
-        html : `<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
-        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>
-        `
-    }
-
-    await emailService.adminSendMail(mailQuery)
-    await emailService.sendMailFromStore(mailStoreQuery)
 
     if (result) {
         res.status(http.Success).json({
