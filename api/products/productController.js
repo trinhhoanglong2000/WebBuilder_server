@@ -42,6 +42,13 @@ exports.updateProduct = async (req, res) => {
     if (productOptionQuery) {
        
         const option = await productOptionService.getOptionFromProductId(productId)
+        if (!option) {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server error!"
+            })
+            return
+        }
         let productOptionQueryWithoutDelete = productOptionQuery.filter((e) => e.update === "Delete")
         let countOption = 0
     
@@ -307,4 +314,21 @@ exports.getProductById = async (req, res) => {
         })
     }
     console.log("Foo")
+}
+
+exports.updateInventory = async (req, res) => {
+    const result = await productService.updateInventory(req.body);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update products inventory successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
 }

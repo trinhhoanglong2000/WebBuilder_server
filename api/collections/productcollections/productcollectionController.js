@@ -116,7 +116,7 @@ exports.getcollectionById = async (req, res) => {
             }
         }
     }
-    if (result.length > 0) {
+    if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
             data: resultQuery,

@@ -14,19 +14,19 @@ const fse = require('fs-extra')
 exports.createPage = async (pageBody, url = "", isDefault = false, templateName = null, templateType = "_index") => {
   try {
     pageBody.id = uuidv4();
-    const templateNewName = templateName ?  URLParser.generateURL(templateName) : "template-default"
+    const templateNewName = templateName ? URLParser.generateURL(templateName) : "template-default"
     let data
     try {
       data = await s3.getObject({
         Bucket: "ezmall-bucket",
-       Key: `templates/${templateNewName}/${templateType}.json`
-     }).promise();
-     }
+        Key: `templates/${templateNewName}/${templateType}.json`
+      }).promise();
+    }
     catch (err) {
       data = await s3.getObject({
         Bucket: "ezmall-bucket",
-       Key: `templates/${templateNewName}/_index.json`
-     }).promise();
+        Key: `templates/${templateNewName}/_index.json`
+      }).promise();
     }
     const id_store_content = data.Body.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
     const content = JSON.parse(data.Body.toString('utf-8').replace(id_store_content, `${pageBody.store_id}`).replace(id_store_content, `${pageBody.store_id}`));
@@ -40,12 +40,13 @@ exports.createPage = async (pageBody, url = "", isDefault = false, templateName 
     }).promise();
 
     pageBody.content_url = s3Result ? s3Result.Location : "";
+    let defaultUrl = isDefault ? "" : "pages/"
     if (url === "")
-      pageBody.page_url = '/' + URLParser.generateURL(pageBody.name);
-    else {
-      pageBody.page_url = '/' + url
-    }
 
+      pageBody.page_url = '/' + defaultUrl + URLParser.generateURL(pageBody.name);
+    else {
+      pageBody.page_url = '/' + defaultUrl + url
+    }
     pageBody.page_url = await createValidURL(pageBody.page_url, pageBody.store_id)
     const result = await db.query(`
             INSERT INTO pages (id, store_id, name, content_url, page_url, is_default) 
@@ -102,7 +103,11 @@ exports.updatePage = async (data) => {
   else {
     data.page_url = await createValidURL(data.page_url, data.store_id)
   }
-
+  const today = new Date()
+  const date = today.getUTCFullYear() + '-' + (today.getUTCMonth() + 1) + '-' + today.getUTCDate();
+  const time = today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds();
+  const dateTime = date + ' ' + time;
+  data.update_at = dateTime
   return DBHelper.updateData(data, "pages", "id")
 }
 
@@ -125,7 +130,9 @@ exports.getPageByName = async (name, store_id) => {
 
 var getPagesByStoreId = exports.getPagesByStoreId = async (query) => {
   let condition = [];
+  console.log(query)
   condition.push({ store_id: query.store_id })
+  console.log(condition)
   if (query.name) {
     condition.push({ [`UPPER(name)`]: { "OP.ILIKE": "%" + query.name.toUpperCase().trim() + "%" } })
   }
@@ -142,10 +149,10 @@ var getPagesByStoreId = exports.getPagesByStoreId = async (query) => {
 exports.getPagesPolicy = async (query) => {
   let condition = [];
   condition.push({ store_id: query.store_id })
-  let condition1=[]
+  let condition1 = []
   condition1.push({ [`name`]: "Terms Of Service" })
-  condition1.push({ [`name`]:  "Refund Policy" })
-  condition.push({"OP.OR":condition1})
+  condition1.push({ [`name`]: "Refund Policy" })
+  condition.push({ "OP.OR": condition1 })
   let config = {
     where: {
       "OP.AND": condition

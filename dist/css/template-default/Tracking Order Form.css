@@ -1,0 +1,44 @@
+[name="trackingOrderForm"] {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+[name="trackingOrderForm"] .input-form {
+  width: 75%;
+  margin: 10px auto;
+}
+
+[name="trackingOrderForm"] .input-form input{
+  margin: 5px;
+}
+
+[name="trackingOrderForm"] .input-form .error {
+  margin-left: 10px; 
+  color: rgb(247, 56, 30);
+  display: none;
+}
+
+[name="trackingOrderForm"] .footer-btn {
+  width: 100%;
+  text-align: center;
+}
+
+[name="trackingOrderForm"] .footer-btn .btn {
+  width: 20%;
+  margin: 10px;
+  min-width: 120px;
+  color: #ffffff;
+  background-color: #65ca3e;
+  border-color: #65ca3e;
+}
+
+[name="trackingOrderForm"] .footer-btn .btn:hover {
+  background-color: #96e477;
+  border-color: #96e477;
+}
+
+@media only screen and (max-width: 480px) {
+  [name="trackingOrderForm"] .input-form {
+    width: 90%;
+  }
+}

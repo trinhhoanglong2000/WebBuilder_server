@@ -10,11 +10,35 @@ const variantService = require("../variants/VariantsService")
 const nodemailer = require('nodemailer');
 const ggAuth = require('google-auth-library');
 const emailService = require('../email/emailService')
+const accountService = require('../accounts/accountService')
 exports.createOrder = async (query) => {
     if (query.discount_id) {
         //DO STH
     }
-    return DBHelper.insertData(query, "orders", false, "id")
+    const result = await DBHelper.insertData(query, "orders", false, "id")
+
+    //MAIL
+    const storeData = await storeService.findById(query.store_id)
+    let mailStoreQuery = {
+        store_id: query.store_id,
+        subject: `Order #${query.id} successfully created`,
+        receiver: `${query.email}`,
+        html: `<p>Your order <a href=${storeData.store_link + "/orders/" + query.id}>#${query.id}</a> from ${storeData.name} has been successfully created</p> <br>
+        <p>You can view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a> to proceed.</p>
+        `
+    }
+    const account = await accountService.getUserInfo(storeData.user_id)
+    let mailQuery = {
+        subject: `Order #${query.id} successfully created`,
+        receiver: `${account[0].email}`,
+        html: `<p>New order #${query.id} have been create from store ${storeData.name}</p> <br>
+        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
+        `
+    }
+
+    await emailService.adminSendMail(mailQuery)
+    await emailService.sendMailFromStore(mailStoreQuery)
+    return result
 }
 
 exports.createOrderId = async () => {
@@ -41,9 +65,15 @@ var getOrderProduct = exports.getOrderProduct = async (query) => {
     return DBHelper.FindAll("order_products", config)
 }
 var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
+    const condition = []
+    if (query.id) {
+        condition.push({ [`UPPER(id)`]: { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } })
+    }
+    condition.push({ "store_id": query.store_id })
+
     const config = {
         where: {
-            "store_id": query.store_id
+            "OP.AND": condition
         },
         offset: query.offset,
         limit: query.limit
@@ -52,43 +82,31 @@ var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
 }
 
 var getAllOrder = exports.getAllOrder = async (query) => {
+    let condition = [];
+    
+    let arr = Object.keys(query)
+    let arr1 = Object.values(query)
+
+    for (let i = 0; i < arr.length; i++) {
+        let queryTemp = {}
+        if (arr[i] == "past_time"){
+            queryTemp[`create_at`] = { "OP.GTE":arr1[i] }
+        }
+        else if (arr[i] == "current_time"){
+            queryTemp[`create_at`] = { "OP.LTE":arr1[i] }
+        }
+        else {
+            queryTemp[`${arr[i]}`] = arr1[i]
+        }
+        
+        condition.push(queryTemp)
+    }
     const config = {
         where: {
-            "id": query.id
+            "OP.AND": condition
         },
-        offset: query.offset,
-        limit: query.limit
     }
 
-    const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        auth: {
-            user: process.env.ADMIN_EMAIL_ADDRESS,
-            pass: process.env.GOOGLE_SMTP_PASSWORD,
-        },
-    });
-
-    const mailQuery = { 
-        subject : `Long`,
-        html : `Long`,
-        store_id : '661456b8-8b07-4e92-b385-f1fcc3d827a8',
-        receiver : 'ttlgame123@gmail.com'
-    }
-    await emailService.sendMailFromStore(mailQuery)
-    // await transporter.sendMail({
-    //     from: `"Long" long@myeasymall.site`,
-    //     to: `ttlgame123@gmail.com`,
-    //     subject: `Long`,
-    //     html: `Long`
-    // }).then(() => {
-    //     console.log("Sent a mail successfully")
-     
-    // })
-    //     .catch((err) => {
-    //         console.log(err)
-
-    //     })
     return DBHelper.FindAll("orders", config)
 }
 
@@ -103,6 +121,9 @@ exports.getAllOrderStatus = async (query) => {
 }
 
 exports.createOrderStatus = async (query) => {
+    return DBHelper.insertData(query, "order_status", true, "id")
+}
+exports.changeOrderStatus = async (query) => {
     let newStatus
     if (query.status == "RESTOCK") {
         const allProduct = await getOrderProduct({ order_id: query.order_id })
@@ -145,4 +166,17 @@ exports.createOrderStatus = async (query) => {
         status: newStatus
     }
     return DBHelper.insertData(createQuery, "order_status", true, "id")
+}
+
+exports.CreateStatusdeleteOrder = async (query) => {
+    return DBHelper.insertData(query, "order_status", true, "id")
+}
+exports.deleteOrderStatus = async (query) => {
+    return DBHelper.deleteData("order_status", query)
+}
+exports.deleteOrderProducts = async (query) => {
+    return DBHelper.deleteData("order_products", query)
+}
+exports.deleteOrder = async (query) => {
+    return DBHelper.deleteData("orders", query)
 }

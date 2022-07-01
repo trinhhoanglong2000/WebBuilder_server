@@ -8,15 +8,27 @@
     padding: 2%;
 } 
 
-[name="contactForm"] button{
-    background-color: rgb(216, 247, 166);
+[name="contactForm"] button {
+    background-color: #65ca3e;
+    border-color: #65ca3e;
+    color: #FEFEFE;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid grey;
     min-width: 100px;
     width: 10%;
 } 
 
+[name="contactForm"] button:hover {
+    background-color: #96e477;
+    border-color: #96e477;
+}
+
 [name="contactForm"] h1 {
     padding: 5px;
+}
+
+[name="contactForm"] #error {
+    color: red;
+    padding: 10px;
+    display: none;
 }

@@ -2,7 +2,7 @@ const generateHeaderMenu = (mNavigation) => {
     let navbar = [];
     if (mNavigation) {
         mNavigation.forEach((element) => {
-            navbar.push(`<li data-highlightable="1" class="nav-item"><a href="${element.name}" class="nav-link p-1"> ${element.name} </a></li>`)
+            navbar.push(`<li data-highlightable="1" class="nav-item"><a href="${element.link}" class="nav-link p-1"> ${element.name} </a></li>`)
         })
 
         return navbar;
@@ -12,6 +12,12 @@ const generateHeaderMenu = (mNavigation) => {
 
 //==============|Data Selector|============
 function embedHeaderData() {
+    $('nav[name="header"]').parent().css('overflow', 'initial')
+    $('nav[name="header"]').parent().css('overflowX', 'initial')
+
+    $('nav[name="header"]').find('#cartIcon').attr('href', '/cart');
+    $('nav[name="header"]').find('#searchIcon').attr('href', '/collections')
+
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
     
