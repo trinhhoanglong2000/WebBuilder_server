@@ -21,7 +21,7 @@ function payMent() {
                 }
             }
         }
-        console.log(listProductBuy)
+        window.localStorage.setItem('paymentItems', JSON.stringify(listProductBuy));
     }
 }
 
