@@ -114,3 +114,21 @@ exports.resetPassword = async (user_id, reset_string, new_password) => {
         return null
     }
 }
+
+exports.getUserMail = async (query) => {
+    let config = {
+        join: {
+            "stores": {
+                condition: {
+                    "stores.user_id": "account.id",
+                }
+            }
+        },
+        select: "account.email",
+        where: {
+            "stores.id": query.store_id
+        },
+    }
+
+    return  DBHelper.FindAll('account', config);
+}

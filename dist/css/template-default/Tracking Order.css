@@ -236,7 +236,7 @@
   display: none;
   position: fixed;
   z-index: 2; 
-  padding-top: 130px; 
+  padding-top: 15%; 
   left: 0;
   top: 0;
   width: 100%; 
@@ -248,7 +248,7 @@
 [name="trackingOrder"] .modal-loader .modal-content {
   background-color: #fefefe;
   margin: auto;
-  padding: 30px;
+  padding: 5% 30px 30px 30px;
   border: 1px solid #888;
   width: 80%;
   align-items: center;
@@ -335,11 +335,13 @@
 [name="trackingOrder"] .modal-loader .modal-content h2 {
   padding-top: 10px;
   padding-bottom: 10px;
+  margin: 20px 0;
 }
 
 [name="trackingOrder"] .modal-loader .modal-content .footer-button {
   width: 100%;
   text-align: center;
+  margin: 20px 0;
 }
 
 [name="trackingOrder"] .modal-loader .modal-content .footer-button .btn {
@@ -350,6 +352,7 @@
   display: inline-block;
   margin: 5px 10px;
   font-size: 16px;
+  height: 45px;
 }
 
 [name="trackingOrder"] .modal-loader .modal-content .footer-button .btn-no {
@@ -362,7 +365,7 @@
   border-color: #a6cffd;
 }
 
-[name="trackingOrder"] .modal-loader .modal-content #reason-popup input {
+[name="trackingOrder"] .modal-loader .modal-content #reason-popup textarea {
   margin: auto;
   width: 80%;
   margin-bottom: 20px;
@@ -467,9 +470,10 @@
     width: 40%;
     margin: 3px 3px;
     font-size: 13px;
+    height: 30px;
   }
 
-  [name="trackingOrder"] .modal-loader .modal-content #reason-popup input {
+  [name="trackingOrder"] .modal-loader .modal-content #reason-popup textarea {
     margin-bottom: 10px;
     font-size: 14px;
   }

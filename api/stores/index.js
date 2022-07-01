@@ -65,3 +65,6 @@ router.put('/', authenticator.Authenticate, storeController.updateStoreInfo);
 router.get('/:id/total-orders', authenticator.Authenticate, storeController.totalOrder)
 router.get('/:id/average-orders-value', authenticator.Authenticate, storeController.averageTotalOrder)
 module.exports = router;
+
+// GET MAIL
+router.get('/:id/user-mail', storeController.getMailByStoreId);

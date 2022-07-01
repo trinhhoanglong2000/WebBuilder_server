@@ -117,7 +117,7 @@ exports.updateDiscount = async (req, res) => {
 };
 
 exports.deleteDiscount = async (req, res) => {
-    query = {
+    const query = {
         id: req.params.id
     }
     const result = await discountService.deleteDiscount(query)
