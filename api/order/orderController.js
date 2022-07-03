@@ -235,21 +235,6 @@ exports.getOrder = async (req, res) => {
 }
 
 exports.deleteOrder = async (req, res) => {
-    if (!req.body.store_id) {
-        res.status(http.BadRequest).json({
-            statusCode: http.BadRequest,
-            message: "Bad Request"
-        })
-        return
-    }
-    let check = {
-        id: req.body.store_id,
-        user_id: req.user.id
-    }
-    let authen = await this.AuthenticateUserAndStore(req, res, check)
-    if (!authen) {
-        return
-    }
     const orderId = req.params.id
     await orderService.deleteOrderStatus({ order_id: orderId })
     await orderService.deleteOrderProducts({ order_id: orderId })
