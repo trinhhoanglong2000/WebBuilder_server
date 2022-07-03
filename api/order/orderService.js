@@ -161,10 +161,13 @@ exports.changeOrderStatus = async (query) => {
         return null
     }
 
-    const createQuery = {
-        order_id: query.order_id,
-        status: newStatus
-    }
+    const createQuery = query
+
+    query.status = newStatus
+    //  {
+    //     order_id: query.order_id,
+    //     status: newStatus
+    // }
     return DBHelper.insertData(createQuery, "order_status", true, "id")
 }
 
