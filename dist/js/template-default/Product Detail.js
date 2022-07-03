@@ -4,13 +4,12 @@ function changeThumnail(id) {
     $(".ezMall-stick-slide .img-thumbnail").attr('src', $(`#${id} img`)[0].src);
 }
 function getParam(param){
-    console.log(window.location.href)
     let url = new URL(window.location.href);
     var value = url.searchParams.get(param);
     return value
 }
 function insertProductData(rootEle, data) {
-
+    $(rootEle).find(".ezMall-popup-alert").hide()
     if ($(rootEle).find(".slick-initialized").length != 0) {
         return;
     }
@@ -18,9 +17,6 @@ function insertProductData(rootEle, data) {
     let productData = data.product[0];
     let imageArr = productData.images ? productData.images : [];
     let options = productData.is_variant ? data.option : [];
-    console.log(data)
-    console.log(productData)
-
     // For render image
     $(rootEle).find(`.ezMall-price .price`).html(productData.price);
     $(rootEle).find(`.ezMall-quantity-remain`).html(productData.inventory);
@@ -194,10 +190,13 @@ function VariantCheck(variantId, optionId) {
 }
 
 function addToCart() {
+    $(".ezMall-popup-alert").show().css("display","flex").children().hide()
+    $(".ezMall-popup-alert .ezMall-loading").show();
     let itemData = JSON.parse(localStorage.getItem('productData'));
     let productData = itemData.product[0];
     let variantData = itemData.variant;
-    let options = itemData.option;
+    let options =productData.is_variant? itemData.option : [];
+    let optionName = options.map(item => item.name).join("/");
     let is_variant = productData.is_variant;
     let arrayOption = [];
     let arrayAlert = [];
@@ -233,7 +232,8 @@ function addToCart() {
         "variant_id": is_variant ? variantSelected.id : null,
         "variant_name": is_variant ? variantSelected.name : null,
         "thumnail": productData.images.length > 0? productData.images[0]: "https://dummyimage.com/150x150/000/fff",
-        "description": productData.description
+        "description": productData.description,
+        "optionName": optionName
     }
     if (cart == null) {
         cart = [];
@@ -259,10 +259,16 @@ function addToCart() {
 
     }
     window.localStorage.setItem('cart', JSON.stringify(cart));
+    $(".ezMall-popup-alert").children().hide();
+    $(".ezMall-popup-alert .ezMall-popup-success").fadeIn()
+    setInterval(() => {
+        $(".ezMall-popup-alert .ezMall-popup-success").fadeOut()
+        $(".ezMall-popup-alert").fadeOut()
+    }, 1000);
     return true
 }
 function buyNow() {
-    console.log("buy");
+  
     if(addToCart()){
         const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
         var myWindow = window.open(`${rootUrl}/payment`, "_self");
