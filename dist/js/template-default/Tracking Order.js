@@ -2,7 +2,8 @@ function embedOrderTrackingData(isDeploy) {
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
     // let orderId = 'FHIJGCCBJFFGB';
-    let orderId = 'ACCBCAFEAGFGB';
+    // let orderId = 'AEFAGEGFCGFGB';
+    let orderId = 'FCJIFEFFCGFGB';
     storeId = '7b06cf0f-c51d-416b-ba37-f37969629355'
     // TODO - Nho Long Em lam express gium
 
@@ -46,17 +47,6 @@ function embedOrderTrackingData(isDeploy) {
                         <div class="col-3"> ${totalPrice.toLocaleString()} </div>
                     </div>`)
                 }
-
-                productList.append(`
-                <div class="row">
-                    <div class="col-8"> ${element.quantity}x <a href="/products?${element.id}">${element.product_name}</a></div>
-                    <div class="col-3"> ${totalPrice.toLocaleString()} </div>
-                </div>`)
-                productList.append(`
-                <div class="row">
-                    <div class="col-8"> ${element.quantity}x ${element.product_name}</div>
-                    <div class="col-3"> ${totalPrice.toLocaleString()} </div>
-                </div>`)
             });
             
             let original_price = Math.trunc(data.order.original_price);
@@ -160,17 +150,15 @@ function embedOrderTrackingData(isDeploy) {
                     $('.modal-loader').find('#reason-popup').css('display', 'none');
                     $('.modal-loader').find('#loader-popup').css('display', 'initial');
                     
-                    let note = $('.modal-loader').find('#reason-popup').find('input').val();
-                    
-                    let raw = JSON.stringify({
-                        store_id: storeId,
-                        note: note
-                    });
+                    let note = $('.modal-loader').find('#reason-popup').find('textarea').val();
 
                     let requestOptions = {
                         method: 'POST',
-                        body: raw,
-                        redirect: 'follow'
+                        body: JSON.stringify({
+                            store_id: storeId,
+                            note: note
+                        }),
+                        headers: {"Content-type": "application/json; charset=UTF-8"}
                     };
 
                     fetch(`${serverURL}/order/${orderId}/delete-status`, requestOptions)
