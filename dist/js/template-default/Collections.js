@@ -35,25 +35,27 @@ var GetRequest_ProductPage = debounce_ProductPage(async (e, idStore, limit, name
                 const price = element.currency ? Number(element.price).toLocaleString(`${element.currency}`) + currency: 
                 element.price
                 //
-                productHTML += ` <div class="col-md-3 col-sm-4">
-        <div class="single-new-arrival">
-            <div class="single-new-arrival-bg">
-                <img src=${element.thumbnail}
-                    alt="new-arrivals images">
-                <div class="single-new-arrival-bg-overlay"></div>
+                productHTML += ` 
+        <div class="col-md-3 col-sm-4">
+            <div class="single-new-arrival">
+                    <a href="${element.id? `/products?id=${element.id}`:'#'}" >
+                        <div class="single-new-arrival-bg">
+                            <img src=${element.thumbnail}
+                                alt="new-arrivals images">
+                            <div class="single-new-arrival-bg-overlay"></div>
 
-                <div class="new-arrival-cart">
-                    <p>
-                        <span class="lnr lnr-cart"></span>
-                        <a href="#"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Add <span>to
-                            </span> cart</a>
-                    </p>
-
-                </div>
+                            <div class="new-arrival-cart">
+                                <p>
+                                    <span class="lnr lnr-cart"></span>
+                                    <a href="${element.id? `/products?id=${element.id}`:'#'}"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Add <span>to
+                                        </span> cart</a>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                <h4><a href="${element.id? `/products?id=${element.id}`:'#'}">${element.title}</a></h4>
+                <p class="arrival-product-price">${price}</p>
             </div>
-            <h4><a href="#">${element.title}</a></h4>
-            <p class="arrival-product-price">${price}</p>
-        </div>
         </div>
 
         `
