@@ -9,7 +9,6 @@ function getParam(param){
     return value
 }
 function insertProductData(rootEle, data) {
-    $(rootEle).find(".ezMall-popup-alert").hide()
     if ($(rootEle).find(".slick-initialized").length != 0) {
         return;
     }
@@ -91,6 +90,8 @@ async function ProductDetailGenerateCodeItem(e) {
     if(productId){
         reqUrl = `${rootUrl}/products/${productId}`;
     }
+    $(".ezMall-popup-alert").show().css("display","flex").children().hide();
+    $(".ezMall-loading").show();
     await fetch(reqUrl
         , {
             mode: 'cors',
@@ -103,6 +104,8 @@ async function ProductDetailGenerateCodeItem(e) {
             } else {
 
             }
+        }).finally(()=>{
+            $(".ezMall-popup-alert").hide()
         })
 }
 function ProductDetailGenerateCodeStart() {
@@ -122,14 +125,7 @@ $(document).ready(function () {
         ProductDetailGenerateCodeStart();
     }
 })
-if ($('[data-gjs-type="wrapper"]').length) {
-    $('[data-gjs-type="wrapper"]').ready(function () {
-        ProductDetailGenerateCodeStart();
-    })
-}
-else {
-    ProductDetailGenerateCodeStart();
-}
+
 function VariantCheck(variantId, optionId) {
     let itemData = JSON.parse(localStorage.getItem('productData'));
     let productData = itemData.product[0];
@@ -259,6 +255,7 @@ function addToCart() {
 
     }
     window.localStorage.setItem('cart', JSON.stringify(cart));
+    $("#numberSelectedProduct").html(cart? cart.length : 0 )
     $(".ezMall-popup-alert").children().hide();
     $(".ezMall-popup-alert .ezMall-popup-success").fadeIn()
     setInterval(() => {

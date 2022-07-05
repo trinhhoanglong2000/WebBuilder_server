@@ -1,130 +1,166 @@
 async function PaymentGenerateCodeStart() {
     $("div[ez-mall-type='payment']").each(async function (i) {
-        await loadPaymentData(this,true)
+        const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+        await fetch(`${rootUrl}/data/rate`,
+        {
+            mode: 'cors',
+            headers: {
+                'Access-Control-Allow-Origin': '*'
+            }
+        }).then(res => res.json()).then(currencyRes => {
+            if (currencyRes.statusCode === 200) {
+                window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+            }
+        }).finally(async () => {
+            await fetch(`${rootUrl}/data/city`
+                , {
+                    mode: 'cors',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                }).then(res => res.json()).then(cityRes => {
+                    if (cityRes.statusCode === 200) {
+                        window.localStorage.setItem('city', JSON.stringify(cityRes.data));
+                    }
+                }).finally(async () => {
+                    await loadPaymentData(this, true)
+                })
+        })
     });
 }
 
 //SetListenOnChangeAtrribute();
-$(document).ready(async function  () {
+$(document).ready(async function () {
+    localStorage.removeItem('discount')
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(async function () {
-           await PaymentGenerateCodeStart();
+            await PaymentGenerateCodeStart();
+            
         })
     }
     else {
-        if(!JSON.parse(localStorage.getItem('paymentItems')) || JSON.parse(localStorage.getItem('paymentItems')).length ==0){
+        if (!JSON.parse(localStorage.getItem('paymentItems')) || JSON.parse(localStorage.getItem('paymentItems')).length == 0) {
             const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-            window.location.replace(`${rootUrl}/cart` );
+            window.location.replace(`${rootUrl}/cart`);
         }
         await PaymentGenerateCodeStart();
     }
 })
 
-function buy(){
+function buy() {
 
-    let isOmitFill = false; 
+    let isOmitFill = false;
 
-    let rootEle =$("div[ez-mall-type='payment']")[0];
-    
-    $(rootEle).find(".ezMall-payment-alert").show().css("display","flex").children().hide()
+    let rootEle = $("div[ez-mall-type='payment']")[0];
+
+    $(rootEle).find(".ezMall-payment-alert").show().css("display", "flex").children().hide()
     $(rootEle).find(".ezMall-payment-alert .ezMall-loading").show();
-    let storeId= $(rootEle).attr("ez-mall-store");
+    let storeId = $(rootEle).attr("ez-mall-store");
     let email = $(rootEle).find("#email").val();
-    if(!email){
+    if (!email) {
         $(rootEle).find(".email-alert").show();
-        isOmitFill= true;
+        isOmitFill = true;
+    } else {
+        $(rootEle).find(".email-alert").hide();
     }
     let name = $(rootEle).find("#name").val();
-    if(!name){
+    if (!name) {
         $(rootEle).find(".name-alert").show();
-        isOmitFill= true;
+        isOmitFill = true;
+    } else {
+        $(rootEle).find(".name-alert").hide();
     }
     let tel = $(rootEle).find("#tel").val();
-    if(!tel){
+    if (!tel) {
         $(rootEle).find(".tel-alert").show();
-        isOmitFill= true;
+        isOmitFill = true;
+    } else {
+        $(rootEle).find(".name-alert").hide();
     }
     let city = $(rootEle).find("#city").val();
 
     let district = $(rootEle).find("#district").val();
     let address = $(rootEle).find("#address").val();
-    if(!address){
+    if (!address) {
         $(rootEle).find(".address-alert").show();
-        isOmitFill= true;
+        isOmitFill = true;
+    } else {
+        $(rootEle).find(".address-alert").hide();
     }
-    if(isOmitFill){
+    if (isOmitFill) {
         $(rootEle).find(".ezMall-payment-alert").hide().children().hide();
         return;
-    }else{
-        $(rootEle).find(".address-alert", ".tel-alert", ".name-alert", ".email-alert").hide(); 
+    } else {
+        $(rootEle).find(".address-alert", ".tel-alert", ".name-alert", ".email-alert").hide();
     }
     let dilivery = $(rootEle).find("input[name='delivery']:checked").val();
     let payment = $(rootEle).find("input[name='payment']:checked").val();
     let paymentItems = JSON.parse(localStorage.getItem('paymentItems'));
-    let currency =  $(rootEle).find("#currency").val();
-    var payload = { 
-        order:  {
+    let currency = $(rootEle).find("#currency").val();
+    var payload = {
+        order: {
             email: email,
-            name : name,
+            name: name,
             phone: tel,
             city: city,
             district: district,
-            address : address,
+            address: address,
             store_id: storeId,
             shipping_method: dilivery,
             payment_method: payment,
             currency: currency
         },
-        products: paymentItems.map((item)=>{
+        products: paymentItems.map((item) => {
             return {
                 id: item.id,
                 quantity: item.quantity,
                 price: item.price,
                 product_name: item.product_name,
                 is_variant: item.is_variant,
-                variant_id:item.variant_id,
-                variant_name:item.variant_name,
+                variant_id: item.variant_id,
+                variant_name: item.variant_name,
                 currency: currency
             }
         })
     }
-    var data = JSON.stringify( payload ) ;
+    var data = JSON.stringify(payload);
     const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-    cost = `${rootUrl}/stores/${storeId}/order`
-    fetch(cost,
-    {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: data
-    })
-    .then(function(res){ return res.json(); })
-    .then(function(data){
-        if(data.statusCode==201){
-            localStorage.removeItem('paymentItems')
-            $(rootEle).find(".ezMall-payment-alert").children().hide()
-            $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success").show().css("display", "flex")
-            $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success button").click( ()=>{
-                window.location.replace(rootUrl);
-            })
-        }else{
-            $(rootEle).find(".ezMall-payment-alert").children().hide();
-            $(rootEle).find(".ezMall-payment-alert  .ezMall-popup-fail").show().css("display", "flex")
-            $(rootEle).find(".ezMall-payment-alert .ezMall-popup-fail button").click( ()=>{
-                window.location.replace(rootUrl);
-            })
-        }
-     })
-    
+    const url = `${rootUrl}/stores/${storeId}/order`
+    fetch(url,
+        {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: data
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.statusCode == 201) {
+                localStorage.removeItem('paymentItems')
+                localStorage.removeItem('discount')
+                $(rootEle).find(".ezMall-payment-alert").children().hide()
+                $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success").show().css("display", "flex")
+                $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success button").click(() => {
+                    window.location.replace(rootUrl);
+                })
+            } else {
+                $(rootEle).find(".ezMall-payment-alert").children().hide();
+                $(rootEle).find(".ezMall-payment-alert  .ezMall-popup-fail").show().css("display", "flex")
+                $(rootEle).find(".ezMall-payment-alert .ezMall-popup-fail button").click(() => {
+                    window.location.replace(rootUrl);
+                })
+            }
+        })
+
 }
-async function getDistrict(rootEle){
+async function getDistrict(rootEle) {
     let paymentCitySelectContainer = $(rootEle).find("#city")[0];
     let cityOptions = JSON.parse(localStorage.getItem('city'))
     let indexCity = cityOptions.findIndex(item => item.id === $(paymentCitySelectContainer).val())
     if (!('data' in cityOptions[indexCity])) {
-         const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+        const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
         await fetch(`${rootUrl}/data/city/${$(paymentCitySelectContainer).val()}/district`,
             {
                 mode: 'cors',
@@ -233,13 +269,16 @@ async function loadPaymentData(rootEle, firstRun) {
         paymentCartContainer.insertAdjacentHTML("beforeend", rowHtml);
     });
     // Render sumary
-    let paymentDiscountVal = Number($(paymentDiscount).val());
-    let paymentShippingCostVal = Number($(paymentShippingCost).val());
-
+    let paymentDiscountVal = Number(calculatorDiscount(sumPrice, paymentCurrencyVal));
+    $(paymentDiscount).html(priceToString(paymentDiscountVal, paymentCurrencyVal));
+    let paymentShippingCostVal = 0;//Number($(paymentShippingCost).val());
+    let finalCost = (sumPrice + paymentDiscountVal + paymentShippingCostVal).toFixed(2);
+    finalCost = finalCost > 0 ? finalCost : 0;
     $(paymentCartSumPrice).html(priceToString(sumPrice.toFixed(2), paymentCurrencyVal));
     $(paymentShippingCost).html(priceToString(paymentShippingCostVal, paymentCurrencyVal))
     $(paymentDiscount).html(priceToString(paymentDiscountVal, paymentCurrencyVal))
-    $(paymentFinalBillCost).html(priceToString((sumPrice + paymentDiscountVal + paymentShippingCostVal).toFixed(2), paymentCurrencyVal));
+    $(paymentFinalBillCost).html(priceToString(finalCost, paymentCurrencyVal));
+    return finalCost;
 }
 function convertCurrency(value, fromCurrency, toCurrency) {
     let currencyOptions = JSON.parse(localStorage.getItem('currency'));
@@ -248,26 +287,82 @@ function convertCurrency(value, fromCurrency, toCurrency) {
 
     switch (toCurrency) {
         case "VND":
-            return Math.ceil(value * Number(currencyOptions[dataToCurrency].amount) /Number(currencyOptions[dataFromCurrency].amount) );
+            return Math.ceil(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount));
             break;
         case "USD":
-            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) /Number(currencyOptions[dataFromCurrency].amount)  + 0.005).toFixed(2);
+            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.005).toFixed(2);
             break;
         default:
-            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) /Number(currencyOptions[dataFromCurrency].amount) + 0.005).toFixed(2);
+            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.005).toFixed(2);
             break;
     }
 }
-function priceToString(value,currency){
+function priceToString(value, currency) {
     switch (currency) {
         case "VND":
-            return Math.ceil(Number(value)).toLocaleString('fi-FI', {style : 'currency', currency : 'VND'});
+            return Math.ceil(Number(value)).toLocaleString('fi-FI', { style: 'currency', currency: 'VND' });
             break;
         case "USD":
-            return Number(value).toLocaleString('fi-FI', {style : 'currency', currency : 'USD'});
+            return Number(value).toLocaleString('fi-FI', { style: 'currency', currency: 'USD' });
             break;
         default:
             return `${value} ${currency}`
             break;
     }
+}
+function useDiscount() {
+
+    let rootEle = $("div[ez-mall-type='payment']")[0];
+    let storeId = $(rootEle).attr("ez-mall-store");
+    let discountCode = $(rootEle).find('input#discount').val();
+    let cart = JSON.parse(localStorage.getItem('paymentItems'));
+    let paymentCurrencyVal = $(rootEle).find("#currency").val();
+    let sumPrice = 0;
+    cart.forEach(element => {
+        let converCurrency = convertCurrency(Number(element.quantity) * Number(element.price), element.currency, paymentCurrencyVal)
+        sumPrice += Number(converCurrency);
+    });
+    var payload = {
+        "store_id": storeId,
+        "code": discountCode,
+        "total_price": sumPrice,
+        "total_products": cart.length,
+        "currency": paymentCurrencyVal
+    }
+    var data = JSON.stringify(payload);
+    let paymentDiscount = $(rootEle).find(".ezMall-discount")[0];
+    const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+    const url = `${rootUrl}/discount/use-discount`
+    fetch(url,
+        {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: data
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (resData) {
+            if (resData.statusCode == 200) {
+                window.localStorage.setItem('discount', JSON.stringify(resData.data[0]));
+            }
+        }).finally(() => {
+            loadPaymentData(rootEle, false)
+        })
+}
+function calculatorDiscount(sumPrice, paymentCurrencyVal) {
+    let value = 0;
+    let discountInfo = JSON.parse(localStorage.getItem('discount'));
+    if (discountInfo) {
+        let amount = discountInfo.amount;
+        let discountCurrency = discountInfo.currency;
+
+        if (discountInfo.type == 1) {
+            value = convertCurrency(Number(amount), discountCurrency, paymentCurrencyVal)
+        } else if (discountInfo.type == 0) {
+            value = convertCurrency(Number(amount) * Number(sumPrice), discountCurrency, paymentCurrencyVal)
+        }
+    }
+    return value * -1;
 }
