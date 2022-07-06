@@ -282,6 +282,14 @@ var updateInventoryFromVariants = exports.updateInventoryFromVariants = async (i
 
 exports.updateInventory = async (query) => {
     let result
+    if (query.sku){
+        const sku = {
+            id : query.id,
+            sku : query.sku
+        }
+        await updateProduct(sku)
+    }
+   
     if (query.is_variant){
         const variantQuery = {
             id : query.variant_id,
