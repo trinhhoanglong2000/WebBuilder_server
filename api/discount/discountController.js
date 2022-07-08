@@ -3,6 +3,24 @@ const { query } = require('express');
 const http = require('../../const');
 const discountService = require('./discountService')
 const dataService = require('../data/dataService')
+
+exports.getDiscount = async (req, res) => {
+    const result = await discountService.getDiscountById(req.params.id)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "get discount successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};
+
 exports.useDiscount = async (req, res) => {
     const data = req.body
     if (!data.store_id || !data.code || data.total_price == undefined || data.total_products == undefined|| !data.currency) {

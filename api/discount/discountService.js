@@ -25,6 +25,10 @@ var findDiscount = exports.findDiscount = async (query) => {
     return DBHelper.getData("discount", query)
 }
 
+exports.getDiscountById = async (id) => {
+    return DBHelper.getData("discount", {id: id})
+}
+
 exports.findAllDiscount = async (query) => {
     let condition = [];
     let offset = query.offset
