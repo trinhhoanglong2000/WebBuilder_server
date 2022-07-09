@@ -19,7 +19,7 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
     let config = {
         select: "menu_item.id, menu_item.name, menu_item.link",
         where: {
-            "OP.AND": [{"menu.store_id": query.store_id}, {"menu.name": "Header"}]
+            "OP.AND": [{"menu.store_id": query.store_id}, {"menu.name": "Header Menu"}]
         },
         join: {
             "menu": {
