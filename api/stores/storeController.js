@@ -1584,48 +1584,54 @@ exports.averageTotalOrder = async (req, res) => {
     query.past_time = pastTime.toISOString()
     query.current_time = date.toISOString()
     let total = 0
+    let totalProduct =  0
+    let totalOrder = 0
+
     const arr = []
     const result = await orderService.getAllOrder(query)
 
     let newDay = false
     let totalDay = 0
+    let totalProductDay = 0
+    let totalOrderDay = 0
     let nextDay
     let currentDay
-    let totalProduct = 0
-    let totalOrder = 0
+   
     for (let i = 0; i < result.length; i++) {
         let price = result[i].original_price - result[i].discount_price
         if (result[i].currency != currency) {
             price = await dataService.changeMoney({ from: result[i].currency, to: currency, price: price })
         }
         total += price
+        totalProduct += result[i].total_products
+        totalOrder += 1
         if (!newDay) {
             newDay = true
             totalDay = price
-            totalProduct = result[i].total_products
-            totalOrder = 1
+            totalProductDay = result[i].total_products
+            totalOrderDay = 1
             nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
             currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
             if (i == result.length - 1) {
-                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProduct, total_order : totalOrder })
+                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
             }
         }
         else {
 
             if (result[i].create_at > nextDay) {
-                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProduct, total_order : totalOrder })
+                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
                 nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
                 currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
                 totalDay = price
-                totalProduct = result[i].total_products
-                totalOrder = 1
+                totalProductDay = result[i].total_products
+                totalOrderDay = 1
             }
             else {
                 totalDay += price
-                totalProduct += result[i].total_products
-                totalOrder += 1
+                totalProductDay += result[i].total_products
+                totalOrderDay += 1
                 if (i == result.length - 1) {
-                    arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProduct, total_order : totalOrder })
+                    arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
                 }
             }
         }
@@ -1633,6 +1639,8 @@ exports.averageTotalOrder = async (req, res) => {
     }
     const resultData = {
         total_sales: total,
+        total_products : totalProduct,
+        total_order : totalOrder,
         orders: arr
     }
     if (result) {
