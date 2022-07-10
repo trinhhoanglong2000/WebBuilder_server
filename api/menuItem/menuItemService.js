@@ -94,6 +94,7 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
         offset: query.offset
     }
     const data = await DBHelper.FindAll("menu_item", config)
+  
     if (data){
         let returnArr = []
     
@@ -112,7 +113,7 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
                 }
                 returnData.children = children
             }
-          
+            returnArr.push(returnData)
         }   
         return returnArr
     }
@@ -121,10 +122,75 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
     }
 }
 
-exports.updateMenuItem = async (menuItemObj) => {
+var updateMenuItem =exports.updateMenuItem = async (menuItemObj) => {
     return DBHelper.updateData(menuItemObj, 'menu_item', 'id')
 }
 
-exports.deleteMenuItem = async (query) => {
+var loopUpdateSubMenu = exports.loopUpdateSubMenu = async (menuItemObj) => {
+    const returnData = []
+    for (let i = 0 ; i < menuItemObj.length; i++){
+        returnData.push(menuItemObj[i].id)
+        let queryData = {
+            id : menuItemObj[i].id,
+            menu_id : menuItemObj[i].menu_id,
+            first_level : false,
+            name : menuItemObj[i].title,
+            link : menuItemObj[i].subtitle,
+            expanded : menuItemObj[i].expanded
+        }
+
+        if (menuItemObj[i].expanded){
+            queryData.children = await loopUpdateSubMenu(menuItemObj[i].children)
+        }
+        else {
+            queryData.children = null
+        }
+        await updateMenuItem(queryData)
+    }
+    return returnData
+}
+
+exports.updateSubMenuItem = async (menuItemObj) => {
+    for (let i = 0 ; i < menuItemObj.length; i++){
+        let queryData = {
+            id : menuItemObj[i].id,
+            menu_id : menuItemObj[i].menu_id,
+            first_level : true,
+            name : menuItemObj[i].title,
+            link : menuItemObj[i].subtitle,
+            expanded : menuItemObj[i].expanded
+        }
+       
+        if (menuItemObj[i].expanded){
+            queryData.children = await loopUpdateSubMenu(menuItemObj[i].children)
+        }
+        else {
+            queryData.children = null
+        }
+        const update = await updateMenuItem(queryData)
+        if (!update){
+            return null
+        }
+    }
+    return true
+}
+
+var getMenuItem = exports.getMenuItem = async (query) => {
+    const data = await DBHelper.getData("menu_item", query)
+    if (data){
+        return data[0]
+    }
+    else {
+        return null
+    }
+}
+
+var deleteMenuItem =exports.deleteMenuItem = async (query) => {
+    const data = await getMenuItem(query)
+    if (data.expanded){
+        for (let i = 0; i <  data.children.length; i++){
+            await deleteMenuItem({id : data.children[i]})
+        } 
+    }
     return DBHelper.deleteData('menu_item', query);
 }

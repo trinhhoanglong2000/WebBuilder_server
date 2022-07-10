@@ -49,14 +49,9 @@ exports.updateMenuItem = async (req, res) => {
 }
 
 exports.updateSubMenuItem = async (req, res) => {
-    const menuItemObj = {
-        id: req.body.id,
-        name: req.body.name,
-        link: req.body.link,
-        children : req.body.children,
-        expanded : req.body.expanded
-    };
-    const newMenuItem = await menuItemService.updateMenuItem(req.body);
+    const listMenu = req.body.listMenuItem
+
+    const newMenuItem = await menuItemService.updateSubMenuItem(listMenu);
     if (newMenuItem) {
         res.status(http.Success).json({
             statusCode: http.Success,

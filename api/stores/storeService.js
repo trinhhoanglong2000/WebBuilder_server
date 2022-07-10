@@ -7,7 +7,8 @@ const DBHelper = require('../../helper/DBHelper/DBHelper')
 const URLParser = require('../../helper/common')
 const templateService = require('../template/templateService')
 const pageService = require('../page/pageService')
-const fse = require('fs-extra')
+const fse = require('fs-extra');
+const { updateStoreData } = require('./storeController');
 
 exports.createStore = async (storeObj) => {
     if (storeObj.name) {
@@ -227,6 +228,44 @@ exports.publishStore = async (storeId) => {
     return true
 }
 
-exports.updateStoreInfo = (storeObj) => {
+var updateStoreInfo = exports.updateStoreInfo = (storeObj) => {
     return DBHelper.updateData(storeObj, 'stores', 'id');
+}
+
+exports.createPaypal = async (storeObj) => {
+    const data = await  DBHelper.insertData(storeObj,"store_paypal",false,"id")
+    if (data){
+        await updateStoreInfo({id: storeObj.id, have_paypal : true })
+        return data
+    }
+    else {
+        return null
+    }
+}
+
+exports.deletePaypal = async (storeObj) => {
+    const data = await  DBHelper.deleteData("store_paypal",storeObj)
+    if (data){
+        await updateStoreInfo({id: storeObj.id, have_paypal : false })
+        return data
+    }
+    else {
+        return null
+    }
+}
+
+exports.getPaypal = async (storeObj) => {
+    return DBHelper.getData("store_paypal", storeObj)
+}
+
+exports.updatePaypal = async (storeObj) => {
+    return DBHelper.updateData(storeObj,"store_paypal", "id")
+}
+
+exports.getPaypalStatus = async (storeObj) => {
+    const config = {
+        select : "have_paypal",
+        where : { id : storeObj.id}
+    }
+    return DBHelper.FindAll("stores", config)
 }

@@ -68,3 +68,12 @@ module.exports = router;
 
 // GET MAIL
 router.get('/:id/user-mail', storeController.getMailByStoreId);
+
+//PAYPAL
+
+router.get('/:id/paypal',authenticator.Authenticate, storeController.getPaypal);
+router.delete('/:id/paypal',authenticator.Authenticate, storeController.deletePaypal);
+router.put('/:id/paypal',authenticator.Authenticate, storeController.updatePaypal);
+router.post('/:id/paypal',authenticator.Authenticate, storeController.createPaypal);
+
+router.get('/:id/paypal-status', storeController.getPaypalStatus);
