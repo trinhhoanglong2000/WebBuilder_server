@@ -46,6 +46,7 @@ exports.getMenuItem = async (req, res) => {
     }
 }
 
+
 exports.updateMenu = async (req, res) => {
     const menuObj = {
         id: req.body.id,

@@ -4,22 +4,84 @@ exports.createMenuItem = async (menuItemObj) => {
     return DBHelper.insertData(menuItemObj, "menu_item", true)
 }
 
-exports.getMenuItemByMenuId = async (query) => {
+
+var loopGetMenu = exports.loopGetMenu = async (query) => {
     let config = {
+        select : "id, menu_id, expanded, children, name as title, link as subtitle",
         where: {
-            menu_id: query.menu_id
+            id: query.id
         },
         limit: query.limit,
         offset: query.offset
     }
-    return DBHelper.FindAll("menu_item", config)
+    let data = await DBHelper.FindAll("menu_item", config)
+    data = data[0] 
+    if (data){
+        const returnData = {
+            id : data.id,
+            menu_id : data.menu_id,
+            title : data.title,
+            subtitle : data.subtitle,
+            expanded : data.expanded
+        }
+        const children = []
+        if (data.expanded) {
+            for (let j = 0; j < data.children.length ; j++){
+                children.push(await loopGetMenu({id : data.children[j]}))
+            }
+            returnData.children = children
+        }
+        
+        return returnData
+    }
+    else {
+        return null
+    }
+}
+
+exports.getMenuItemByMenuId = async (query) => {
+    let config = {
+        select : "id, menu_id, expanded, children, name as title, link as subtitle",
+        where: {
+            "OP.AND" : [{menu_id: query.menu_id},
+            {first_level : true }]
+        },
+        limit: query.limit,
+        offset: query.offset
+    }
+    const data = await DBHelper.FindAll("menu_item", config)
+    if (data){
+        let returnArr = []
+    
+        for (let i = 0 ; i < data.length; i++){
+            const returnData = {
+                id : data[i].id,
+                menu_id : data[i].menu_id,
+                title : data[i].title,
+                subtitle : data[i].subtitle,
+                expanded : data[i].expanded
+            }
+            const children = []
+            if (data[i].expanded) {
+                for (let j = 0; j < data[i].children.length ; j++){
+                    children.push( await loopGetMenu({id : data[i].children[j]}))
+                }
+                returnData.children = children
+            }
+            returnArr.push(returnData)
+        }   
+        return returnArr
+    }
+    else {
+        return null
+    }
 }
 
 exports.getHeaderMenuItemsByStoreId = async (query) => {
     let config = {
-        select: "menu_item.id, menu_item.name, menu_item.link",
+        select: "menu_item.id, menu_item.menu_id, menu_item.expanded, menu_item.children, menu_item.name as title, menu_item.link as subtitle",
         where: {
-            "OP.AND": [{"menu.store_id": query.store_id}, {"menu.name": "Header Menu"}]
+            "OP.AND": [{"menu.store_id": query.store_id}, {"menu.name": "Header Menu"}, {"menu_item.first_level" : true}], 
         },
         join: {
             "menu": {
@@ -31,7 +93,32 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
         limit: query.limit,
         offset: query.offset
     }
-    return DBHelper.FindAll("menu_item", config)
+    const data = await DBHelper.FindAll("menu_item", config)
+    if (data){
+        let returnArr = []
+    
+        for (let i = 0 ; i < data.length; i++){
+            const returnData = {
+                id : data[i].id,
+                menu_id : data[i].menu_id,
+                title : data[i].title,
+                subtitle : data[i].subtitle,
+                expanded : data[i].expanded
+            }
+            const children = []
+            if (data[i].expanded) {
+                for (let j = 0; j < data[i].children.length ; j++){
+                    children.push( await loopGetMenu({id : data[i].children[j]}))
+                }
+                returnData.children = children
+            }
+          
+        }   
+        return returnArr
+    }
+    else {
+        return null
+    }
 }
 
 exports.updateMenuItem = async (menuItemObj) => {

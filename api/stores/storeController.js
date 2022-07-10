@@ -552,8 +552,8 @@ exports.getHeaderData = async (req, res) => {
     const storeName = storeService.getStoreNameById(storeId);
     const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
 
+    
     const result = await Promise.all([logoURL, storeName, menuItems]);
-
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
