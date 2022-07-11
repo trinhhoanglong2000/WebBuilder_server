@@ -1241,6 +1241,7 @@ exports.createOrder = async (req, res) => {
 exports.getOrderByStore = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
+
     const result = await orderService.getAllStoreOrder(query)
 
     for (let i = 0; i < result.length; i++) {

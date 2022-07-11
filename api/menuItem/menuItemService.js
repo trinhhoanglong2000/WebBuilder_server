@@ -7,7 +7,7 @@ exports.createMenuItem = async (menuItemObj) => {
 
 var loopGetMenu = exports.loopGetMenu = async (query) => {
     let config = {
-        select : "id, menu_id, expanded, children, name as title, link as subtitle",
+        select : "id, menu_id, expanded, children, name as title, link",
         where: {
             id: query.id
         },
@@ -21,7 +21,7 @@ var loopGetMenu = exports.loopGetMenu = async (query) => {
             id : data.id,
             menu_id : data.menu_id,
             title : data.title,
-            subtitle : data.subtitle,
+            link : data.link,
             expanded : data.expanded
         }
         const children = []
@@ -41,7 +41,7 @@ var loopGetMenu = exports.loopGetMenu = async (query) => {
 
 exports.getMenuItemByMenuId = async (query) => {
     let config = {
-        select : "id, menu_id, expanded, children, name as title, link as subtitle",
+        select : "id, menu_id, expanded, children, name as title, link",
         where: {
             "OP.AND" : [{menu_id: query.menu_id},
             {first_level : true }]
@@ -58,7 +58,7 @@ exports.getMenuItemByMenuId = async (query) => {
                 id : data[i].id,
                 menu_id : data[i].menu_id,
                 title : data[i].title,
-                subtitle : data[i].subtitle,
+                link : data[i].link,
                 expanded : data[i].expanded
             }
             const children = []
@@ -79,7 +79,7 @@ exports.getMenuItemByMenuId = async (query) => {
 
 exports.getHeaderMenuItemsByStoreId = async (query) => {
     let config = {
-        select: "menu_item.id, menu_item.menu_id, menu_item.expanded, menu_item.children, menu_item.name as title, menu_item.link as subtitle",
+        select: "menu_item.id, menu_item.menu_id, menu_item.expanded, menu_item.children, menu_item.name as title, menu_item.link",
         where: {
             "OP.AND": [{"menu.store_id": query.store_id}, {"menu.name": "Header Menu"}, {"menu_item.first_level" : true}], 
         },
@@ -103,7 +103,7 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
                 id : data[i].id,
                 menu_id : data[i].menu_id,
                 title : data[i].title,
-                subtitle : data[i].subtitle,
+                link : data[i].link,
                 expanded : data[i].expanded
             }
             const children = []
@@ -135,7 +135,7 @@ var loopUpdateSubMenu = exports.loopUpdateSubMenu = async (menuItemObj) => {
             menu_id : menuItemObj[i].menu_id,
             first_level : false,
             name : menuItemObj[i].title,
-            link : menuItemObj[i].subtitle,
+            link : menuItemObj[i].link,
             expanded : menuItemObj[i].expanded
         }
 
@@ -157,7 +157,7 @@ exports.updateSubMenuItem = async (menuItemObj) => {
             menu_id : menuItemObj[i].menu_id,
             first_level : true,
             name : menuItemObj[i].title,
-            link : menuItemObj[i].subtitle,
+            link : menuItemObj[i].link,
             expanded : menuItemObj[i].expanded
         }
        
