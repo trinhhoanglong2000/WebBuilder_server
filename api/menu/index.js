@@ -8,6 +8,6 @@ router.get('/:id', menuController.getMenuItem)
 router.post('/', authenticator.Authenticate, menuController.createMenu);
 
 router.put('/', authenticator.Authenticate, menuController.updateMenu);
-
+router.put('/:id/sub-menu', authenticator.Authenticate, menuController.updateSubMenu);
 router.delete('/:id', authenticator.Authenticate, menuController.deleteMenu)
 module.exports = router;

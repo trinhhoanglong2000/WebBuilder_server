@@ -123,6 +123,13 @@ exports.getHeaderMenuItemsByStoreId = async (query) => {
 }
 
 var updateMenuItem =exports.updateMenuItem = async (menuItemObj) => {
+    let whereconfig = {}
+    whereconfig[`'${menuItemObj.id}'`] = {"OP.NORMAL" : "ANY (children)"}
+    let config = {
+        where : whereconfig
+    }
+    const children = await DBHelper.FindAll("menu_item",config)
+    console.log(children)
     return DBHelper.updateData(menuItemObj, 'menu_item', 'id')
 }
 
@@ -185,12 +192,18 @@ var getMenuItem = exports.getMenuItem = async (query) => {
     }
 }
 
-var deleteMenuItem =exports.deleteMenuItem = async (query) => {
+var deleteMenuItem = exports.deleteMenuItem = async (query) => {
     const data = await getMenuItem(query)
     if (data.expanded){
         for (let i = 0; i <  data.children.length; i++){
             await deleteMenuItem({id : data.children[i]})
         } 
     }
+    
+    config = {
+        where : {"ANY (children)" : query.id}
+    }
+    const children = await DBHelper.FindAll("menu_item",config)
+    console.log(children)
     return DBHelper.deleteData('menu_item', query);
 }

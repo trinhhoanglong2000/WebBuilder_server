@@ -420,7 +420,7 @@ exports.getListMenuItems = async (req, res) => {
 
     if (listMenu) {
         const navigation = await Promise.all(listMenu.map(async (item) => {
-            const menuItems = await menuItemService.getMenuItemByMenuId({ menu_id: item.id });
+            const menuItems = await menuService.getMenuItem(item.id)
             return {
                 ...item,
                 listMenuItem: menuItems
@@ -550,8 +550,8 @@ exports.getHeaderData = async (req, res) => {
 
     const logoURL = storeService.getStoreLogoById(storeId);
     const storeName = storeService.getStoreNameById(storeId);
-    const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
-
+    //const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
+    const menuItems = menuService.getHeaderMenu(storeId)
 
     const result = await Promise.all([logoURL, storeName, menuItems]);
     if (result) {
@@ -844,6 +844,8 @@ exports.deleteStore = async (req, res) => {
     //DELETE EMAIL
     await emailService.deleteStoreEmail({ id: id })
 
+    //DELETE PAYPAL 
+    await storeService.deletePaypal({id : id})
 
     //DELETE HTML 
     const storeName = await storeService.findById(id)
