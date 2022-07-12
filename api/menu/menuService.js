@@ -77,7 +77,13 @@ var getMenuItem = exports.getMenuItem = async (menuId) => {
             Key: `menu/${menuId}.json`
         }).promise();
         const content = JSON.parse(data.Body.toString('utf-8'));
-        return content;
+        if (content){
+            return content;
+        }
+        else {
+            return []
+        }
+      
     } catch (error) {
         console.log(error);
         return null;
