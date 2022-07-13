@@ -1585,7 +1585,7 @@ exports.averageTotalOrder = async (req, res) => {
     const currency = req.query.currency ? req.query.currency : 'VND'
     const pastTime = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate(), date.getHours(), date.getMinutes())
     query.past_time = pastTime.toISOString()
-    query.current_time = date.toISOString()
+    //query.current_time = date.toISOString()
     let total = 0
     let totalProduct =  0
     let totalOrder = 0
