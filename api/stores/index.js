@@ -56,7 +56,7 @@ router.delete('/:id',authenticator.Authenticate, storeController.deleteStore)
 router.post('/:id/publish',authenticator.Authenticate, storeController.publishStore)
 
 // SEND CONTACT FORM
-router.post('/:id/contact-form',authenticator.Authenticate, storeController.sendContact)
+router.post('/:id/contact-form', storeController.sendContact)
 //Update store info
 router.put('/', authenticator.Authenticate, storeController.updateStoreInfo);
 

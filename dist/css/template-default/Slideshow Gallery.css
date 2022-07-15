@@ -4,14 +4,14 @@
 
 [name="slideshowGallery"] .container-fluid {
   position: relative;
-  background-color: #ced4da;
+  background-color: #ced4da82;
 }
 
 [name="slideshowGallery"] .mySlides {
   text-align: center;
   padding-top: 10px;
   padding-bottom: 10px;
-  background-color: #adb5bd;
+  background-color: transparent;
 }
 
 [name="slideshowGallery"] .mySlides img {
@@ -32,7 +32,7 @@
   padding: 16px;
   margin-top: -50px;
   color: white;
-  background-color: rgba(203, 243, 240, 0.4);
+  background-color: rgb(255 255 255 / 17%);
   font-weight: bold;
   font-size: 20px;
   border-radius: 0 3px 3px 0;
