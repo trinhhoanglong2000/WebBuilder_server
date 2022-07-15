@@ -420,7 +420,7 @@ exports.getListMenuItems = async (req, res) => {
 
     if (listMenu) {
         const navigation = await Promise.all(listMenu.map(async (item) => {
-            const menuItems = await menuItemService.getMenuItemByMenuId({ menu_id: item.id });
+            const menuItems = await menuService.getMenuItem(item.id)
             return {
                 ...item,
                 listMenuItem: menuItems
@@ -550,10 +550,10 @@ exports.getHeaderData = async (req, res) => {
 
     const logoURL = storeService.getStoreLogoById(storeId);
     const storeName = storeService.getStoreNameById(storeId);
-    const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
+    //const menuItems = menuItemService.getHeaderMenuItemsByStoreId(query);
+    const menuItems = menuService.getHeaderMenu(storeId)
 
     const result = await Promise.all([logoURL, storeName, menuItems]);
-
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -844,6 +844,8 @@ exports.deleteStore = async (req, res) => {
     //DELETE EMAIL
     await emailService.deleteStoreEmail({ id: id })
 
+    //DELETE PAYPAL 
+    await storeService.deletePaypal({id : id})
 
     //DELETE HTML 
     const storeName = await storeService.findById(id)
@@ -1241,6 +1243,7 @@ exports.createOrder = async (req, res) => {
 exports.getOrderByStore = async (req, res) => {
     const query = req.query;
     query.store_id = req.params.id;
+
     const result = await orderService.getAllStoreOrder(query)
 
     for (let i = 0; i < result.length; i++) {
@@ -1551,11 +1554,11 @@ exports.sendContact = async (req, res) => {
 
 exports.totalOrder = async (req, res) => {
     const query = {
-        store_id : req.params.id
+        store_id: req.params.id
     }
     const date = new Date()
-    
-    const pastTime = new Date(date.getFullYear(), date.getMonth() - 1 , date.getDate(), date.getHours(), date.getMinutes())
+
+    const pastTime = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate(), date.getHours(), date.getMinutes())
     query.past_time = pastTime.toISOString()
     query.current_time = date.toISOString()
     const result = await orderService.getAllOrder(query)
@@ -1576,27 +1579,72 @@ exports.totalOrder = async (req, res) => {
 
 exports.averageTotalOrder = async (req, res) => {
     const query = {
-        store_id : req.params.id
+        store_id: req.params.id
     }
     const date = new Date()
-    
-    const pastTime = new Date(date.getFullYear(), date.getMonth() - 1 , date.getDate(), date.getHours(), date.getMinutes())
+    const currency = req.query.currency ? req.query.currency : 'VND'
+    const pastTime = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate(), date.getHours(), date.getMinutes())
     query.past_time = pastTime.toISOString()
-    query.current_time = date.toISOString()
+    //query.current_time = date.toISOString()
     let total = 0
+    let totalProduct =  0
+    let totalOrder = 0
+
     const arr = []
     const result = await orderService.getAllOrder(query)
-    for (let i = 0 ; i < result.length; i++){
+
+    let newDay = false
+    let totalDay = 0
+    let totalProductDay = 0
+    let totalOrderDay = 0
+    let nextDay
+    let currentDay
+   
+    for (let i = 0; i < result.length; i++) {
         let price = result[i].original_price - result[i].discount_price
-        if (result[i].currency != 'VND'){
-            price = await dataService.changeMoney({from : result[i].currency, to : 'VND', price : price})
+        if (result[i].currency != currency) {
+            price = await dataService.changeMoney({ from: result[i].currency, to: currency, price: price })
         }
         total += price
-        arr.push({id : result[i].id, total_sale : price})
+        totalProduct += result[i].total_products
+        totalOrder += 1
+        if (!newDay) {
+            newDay = true
+            totalDay = price
+            totalProductDay = result[i].total_products
+            totalOrderDay = 1
+            nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
+            currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
+            if (i == result.length - 1) {
+                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
+            }
+        }
+        else {
+
+            if (result[i].create_at > nextDay) {
+                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
+                nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
+                currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
+                totalDay = price
+                totalProductDay = result[i].total_products
+                totalOrderDay = 1
+            }
+            else {
+                totalDay += price
+                totalProductDay += result[i].total_products
+                totalOrderDay += 1
+                if (i == result.length - 1) {
+                    arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
+                }
+            }
+        }
+
     }
     const resultData = {
-        total_sales : total,
-        orders : arr
+        total_sales: total,
+        total_products : totalProduct,
+        total_order : totalOrder,
+        orders: arr
     }
     if (result) {
         res.status(http.Success).json({
@@ -1615,7 +1663,7 @@ exports.averageTotalOrder = async (req, res) => {
 
 exports.getMailByStoreId = async (req, res) => {
     const query = {
-        store_id : req.params.id
+        store_id: req.params.id
     }
 
     const result = await accountService.getUserMail(query);
@@ -1625,6 +1673,123 @@ exports.getMailByStoreId = async (req, res) => {
             statusCode: http.Success,
             data: result,
             message: "Get User Mail Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.createPaypal = async (req, res) => {
+    const data = req.body
+    data.id = req.params.id
+
+    if (!data.client_id || !data.secret_key) {
+        res.status(http.BadRequest).json({
+            statusCode: http.BadRequest,
+            message: "Bad Request"
+        })
+        return
+    }
+
+    const result = await storeService.createPaypal(data)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Create Paypal link Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getPaypal = async (req, res) => {
+    const query = {
+        id: req.params.id
+    }
+
+    const result = await storeService.getPaypal(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Get Store Paypal Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.updatePaypal = async (req, res) => {
+    const data  = req.body
+    data.id = req.params.id
+    
+
+    const result = await storeService.updatePaypal(data)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update store paypal Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.deletePaypal = async (req, res) => {
+    const query = {
+        id: req.params.id
+    }
+
+    const result = await storeService.deletePaypal(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Delete store paypal Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.getPaypalStatus = async (req, res) => {
+    const query = {
+        id: req.params.id
+    }
+
+    const result = await storeService.getPaypalStatus(query)
+    
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result[0],
+            message: "Get store paypal status Successfully!"
         })
     }
     else {

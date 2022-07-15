@@ -5,33 +5,72 @@ function ValidateEmail(mail) {
     return (false)
 }
 
-function validPhonenumber(inputtxt) {
+function validPhonenumber(pNumber) {
     let phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-    if(inputtxt.value.match(phoneno)) {
+    if(pNumber.match(phoneno)) {
       return true;
     }
     else {
-      alert("message");
       return false;
     }
 }
 
 function embedContact() {
-    $('[name="contactForm"] #submitBtn').on('click', () => {
-        let errorLabel = $('[name="contactForm"] #error').css('display', 'none');
+    $('[name="contactForm"]').each(function() {  
+        $(this).find('#submitBtn').on('click', () => {
+            let name = $(this).find('#name').val().trim();
+            let email = $(this).find('#email').val().trim();
+            let pNumber = $(this).find('#pNumber').val().trim();
+            let comment = $(this).find('#comment').val().trim();
 
-        let name = $('[name="contactForm"] #name').val().trim();
-        let email = $('[name="contactForm"] #email').val().trim();
-        let pNumber = $('[name="contactForm"] #pNumber').val().trim();
-        let comment = $('[name="contactForm"] #comment').val().trim();
+            if (name && email && pNumber && comment && name != "" && comment != "" && 
+                validPhonenumber(pNumber) && ValidateEmail(email)) {
 
-        if (name && email && pNumber && comment && name != "" && comment != "" && 
-            validPhonenumber(pNumber) && ValidateEmail(email)) {
-            
-            // TO DO - fetch
-        } else {
-            errorLabel.css('display', 'initial').html('Invalid error!');
-        }
+                $(this).find('.modal-loader').css('display', 'block');
+                $(this).find('#loader-popup').css('display', 'initial');
+                $(this).find('#success-popup').css('display', 'none');
+                $(this).find('#error-popup').css('display', 'none');
+                $(this).find('#error').css('display', 'none');
+    
+                let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+                let storeId = $('nav[name="header"]').attr("store-id");
+                debugger
+                let requestOptions = {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        "name": name,
+                        "email": email,
+                        "phone": pNumber,
+                        "comment": comment,
+                    }),
+                    headers: {"Content-type": "application/json; charset=UTF-8"}
+                };
+    
+                fetch(`${serverURL}/stores/${storeId}/contact-form`, requestOptions)
+                    .then((response) => response.json())
+                    .then((response) => {
+                        if (response.statusCode == 200) {
+                            $(this).find('#loader-popup').css('display', 'none');
+                            $(this).find('#success-popup').css('display', 'initial');
+    
+                            $(this).find('#success-popup').find('.footer-button .btn-ok')
+                            .on('click', () => {
+                                $(this).find('.modal-loader').css('display', 'none');
+                            })
+                        } else {
+                            $(this).find('#loader-popup').css('display', 'none');
+                            $(this).find('#error-popup').css('display', 'initial');
+    
+                            $(this).find('#error-popup').find('.footer-button .btn-ok')
+                            .on('click', () => {
+                                $(this).find('.modal-loader').css('display', 'none');
+                            })
+                        }
+                    });
+            } else {
+                $(this).find('#error').css('display', 'initial').html('Invalid input!');
+            }
+        })
     })
 }
 

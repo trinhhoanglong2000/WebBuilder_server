@@ -66,6 +66,27 @@ var getOrderProduct = exports.getOrderProduct = async (query) => {
 }
 var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
     const condition = []
+
+    let arr = Object.keys(query)
+    let arr1 = Object.values(query)
+
+    console.log(query)
+    for (let i = 0; i < arr.length; i++) {
+        let queryTemp = {}
+        if (arr[i] == "id") {
+            queryTemp[`UPPER(id)`] = { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } 
+            //condition.push({ [`UPPER(id)`]: { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } })
+        }
+        else if (arr[i] == "start_day"){
+            queryTemp["create_at"] = {"OP.GTE" : arr1[i]}
+           // condition.push({"create_at" : {"OP.GTE" : arr1[i]}})
+        }
+        else {
+            queryTemp[`${arr[i]}`] = arr1[i]
+        }
+        condition.push(queryTemp)
+    }
+
     if (query.id) {
         condition.push({ [`UPPER(id)`]: { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } })
     }

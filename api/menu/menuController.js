@@ -30,7 +30,8 @@ exports.getMenuItem = async (req, res) => {
     let menu = await menuService.getMenuById({ id: req.params.id });
     if (menu) {
         menu = menu[0];
-        let item = await menuItemService.getMenuItemByMenuId({ menu_id: menu.id })
+        //let item = await menuItemService.getMenuItemByMenuId({ menu_id: menu.id })
+        let item = await menuService.getMenuItem(menu.id)
         menu.listMenuItem = item;
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -45,6 +46,7 @@ exports.getMenuItem = async (req, res) => {
         })
     }
 }
+
 
 exports.updateMenu = async (req, res) => {
     const menuObj = {
@@ -77,6 +79,25 @@ exports.deleteMenu = async (req, res) => {
             statusCode: http.Success,
             data: result,
             message: "delete menu successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.updateSubMenu = async (req, res) => {
+    const query = req.body
+    query.id = req.params.id
+    const result = await menuService.updateSubMenu(query);
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "update sub menu item successfully!"
         })
     }
     else {
