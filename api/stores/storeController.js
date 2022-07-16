@@ -1207,7 +1207,7 @@ exports.createOrder = async (req, res) => {
     //CREATE ORDER STATUS
     const statusQuery = {
         order_id: orderId,
-        status: checkOutOfStock ? "RESTOCK" : "CREATED",
+        status: checkOutOfStock ? (orderQuery.payment_method == 1 ? "PREPAID & RESTOCK" : "RESTOCK") : orderQuery.payment_method == 1 ? "PRE-PAID" : "CREATED",
     }
 
     await orderService.createOrderStatus(statusQuery)

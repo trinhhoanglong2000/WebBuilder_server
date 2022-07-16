@@ -146,7 +146,7 @@ exports.createOrderStatus = async (query) => {
 }
 exports.changeOrderStatus = async (query) => {
     let newStatus
-    if (query.status == "RESTOCK") {
+    if (query.status == "RESTOCK" || query.status == "PAID & RESTOCK") {
         const allProduct = await getOrderProduct({ order_id: query.order_id })
         for (let i = 0; i < allProduct.length; i++) {
             if (allProduct[i].is_variant) {
@@ -167,9 +167,9 @@ exports.changeOrderStatus = async (query) => {
                 }
             }
         }
-        newStatus = "CREATED"
+        query.status = "CREATED"
     }
-    else if (query.status == "CREATED") {
+    else if (query.status == "CREATED" || query.status == "PAID") {
         newStatus = "CONFIRMED"
     }
     else if (query.status == "CONFIRMED") {
@@ -177,6 +177,28 @@ exports.changeOrderStatus = async (query) => {
     }
     else if (query.status == "SHIPPING") {
         newStatus = "COMPLETED"
+    }
+    else {
+        return null
+    }
+
+    const createQuery = query
+
+    query.status = newStatus
+    //  {
+    //     order_id: query.order_id,
+    //     status: newStatus
+    // }
+    return DBHelper.insertData(createQuery, "order_status", true, "id")
+}
+
+exports.changeOrderStatusPaid = async (query) => {
+    let newStatus
+    if (query.status == "PRE-PAID") {
+        newStatus = "PAID"
+    }
+    else if (query.status == "PREPAID & RESTOCK"){
+        newStatus = "PAID & RESTOCK"
     }
     else {
         return null

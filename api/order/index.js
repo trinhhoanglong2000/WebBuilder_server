@@ -8,4 +8,5 @@ router.delete('/:id',authenticator.Authenticate, orderController.deleteOrder)
 router.post('/:id/delete-status', orderController.deleteOrderStatus)
 router.post('/:id/restore-order',authenticator.Authenticate, orderController.restoreOrder)
 router.post('/:id/change-status', authenticator.Authenticate, orderController.changeOrderStatus);
+router.post('/:id/change-status-paid', orderController.changeOrderStatusPaid)
 module.exports = router;

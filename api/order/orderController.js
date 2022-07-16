@@ -44,6 +44,37 @@ exports.changeOrderStatus = async (req, res) => {
     }
 }
 
+exports.changeOrderStatusPaid = async (req, res) => {
+
+    if (!req.body.store_id || !req.body.status) {
+        res.status(http.BadRequest).json({
+            statusCode: http.BadRequest,
+            message: "Bad Request"
+        })
+        return
+    }
+
+    const query = req.body
+    delete query["store_id"]
+    query.order_id = req.params.id
+    const result = await orderService.changeOrderStatusPaid(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Successfully Change Status"
+        })
+    }
+    else {
+        res.status(http.NotAcceptable).json({
+            statusCode: http.NotAcceptable,
+            data: result,
+            message: "No data found"
+        })
+    }
+}
+
 exports.deleteOrderStatus = async (req, res) => {
     if (!req.body.store_id) {
         res.status(http.BadRequest).json({
