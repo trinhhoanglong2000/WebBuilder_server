@@ -15,7 +15,7 @@ const debounce_ProductPage = (fn, delay = 1000) => {
 };
 var GetRequest_ProductPage = debounce_ProductPage(async (e, idStore, limit, name) => {
     const id = $.urlParam('id') ? $.urlParam('id') : ''
-    fetch(`${urlProductSection}/stores/${idStore}/products?limit=${limit}&offset=${startProductSection}&title=${name}${id ? `&collection_id=${id}` : ''}`)
+    fetch(`${urlProductSection}/stores/${idStore}/products?limit=${limit}&offset=${startProductSection}&status=Active&title=${name}${id ? `&collection_id=${id}` : ''}`)
         .then((response) => response.json())
         .then((data) => {
 
