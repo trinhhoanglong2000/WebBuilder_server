@@ -1,16 +1,18 @@
-function embedOrderTrackingData(isDeploy) {
+function getOrderParam(param){
+    let url = new URL(window.location.href);
+    var value = url.searchParams.get(param);
+    return value
+}
+
+function embedOrderTrackingData() {
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
-    // let orderId = 'FHIJGCCBJFFGB';
-    // let orderId = 'AEFAGEGFCGFGB';
-    let orderId = 'FCJIFEFFCGFGB';
-    storeId = '7b06cf0f-c51d-416b-ba37-f37969629355'
-    // TODO - Nho Long Em lam express gium
+    let orderId = getOrderParam("id");
 
     fetch(`${serverURL}/stores/${storeId}/order/${orderId}`)
     .then((response) => response.json())
     .then((response) => {
-        console.log(response)
+        
         if (response.statusCode === 200 || response.statusCode === 304) {
             data = response.data;
 
@@ -21,13 +23,13 @@ function embedOrderTrackingData(isDeploy) {
             if (data.order.payment_method  === 0) {
                 $('div[name="trackingOrder"]').find('#payment_method span').html("Cash on delivery");
             } else if (data.order.payment_method === 1) {
-                $('div[name="trackingOrder"]').find('#payment_method span').html("Debit card");
+                $('div[name="trackingOrder"]').find('#payment_method span').html("Paypal");
             }
-            // TODO - CODE CỨNG .-. Chưa biết trạng thái
+
             if (data.order.shipping_method === 0) {
-                $('div[name="trackingOrder"]').find('#delivery_method span').html("Nhanh")
+                $('div[name="trackingOrder"]').find('#delivery_method span').html("Take it at store")
             } else if (data.order.shipping_method  === 1) {
-                $('div[name="trackingOrder"]').find('#delivery_method span').html("Hỏa tốc")
+                $('div[name="trackingOrder"]').find('#delivery_method span').html("Standard shipping")
             }
             
             let productList = $('.product-bill').find('.product');
@@ -70,40 +72,96 @@ function embedOrderTrackingData(isDeploy) {
                 $('div[name="trackingOrder"]').find('#order_note span').html(data.status[0].note);
                 buttonCancel.css('display', 'none');
 
-                if (data.status[1].status === "RESTOCK" || data.status[1].status === "CREATED") {
-                    trackingStep.eq(0).addClass('active');
-                    trackingStep.eq(0).addClass('cancel');
-                } else if (data.status[1].status === "CONFIRMED") {
-                    trackingStep.eq(0).addClass('active');
+                if (data.status[0].status === "PREPAID & RESTOCK" || data.status[0].status === "PRE-PAID") {
+                    $('div[name="trackingOrder"]').find('#order_Status span').html("Prepay");
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
+                    trackingStep.eq(1).addClass('active');
+                    buttonCancel.css('display', 'initial');
+                } else if (data.status[1].status === "RESTOCK" || data.status[1].status === "CREATED") {
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
                     trackingStep.eq(1).addClass('active');
                     trackingStep.eq(1).addClass('cancel');
-                } else if (data.status[1].status === "SHIPPING") {
-                    trackingStep.eq(0).addClass('active');
+                } else if (data.status[1].status === "CONFIRMED") {
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
                     trackingStep.eq(1).addClass('active');
                     trackingStep.eq(2).addClass('active');
                     trackingStep.eq(2).addClass('cancel');
-                }
-            } else {
-                if (data.status[0].status === "RESTOCK" || data.status[0].status === "CREATED") {
-                    $('div[name="trackingOrder"]').find('#order_Status span').html("Order placed");
-                    trackingStep.eq(0).addClass('active');
-                    buttonCancel.css('display', 'initial');
-                } else if (data.status[1].status === "CONFIRMED") {
-                    $('div[name="trackingOrder"]').find('#order_Status span').html("In production");
-                    trackingStep.eq(0).addClass('active');
-                    trackingStep.eq(1).addClass('active');
-                    buttonCancel.css('display', 'initial');
                 } else if (data.status[1].status === "SHIPPING") {
-                    $('div[name="trackingOrder"]').find('#order_Status span').html("In shipping");
-                    trackingStep.eq(0).addClass('active');
-                    trackingStep.eq(1).addClass('active');
-                    trackingStep.eq(2).addClass('active');
-                } else if (data.status[1].status === "COMPLETED") {
-                    $('div[name="trackingOrder"]').find('#order_Status span').html("Delivered");
-                    trackingStep.eq(0).addClass('active');
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
                     trackingStep.eq(1).addClass('active');
                     trackingStep.eq(2).addClass('active');
                     trackingStep.eq(3).addClass('active');
+                    trackingStep.eq(3).addClass('cancel');
+                }
+            } else {
+                if (data.status[0].status === "PREPAID & RESTOCK" || data.status[0].status === "PRE-PAID") {
+                    $('div[name="trackingOrder"]').find('#order_Status span').html("Prepay");
+                    trackingStep.eq(0).addClass('active');
+                    buttonCancel.css('display', 'initial');
+                } else if (data.status[0].status === "RESTOCK" || data.status[0].status === "CREATED" || data.status[0].status === "PAID" || data.status[0].status === "PAID & RESTOCK") {
+                    $('div[name="trackingOrder"]').find('#order_Status span').html("Order placed");
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
+                    trackingStep.eq(1).addClass('active');
+                    buttonCancel.css('display', 'initial');
+                } else if (data.status[0].status === "CONFIRMED") {
+                    $('div[name="trackingOrder"]').find('#order_Status span').html("In production");
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
+                    trackingStep.eq(1).addClass('active');
+                    trackingStep.eq(2).addClass('active');
+                    buttonCancel.css('display', 'initial');
+                } else if (data.status[0].status === "SHIPPING") {
+                    $('div[name="trackingOrder"]').find('#order_Status span').html("In shipping");
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
+                    trackingStep.eq(1).addClass('active');
+                    trackingStep.eq(2).addClass('active');
+                    trackingStep.eq(3).addClass('active');
+                } else if (data.status[0].status === "COMPLETED") {
+                    $('div[name="trackingOrder"]').find('#order_Status span').html("Delivered");
+                    if (data.order.payment_method === 0){
+                        trackingStep.eq(0).css('display', 'none');
+                    } else {
+                        trackingStep.eq(0).css('display', 'initial');
+                        trackingStep.eq(0).addClass('active');
+                    }
+                    trackingStep.eq(1).addClass('active');
+                    trackingStep.eq(2).addClass('active');
+                    trackingStep.eq(3).addClass('active');
+                    trackingStep.eq(4).addClass('active');
                 }
             }
 
@@ -188,11 +246,6 @@ function embedOrderTrackingData(isDeploy) {
                     $('.modal-loader').css('display', 'none');
                 })
             })
-        } else {
-            if (isDeploy) {
-                // TODO - Goi API  
-                document.location('/PageNotFound')
-            }
         }
     });
     
@@ -201,10 +254,10 @@ function embedOrderTrackingData(isDeploy) {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embedOrderTrackingData(false);
+            embedOrderTrackingData();
         })
     }
     else {
-        embedOrderTrackingData(true);
+        embedOrderTrackingData();
     } 
 })
