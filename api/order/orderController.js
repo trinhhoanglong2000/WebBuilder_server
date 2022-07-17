@@ -106,7 +106,7 @@ exports.deleteOrderStatus = async (req, res) => {
             store_id : storeId,
             subject: `Order #${query.order_id} has been delete`,
             receiver : `${orderData[0].email}`,
-            html : `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders/" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
+            html : `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders?id=" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
             <p>You can still view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a>. We sorry for this inconvience</p>
             `
         }

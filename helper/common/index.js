@@ -31,6 +31,14 @@ exports.generateCode = () => {
   return token;
 }
 
+exports.generateCodeNumber = () => {
+  const now = Date.now();
+  let cur = now;
+  let token = "";
+
+  return cur;
+}
+
 exports.checkValidURL = (data) => {
   const check = data.match(/^\/[/.a-zA-Z0-9-]+$/gm)
   return check;
