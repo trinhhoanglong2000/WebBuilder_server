@@ -25,7 +25,7 @@ exports.createOrder = async (query) => {
         store_id: query.store_id,
         subject: `Order #${query.id} successfully created`,
         receiver: `${query.email}`,
-        html: `<p>Your order <a href=${storeData.store_link + "/orders/" + query.id}>#${query.id}</a> from ${storeData.name} has been successfully created</p> <br>
+        html: `<p>Your order <a href=${storeData.store_link + "/orders?id=" + query.id}>#${query.id}</a> from ${storeData.name} has been successfully created</p> <br>
         <p>You can view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a> to proceed.</p>
         `
     }
@@ -44,10 +44,10 @@ exports.createOrder = async (query) => {
 }
 
 exports.createOrderId = async () => {
-    let orderId = URLParser.generateCode()
+    let orderId = URLParser.generateCodeNumber()
     let checkExist = await getAllOrder({ id: orderId })
     while (checkExist.length > 0) {
-        orderId = URLParser.generateCode()
+        orderId = URLParser.generateCodeNumber()
         checkExist = await getAllOrder({ id: orderId })
     }
     return orderId

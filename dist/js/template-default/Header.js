@@ -3,25 +3,36 @@ const generateHeaderDropdownMenu = (mNavigation) => {
     if (mNavigation) {
         mNavigation = mNavigation?.slice(0, 4);
         mNavigation.forEach((element) => {
-            if (element.expanded) {
+            if (element.expanded && element.children) {
                 let dropdown =  `<li class="nav-item">
                 <a class="nav-link p-1" href="${element.link}">
                     ${element.title} <i class="fa fa-chevron-down" aria-hidden="true"></i>
                 </a>
                 <ul class="submenu">`;
 
-                element.children.forEach((element) => {
-                    if (element.expanded) {
-                        dropdown += `<li> <a class="nav-link p-1" href="${element.link}"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
+                element.children.forEach((element, index) => {
+                    if (element.expanded && element.children) {
+                        if (index != 0) {
+                            dropdown += `<hr>`
+                        }
+
+                        dropdown += `<li> <a class="nav-link" href="${element.link}"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
                                         <ul class="submenu2">`
 
-                        element.children.forEach((element) => {
-                            dropdown += `<li><a class="dropdown-item" href="${element.link}"> ${element.title} </a></li>`;
+                        element.children.forEach((element, index) => {
+                            if (index != 0) {
+                                dropdown += `<hr>`
+                            }
+                            dropdown += `<li><a href="${element.link}"> ${element.title} </a></li>`;
                         });
 
                         dropdown += `</ul>`
 
                     } else {
+                        if (index != 0) {
+                            dropdown += `<hr>`
+                        }
+
                         dropdown += `<li> <a href="${element.link}"> ${element.title}</a>  </li>`
                     }
                 });
@@ -29,7 +40,7 @@ const generateHeaderDropdownMenu = (mNavigation) => {
                 navbar.push(dropdown)
             } else {
                 navbar.push(`<li class="nav-item">
-                    <a href="${element.link}" class="nav-link p-1"> ${element.title} </a>
+                    <a href="${element.link}" class="nav-link"> ${element.title} </a>
                     <a class="sx-nav-link">
                         ${element.title}
                     </a>
@@ -47,7 +58,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
     if (mNavigation) {
         mNavigation = mNavigation?.slice(0, 4);
         mNavigation.forEach((element) => {
-            if (element.expanded) {
+            if (element.expanded && element.children) {
                 let dropdown =  `<li class="nav-item">
                 <a class="sx-nav-link expanded">
                     ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i>
@@ -55,7 +66,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
                 <ul class="navbar-nav expand-ul"><li class="expand-li"> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 
                 element.children.forEach((element) => {
-                    if (element.expanded) {
+                    if (element.expanded && element.children) {
                         dropdown += `<li class="expand-li"> <a class="expanded" href="${element.link}"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
                                         <ul class="navbar-nav expand-ul2"><li> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 

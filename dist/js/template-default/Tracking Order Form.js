@@ -5,7 +5,7 @@ function ValidateEmail(mail) {
     return (false)
 }
 
-function embedOrderTrackingScriptForm(isDeploy) {
+function embedOrderTrackingScriptForm() {
     $('div[name="trackingOrderForm"]').each(function() {
 
         $(this).find('#submitBtn').click(() => {
@@ -15,10 +15,8 @@ function embedOrderTrackingScriptForm(isDeploy) {
             
             if (mail && orderId && ValidateEmail(mail) && orderId != "") {
                 let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm);
-                //let storeId = $('nav[name="header"]').attr("store-id");
-                let storeId = '7b06cf0f-c51d-416b-ba37-f37969629355'
-                let orderId = "ACICBIDGBGFGB"
-                mail = "ttlgame123@gmail.com"
+                let storeId = $('nav[name="header"]').attr("store-id");
+
                 fetch(`${serverURL}/stores/${storeId}/order/${orderId}?email=${mail}`)
                 .then((response) => response.json())
                 .then((response) => {
@@ -40,10 +38,10 @@ function embedOrderTrackingScriptForm(isDeploy) {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embedOrderTrackingScriptForm(false);
+            embedOrderTrackingScriptForm();
         })
     }
     else {
-        embedOrderTrackingScriptForm(true);
+        embedOrderTrackingScriptForm();
     } 
 })
