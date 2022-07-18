@@ -4,18 +4,41 @@ function getOrderParam(param){
     return value
 }
 
+function convertCurrency(value, currency) {
+    switch (currency) {
+        case "VND": {
+            return Math.ceil(value);
+            break;
+        }
+        case "USD": {
+            return parseFloat(value).toFixed(2);
+            break;
+        }
+        default:
+            return parseFloat(value).toFixed(2);
+            break;
+    }
+}
+
 function embedOrderTrackingData() {
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
     let orderId = getOrderParam("id");
 
+    storeId = '747842bf-77df-406a-8c80-52aae4e1cfa0'
+    orderId = '1658153123803'
+
+    $('.modal-loader').css('display', 'block')
+    $('.modal-loader').find('#loader-popup').css('display', 'initial');
+
     fetch(`${serverURL}/stores/${storeId}/order/${orderId}`)
     .then((response) => response.json())
     .then((response) => {
-        
-        if (response.statusCode === 200 || response.statusCode === 304) {
-            data = response.data;
+        data = response.data;
 
+        if ((response.statusCode === 200 || response.statusCode === 304) && data.length > 0) {
+            $('.modal-loader').css('display', 'none');
+            
             $('div[name="trackingOrder"]').find('#order_id span').html(data.order.id)
             $('div[name="trackingOrder"]').find('#customer_name span').html(data.order.name)
             $('div[name="trackingOrder"]').find('#delivery_address span').html(data.order.address + ", " + data.order.district + ", " + data.order.city)
@@ -33,30 +56,29 @@ function embedOrderTrackingData() {
             }
             
             let productList = $('.product-bill').find('.product');
-            data.products && data.products.forEach(element => {3
+            data.products && data.products.forEach(element => {
                 let totalPrice = element.price * element.quantity;
-                totalPrice = Math.trunc(totalPrice);
                 if (element.existed) {
                     productList.append(`
                     <div class="row">
-                        <div class="col-8"> ${element.quantity}x <a href="/products?${element.id}">${element.product_name}</a></div>
-                        <div class="col-3"> ${totalPrice.toLocaleString()} </div>
+                        <div class="col-8"> ${element.quantity}x <a href="/products?id=${element.id}">${element.product_name}</a></div>
+                        <div class="col-3"> ${convertCurrency(totalPrice, data.order.currency)} </div>
                     </div>`)
                 } else {
                     productList.append(`
                     <div class="row">
                         <div class="col-8"> ${element.quantity}x ${element.product_name}</div>
-                        <div class="col-3"> ${totalPrice.toLocaleString()} </div>
+                        <div class="col-3"> ${convertCurrency(totalPrice, data.order.currency)} </div>
                     </div>`)
                 }
             });
             
-            let original_price = Math.trunc(data.order.original_price);
-            let discount_price = Math.trunc(data.order.discount_price);
+            let original_price = convertCurrency(data.order.original_price, data.order.currency);
+            let discount_price = convertCurrency(data.order.discount_price, data.order.currency);
             let totalPrice = original_price  - discount_price;
-            $('.product-bill').find('.billing #subtotal_price').html((data.order.currency === "VND")? original_price.toLocaleString() : original_price);
-            $('.product-bill').find('.billing #discount_price').html((data.order.currency === "VND")? discount_price.toLocaleString() : discount_price);
-            $('.product-bill').find('.billing #total_price').html((data.order.currency === "VND")? totalPrice.toLocaleString() : totalPrice);
+            $('.product-bill').find('.billing #subtotal_price').html(original_price);
+            $('.product-bill').find('.billing #discount_price').html(discount_price);
+            $('.product-bill').find('.billing #total_price').html(totalPrice);
             $('.product-bill').find('.billing #currency').html(data.order.currency);
             
             
@@ -231,6 +253,7 @@ function embedOrderTrackingData() {
                                 $('div[name="trackingOrder"]').find('#order_note span').html(data.status[0].note);
                             } else {
                                 $('.modal-loader').find('#loader-popup').css('display', 'none');
+                                $('.modal-loader').find('#error-popup').find('#title').html('Server error... !');
                                 $('.modal-loader').find('#error-popup').css('display', 'initial');
                             }
                         });
@@ -240,13 +263,18 @@ function embedOrderTrackingData() {
                 .on('click', function() {
                     $('.modal-loader').css('display', 'none');
                 })
-
-                $('.modal-loader').find('#error-popup .footer-button .btn-ok')
-                .on('click', function() {
-                    $('.modal-loader').css('display', 'none');
-                })
             })
+        } else {
+            $('.modal-loader').find('#loader-popup').css('display', 'none');
+            $('.modal-loader').find('#error-popup').find('#title').html('Order could not found... !');
+            $('.modal-loader').find('#error-popup').css('display', 'initial');
+            $('.modal-loader').find('#error-popup .footer-button .btn-ok');
         }
+
+        $('.modal-loader').find('#error-popup .footer-button .btn-ok')
+        .on('click', function() {
+            $('.modal-loader').css('display', 'none');
+        })
     });
     
 }
