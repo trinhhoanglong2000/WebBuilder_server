@@ -269,3 +269,4 @@ exports.getPaypalStatus = async (storeObj) => {
     }
     return DBHelper.FindAll("stores", config)
 }
+

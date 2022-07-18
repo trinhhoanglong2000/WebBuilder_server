@@ -100,25 +100,25 @@ exports.deleteOrderStatus = async (req, res) => {
     const result = await orderService.CreateStatusdeleteOrder(query)
 
     const storeData = await storeService.findById(storeId)
-    const orderData = await orderService.getAllOrder({id: query.order_id})
+    const orderData = await orderService.getAllOrder({ id: query.order_id })
     if (orderData.length) {
-        let mailStoreQuery  = {
-            store_id : storeId,
+        let mailStoreQuery = {
+            store_id: storeId,
             subject: `Order #${query.order_id} has been delete`,
-            receiver : `${orderData[0].email}`,
-            html : `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders/" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
+            receiver: `${orderData[0].email}`,
+            html: `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders/" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
             <p>You can still view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a>. We sorry for this inconvience</p>
             `
         }
         const account = await accountService.getUserInfo(storeData.user_id)
-        let mailQuery  = {
+        let mailQuery = {
             subject: `Order #${query.order_id} successfully change delete status`,
-            receiver : `${account[0].email}`,
-            html : `<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
+            receiver: `${account[0].email}`,
+            html: `<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
             <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>
             `
         }
-    
+
         await emailService.adminSendMail(mailQuery)
         await emailService.sendMailFromStore(mailStoreQuery)
     }
@@ -171,8 +171,8 @@ exports.restoreOrder = async (req, res) => {
 
     if (status.length > 1) {
         if (status[0].status == "DELETED") {
-            if (status[1].status == "CREATE" || status[1].status == "RESTOCK"){
-                query.status = status[length-2]
+            if (status[1].status == "CREATE" || status[1].status == "RESTOCK") {
+                query.status = status[length - 2]
                 result = await orderService.changeOrderStatus(query)
             }
             else {
@@ -302,5 +302,139 @@ exports.AuthenticateUserAndStore = async (req, res, check) => {
         else {
             return authenticateUser
         }
+    }
+}
+
+exports.paypalCaptureOrder = async (req, res) => {
+    const query = {
+        order_id: req.params.orderId,
+        store_id: req.params.storeId
+    }
+
+    const checkStatus = await orderService.paypalCheckOrder(query.store_id, query.order_id).catch(e => null);
+    if (checkStatus) {
+        if (checkStatus.status == "COMPLETED") {
+            res.status(http.Success).json({
+                statusCode: checkStatus.status,
+                message: "Order completed!",
+                dataPayment: checkStatus
+            })
+            return
+        }
+    }
+
+    const result = await orderService.paypalCaptureOrder(query.store_id, query.order_id).catch(e => null)
+
+    if (result) {
+        if (result.status == "COMPLETED") {
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                message: "Order completed!",
+                dataPayment: result
+            })
+        } else {
+            let msgError = "Cant not find";
+            let statuscode = http.BadRequest;
+            if (result.name == "UNPROCESSABLE_ENTITY") {
+                statuscode = http.NotAcceptable
+                msgError = "SERVER_ERROR"
+            } else if (result.name == "NOT_AUTHORIZED") {
+                statuscode = http.Unauthorized
+                msgError = "NOT_AUTHORIZED"
+            }
+            res.status(statuscode).json({
+                statuscode: statuscode,
+                message: msgError,
+            })
+
+        }
+
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+exports.paypalCheckOrder = async (req, res) => {
+    const query = {
+        order_id: req.params.orderId,
+        store_id: req.params.storeId
+    }
+    const result = await orderService.paypalCheckOrder(query.store_id, query.order_id).catch(e => null)
+    if (result) {
+        if (result.status) {
+            // TRANG THAI DON
+            if (result.status == "CREATED") {
+                res.status(http.Success).json({
+                    statusCode: http.Success,
+                    paypalStatus: result.status,
+                    approveLink: result.links.find(x => x.rel === "approve").href,
+                    purchase_units: result.purchase_units
+                })
+            } else if (result.status == "APPROVED") {
+                // Neu khach hang da thanh toan => Tien hanh capture de hoan tat don hang
+                const result = await orderService.paypalCaptureOrder(query.store_id, query.order_id).catch(e => null)
+                if (result) {
+                    if (result.status == "COMPLETED") {
+                        res.status(http.Success).json({
+                            statusCode: http.Success,
+                            message: "Order completed!",
+                            dataPayment: result
+                        })
+                    } else {
+                        let msgError = "Cant not find";
+                        let statuscode = http.BadRequest;
+                        if (result.name == "UNPROCESSABLE_ENTITY") {
+                            statuscode = http.NotAcceptable
+                            msgError = "SERVER_ERROR"
+                        } else if (result.name == "NOT_AUTHORIZED") {
+                            statuscode = http.Unauthorized
+                            msgError = "NOT_AUTHORIZED"
+                        }
+                        res.status(statuscode).json({
+                            statuscode: statuscode,
+                            message: msgError,
+                        })
+
+                    }
+                }
+                else {
+                    res.status(http.ServerError).json({
+                        statusCode: http.ServerError,
+                        message: "Server error!"
+                    })
+                }
+            }
+            else {
+                res.status(http.Success).json({
+                    statusCode: http.Success,
+                    paypalStatus: result.status,
+                })
+            }
+        } else {
+
+            // LOI KET NOI
+            let msgError = "Cant not find";
+            let statuscode = http.BadRequest;
+            if (result.name == "UNPROCESSABLE_ENTITY") {
+                statuscode = http.NotAcceptable
+                msgError = "SERVER_ERROR"
+            } else if (result.name == "NOT_AUTHORIZED") {
+                statuscode = http.Unauthorized
+                msgError = "NOT_AUTHORIZED"
+            }
+            res.status(statuscode).json({
+                statuscode: statuscode,
+                message: msgError,
+            })
+        }
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
     }
 }

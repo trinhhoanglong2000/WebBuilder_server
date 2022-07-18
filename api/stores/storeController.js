@@ -845,7 +845,7 @@ exports.deleteStore = async (req, res) => {
     await emailService.deleteStoreEmail({ id: id })
 
     //DELETE PAYPAL 
-    await storeService.deletePaypal({id : id})
+    await storeService.deletePaypal({ id: id })
 
     //DELETE HTML 
     const storeName = await storeService.findById(id)
@@ -1020,6 +1020,7 @@ exports.createOrder = async (req, res) => {
     const vndRate = 23000
     const usdRate = 0.000043
     let currency = req.body.order.currency
+
     let checkOutOfStock = false
     if (!productQuery) {
         res.status(http.ServerError).json({
@@ -1028,6 +1029,7 @@ exports.createOrder = async (req, res) => {
         })
         return
     }
+
 
     //CREATE ID
     const orderId = await orderService.createOrderId()
@@ -1221,6 +1223,26 @@ exports.createOrder = async (req, res) => {
         orderQuery.discount_price = originalPrice
     }
     orderQuery.total_products = totalProduct
+    
+    // PAYPAL
+    let paypalOrderRes = null;
+    console.log("Before paypal")
+    if (orderQuery.payment_method == 1) {
+        console.log("inner paypal")
+        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice,  discountPrice);
+        console.log(paypalOrderRes)
+        if (paypalOrderRes.id) {
+            orderQuery.paypal_id = paypalOrderRes.id;
+        }
+        else {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server error!"
+            })
+        }
+    }
+    console.log("After paypal")
+    
     const newOrder = await orderService.createOrder(orderQuery)
 
 
@@ -1228,6 +1250,7 @@ exports.createOrder = async (req, res) => {
         res.status(http.Created).json({
             statusCode: http.Created,
             data: newOrder.rows,
+            paypalOrderRes: paypalOrderRes,
             message: "Create Order successfully!"
         })
     }
@@ -1587,7 +1610,7 @@ exports.averageTotalOrder = async (req, res) => {
     query.past_time = pastTime.toISOString()
     //query.current_time = date.toISOString()
     let total = 0
-    let totalProduct =  0
+    let totalProduct = 0
     let totalOrder = 0
 
     const arr = []
@@ -1599,7 +1622,7 @@ exports.averageTotalOrder = async (req, res) => {
     let totalOrderDay = 0
     let nextDay
     let currentDay
-   
+
     for (let i = 0; i < result.length; i++) {
         let price = result[i].original_price - result[i].discount_price
         if (result[i].currency != currency) {
@@ -1616,13 +1639,13 @@ exports.averageTotalOrder = async (req, res) => {
             nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
             currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
             if (i == result.length - 1) {
-                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
+                arr.push({ day: currentDay, total_sale: totalDay, total_products: totalProductDay, total_order: totalOrderDay })
             }
         }
         else {
 
             if (result[i].create_at > nextDay) {
-                arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
+                arr.push({ day: currentDay, total_sale: totalDay, total_products: totalProductDay, total_order: totalOrderDay })
                 nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
                 currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
                 totalDay = price
@@ -1634,7 +1657,7 @@ exports.averageTotalOrder = async (req, res) => {
                 totalProductDay += result[i].total_products
                 totalOrderDay += 1
                 if (i == result.length - 1) {
-                    arr.push({ day: currentDay, total_sale: totalDay, total_products : totalProductDay, total_order : totalOrderDay })
+                    arr.push({ day: currentDay, total_sale: totalDay, total_products: totalProductDay, total_order: totalOrderDay })
                 }
             }
         }
@@ -1642,8 +1665,8 @@ exports.averageTotalOrder = async (req, res) => {
     }
     const resultData = {
         total_sales: total,
-        total_products : totalProduct,
-        total_order : totalOrder,
+        total_products: totalProduct,
+        total_order: totalOrder,
         orders: arr
     }
     if (result) {
@@ -1735,9 +1758,9 @@ exports.getPaypal = async (req, res) => {
 }
 
 exports.updatePaypal = async (req, res) => {
-    const data  = req.body
+    const data = req.body
     data.id = req.params.id
-    
+
 
     const result = await storeService.updatePaypal(data)
 
@@ -1784,7 +1807,7 @@ exports.getPaypalStatus = async (req, res) => {
     }
 
     const result = await storeService.getPaypalStatus(query)
-    
+
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

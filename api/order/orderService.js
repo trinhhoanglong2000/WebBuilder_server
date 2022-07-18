@@ -10,7 +10,9 @@ const variantService = require("../variants/VariantsService")
 const nodemailer = require('nodemailer');
 const ggAuth = require('google-auth-library');
 const emailService = require('../email/emailService')
-const accountService = require('../accounts/accountService')
+const accountService = require('../accounts/accountService');
+const fetch = require('node-fetch');
+const db = require('../../database');
 exports.createOrder = async (query) => {
     if (query.discount_id) {
         //DO STH
@@ -74,12 +76,12 @@ var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
     for (let i = 0; i < arr.length; i++) {
         let queryTemp = {}
         if (arr[i] == "id") {
-            queryTemp[`UPPER(id)`] = { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } 
+            queryTemp[`UPPER(id)`] = { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" }
             //condition.push({ [`UPPER(id)`]: { "OP.ILIKE": "%" + query.id.toUpperCase().trim() + "%" } })
         }
-        else if (arr[i] == "start_day"){
-            queryTemp["create_at"] = {"OP.GTE" : arr1[i]}
-           // condition.push({"create_at" : {"OP.GTE" : arr1[i]}})
+        else if (arr[i] == "start_day") {
+            queryTemp["create_at"] = { "OP.GTE": arr1[i] }
+            // condition.push({"create_at" : {"OP.GTE" : arr1[i]}})
         }
         else {
             queryTemp[`${arr[i]}`] = arr1[i]
@@ -104,22 +106,22 @@ var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
 
 var getAllOrder = exports.getAllOrder = async (query) => {
     let condition = [];
-    
+
     let arr = Object.keys(query)
     let arr1 = Object.values(query)
 
     for (let i = 0; i < arr.length; i++) {
         let queryTemp = {}
-        if (arr[i] == "past_time"){
-            queryTemp[`create_at`] = { "OP.GTE":arr1[i] }
+        if (arr[i] == "past_time") {
+            queryTemp[`create_at`] = { "OP.GTE": arr1[i] }
         }
-        else if (arr[i] == "current_time"){
-            queryTemp[`create_at`] = { "OP.LTE":arr1[i] }
+        else if (arr[i] == "current_time") {
+            queryTemp[`create_at`] = { "OP.LTE": arr1[i] }
         }
         else {
             queryTemp[`${arr[i]}`] = arr1[i]
         }
-        
+
         condition.push(queryTemp)
     }
     const config = {
@@ -197,7 +199,7 @@ exports.changeOrderStatusPaid = async (query) => {
     if (query.status == "PRE-PAID") {
         newStatus = "PAID"
     }
-    else if (query.status == "PREPAID & RESTOCK"){
+    else if (query.status == "PREPAID & RESTOCK") {
         newStatus = "PAID & RESTOCK"
     }
     else {
@@ -225,4 +227,156 @@ exports.deleteOrderProducts = async (query) => {
 }
 exports.deleteOrder = async (query) => {
     return DBHelper.deleteData("orders", query)
+}
+
+async function getStorePaypalInfo(id) {
+    try {
+        const result = await db.query(`
+                SELECT * 
+                FROM store_paypal 
+                WHERE (id = '${id}')
+            `)
+        if (result.rows) {
+            return result.rows[0];
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.getPaypalAccessToken = async (store_id) => {
+
+    const GENERATE_ACCESS_TOKEN_URL = "https://api.sandbox.paypal.com/v1/oauth2/token"
+    let storePayment = await getStorePaypalInfo(store_id);
+    console.log("getPaypalAccessToken")
+    console.log(store_id)
+    console.log(storePayment)
+    if (storePayment == null) {
+        return null;
+    } else {
+        var accessTokenData = await fetch(GENERATE_ACCESS_TOKEN_URL, {
+            method: 'post',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(storePayment.client_id + ":" + storePayment.secret_key).toString('base64'),
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: new URLSearchParams({
+                'grant_type': 'client_credentials',
+                'ignoreCache': 'true',
+                'return_authn_schemes': 'true',
+                'return_unconsented_scopes': 'true'
+
+            })
+        }).then(function (res) {
+            return res.json();
+        }).then(function (orderData) {
+            return orderData;
+        });
+        return accessTokenData;
+    }
+
+}
+
+exports. createPaypalOrder = async (store_id, productData, sumPrice, discount) => {
+    console.log(sumPrice)
+    console.log(discount)
+    if(!discount){
+        discount = 0;
+    }else {
+        discount = parseFloat(discount).toFixed(2);
+    }
+    var accessTokenData = await this.getPaypalAccessToken(store_id)
+    if (accessTokenData == null) {
+        return null;
+    }
+    var payload = {
+        intent: "CAPTURE",
+        purchase_units: [
+            {
+                items:  productData.map((item) => {
+                    return {
+                        name: item.is_variant ? `${item.product_name } / ${item.variant_name}` :item.product_name ,
+                        description: "",
+                        quantity: item.quantity,
+                        unit_amount: {
+                            currency_code: item.currency,
+                            value: item.price
+                        }
+                    }
+                }),
+                amount: {
+                    currency_code: "USD",
+                    value: parseFloat( Number(sumPrice) - Number(discount)).toFixed(2),
+                    breakdown: {
+                        item_total: {
+                            currency_code: "USD",
+                            value: sumPrice
+                        },
+                        shipping: {
+                            currency_code: "USD",
+                            value: 0.00
+                        },
+                        shipping_discount: {
+                            currency_code: "USD",
+                            value:  0.00
+                        },
+                        discount: {
+                            currency_code: "USD",
+                            value: discount
+                        }
+                    }
+                }
+            }
+        ],
+        application_context: {
+            return_url: "https://google.com",
+            cancel_url: "https://google.com"
+        }
+    }
+    var data = JSON.stringify(payload);
+
+    return await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
+        method: "post",
+        headers: {
+            'Authorization': 'Bearer ' + accessTokenData.access_token,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        body: data
+    }).then((response) => {
+        return response.json()
+    }).then((order) => {
+        return order
+    });
+}
+exports.paypalCaptureOrder = async (store_id, paypal_order_id) => {
+    var accessTokenData = await this.getPaypalAccessToken(store_id)
+    if (accessTokenData == null) {
+        return null
+    }
+    return await fetch(`https://api.sandbox.paypal.com/v2/checkout/orders/${paypal_order_id}/capture`, {
+        method: "post",
+        headers: {
+            'Authorization': 'Bearer ' + accessTokenData.access_token,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        }
+    })
+        .then((response) => response.json())
+}
+exports.paypalCheckOrder = async (store_id, paypal_order_id) => {
+    var accessTokenData = await this.getPaypalAccessToken(store_id)
+    if (accessTokenData == null) {
+        return null
+    }
+    return await fetch(`https://api.sandbox.paypal.com/v2/checkout/orders/${paypal_order_id}`, {
+        headers: {
+            'Authorization': 'Bearer ' + accessTokenData.access_token,
+            'Content-Type': 'application/json',
+        }
+    })
+        .then(async (response) => {
+            return await response.json()
+        })
 }
