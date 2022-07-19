@@ -1,6 +1,6 @@
 [name="trackingOrder"] {
-  margin-top: 20px;
-  margin-top: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 [name="trackingOrder"] .container {
@@ -262,6 +262,7 @@
 [name="trackingOrder"] .modal-loader .modal-content #error-popup {
   text-align: center;
   width: 100%;
+  display: none;
 }
 
 @-webkit-keyframes spin {

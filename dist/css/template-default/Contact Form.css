@@ -172,3 +172,44 @@ padding: 0px;
     }
   
 }
+
+/* Css header trait */
+[name='contactForm'][theme='white'].container { 
+    background-color: white;
+}
+
+[name='contactForm'][theme='white'].container { 
+    color: black;
+}
+
+[name='contactForm'][theme='black'].container { 
+    background-color: #282828;
+}
+
+[name='contactForm'][theme='black'].container { 
+    color: white;
+}
+
+[name='contactForm'][theme='lGreen'].container { 
+    background-color: #afffc2;
+}
+
+[name='contactForm'][theme='lGreen'].container { 
+    color: black;
+}
+
+[name='contactForm'][theme='lBlue'].container { 
+    background-color: #90e0ef; 
+}
+
+[name='contactForm'][theme='lBlue'].container { 
+    color: black;
+}
+
+[name='contactForm'][theme='sand'].container { 
+    background-color: #ffca83; 
+}
+
+[name='contactForm'][theme='sand'].container { 
+    color: black;
+}

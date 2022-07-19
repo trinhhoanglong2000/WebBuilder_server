@@ -169,7 +169,8 @@ exports.changeOrderStatus = async (query) => {
                 }
             }
         }
-        query.status = "CREATED"
+        query.status = "CONFIRMED"
+        newStatus = "CONFIRMED"
     }
     else if (query.status == "CREATED" || query.status == "PAID") {
         newStatus = "CONFIRMED"
