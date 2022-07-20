@@ -21,7 +21,7 @@ function embedOrderTrackingScriptForm() {
                 .then((response) => response.json())
                 .then((response) => {
                     if (response.statusCode === 200 || response.statusCode === 304) {
-                        window.location.pathname = `/editor/Order/${orderId}`
+                        window.location.href = `/orders?id=${orderId}`
                     } else {
                         errorAlert.html('Server erorr!')
                         errorAlert.css('display', 'initial');

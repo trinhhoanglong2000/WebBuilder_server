@@ -6,13 +6,13 @@ function getOrderParam(param){
 
 function embedOrderTrackingData() {
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-    let storeId = $('nav[name="header"]').attr("store-id");
+    let storeId =$('nav[name="header"]').attr("store-id");
     let orderId = getOrderParam("id");
 
     fetch(`${serverURL}/stores/${storeId}/order/${orderId}`)
     .then((response) => response.json())
     .then((response) => {
-        
+        console.log(response)
         if (response.statusCode === 200 || response.statusCode === 304) {
             data = response.data;
 
@@ -67,6 +67,7 @@ function embedOrderTrackingData() {
 
             let trackingStep = $('#tracking-order').find('.track .step').removeClass('active').removeClass('cancel');
             let buttonCancel = $('div[name="trackingOrder"]').find('#show_order_details button.btn-cancel_order');
+            let btnPayment = $('div[name="trackingOrder"]').find('#show_order_details button.btn-payment'); 
             if (data.status && data.status.length && data.status[0].status === "DELETED") {
                 $('div[name="trackingOrder"]').find('#order_Status span').html("Canceled");
                 $('div[name="trackingOrder"]').find('#order_note span').html(data.status[0].note);
@@ -118,6 +119,7 @@ function embedOrderTrackingData() {
                     $('div[name="trackingOrder"]').find('#order_Status span').html("Prepay");
                     trackingStep.eq(0).addClass('active');
                     buttonCancel.css('display', 'initial');
+                    btnPayment.css('display', 'initial');
                 } else if (data.status[0].status === "RESTOCK" || data.status[0].status === "CREATED" || data.status[0].status === "PAID" || data.status[0].status === "PAID & RESTOCK") {
                     $('div[name="trackingOrder"]').find('#order_Status span').html("Order placed");
                     if (data.order.payment_method === 0){
@@ -128,6 +130,7 @@ function embedOrderTrackingData() {
                     }
                     trackingStep.eq(1).addClass('active');
                     buttonCancel.css('display', 'initial');
+                    btnPayment.css('display', 'none');
                 } else if (data.status[0].status === "CONFIRMED") {
                     $('div[name="trackingOrder"]').find('#order_Status span').html("In production");
                     if (data.order.payment_method === 0){
@@ -139,6 +142,7 @@ function embedOrderTrackingData() {
                     trackingStep.eq(1).addClass('active');
                     trackingStep.eq(2).addClass('active');
                     buttonCancel.css('display', 'initial');
+                    btnPayment.css('display', 'none');
                 } else if (data.status[0].status === "SHIPPING") {
                     $('div[name="trackingOrder"]').find('#order_Status span').html("In shipping");
                     if (data.order.payment_method === 0){
@@ -150,6 +154,7 @@ function embedOrderTrackingData() {
                     trackingStep.eq(1).addClass('active');
                     trackingStep.eq(2).addClass('active');
                     trackingStep.eq(3).addClass('active');
+                    btnPayment.css('display', 'none');
                 } else if (data.status[0].status === "COMPLETED") {
                     $('div[name="trackingOrder"]').find('#order_Status span').html("Delivered");
                     if (data.order.payment_method === 0){
@@ -162,6 +167,7 @@ function embedOrderTrackingData() {
                     trackingStep.eq(2).addClass('active');
                     trackingStep.eq(3).addClass('active');
                     trackingStep.eq(4).addClass('active');
+                    btnPayment.css('display', 'none');
                 }
             }
 
@@ -245,6 +251,10 @@ function embedOrderTrackingData() {
                 .on('click', function() {
                     $('.modal-loader').css('display', 'none');
                 })
+            })
+
+            btnPayment.on('click', ()=>{
+                window.location.href = data.approveLink;
             })
         }
     });
