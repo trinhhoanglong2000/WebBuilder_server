@@ -34,14 +34,7 @@ function embedOrderTrackingData() {
     fetch(`${serverURL}/stores/${storeId}/order/${orderId}`)
     .then((response) => response.json())
     .then((response) => {
-<<<<<<< HEAD
-        console.log(response)
-        if (response.statusCode === 200 || response.statusCode === 304) {
-            data = response.data;
-=======
         data = response.data;
->>>>>>> 165c18859a3bc09d376e6fab13192e69cb896a7f
-
         if ((response.statusCode === 200 || response.statusCode === 304) && data.length > 0) {
             $('.modal-loader').css('display', 'none');
             

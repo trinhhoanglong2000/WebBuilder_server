@@ -1360,8 +1360,8 @@ exports.getOrderById = async (req, res) => {
                     res.status(http.ServerError).json({
                         statusCode: http.ServerError,
                         message: "Server error!"
-                    })
-                    return;
+                    });
+                    return
                 }
             } else  if (result.status == "COMPLETED") {
                 let query = {
