@@ -5,14 +5,15 @@ function ValidateEmail(mail) {
     return (false)
 }
 
-function embedOrderTrackingScriptForm() {
+function embedOrderTrackingScriptForm(deploy) {
     $('div[name="trackingOrderForm"]').each(function() {
 
         $(this).find('#submitBtn').click(() => {
             let errorAlert  = $(this).find('.error').css('display', 'none');
+            let notifyAlert = $(this).find('.notify').css('display', 'none');
             let mail = $(this).find('#email').val();
             let orderId = $(this).find('#orderCode').val().trim();
-            
+            debugger
             if (mail && orderId && ValidateEmail(mail) && orderId != "") {
                 let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm);
                 let storeId = $('nav[name="header"]').attr("store-id");
@@ -21,9 +22,14 @@ function embedOrderTrackingScriptForm() {
                 .then((response) => response.json())
                 .then((response) => {
                     if (response.statusCode === 200 || response.statusCode === 304) {
-                        window.location.href = `/orders?id=${orderId}`
+                        if (response.data.length > 0 && deploy) {
+                            window.location.href = `/orders?id=${orderId}`
+                        } else if (response.data.length <= 0) {
+                            notifyAlert.html('Order could not be found!')
+                            notifyAlert.css('display', 'initial');
+                        } 
                     } else {
-                        errorAlert.html('Server erorr!')
+                        errorAlert.html('Server error!')
                         errorAlert.css('display', 'initial');
                     }
                 })
@@ -38,10 +44,10 @@ function embedOrderTrackingScriptForm() {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embedOrderTrackingScriptForm();
+            embedOrderTrackingScriptForm(false);
         })
     }
     else {
-        embedOrderTrackingScriptForm();
+        embedOrderTrackingScriptForm(true);
     } 
 })

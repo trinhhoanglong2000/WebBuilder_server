@@ -32,6 +32,6 @@
     flex-direction: initial;
 }
 
-[name="imageWithText"][iposition="left"] .row {
+[name="imageWithText"][iposition="right"] .row {
     flex-direction: row-reverse;
 }
