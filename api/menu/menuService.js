@@ -61,7 +61,6 @@ exports.deleteMenu = async (menuObj) => {
 }
 
 exports.updateSubMenu = async (menuObj) => {
-    console.log(menuObj)
     const body = JSON.stringify(menuObj.listMenuItem, null, '');
     const key = `menu/${menuObj.id}`
     const rest = await fileService.uploadTextFileToS3(body, key, 'json');

@@ -203,7 +203,7 @@ exports.createTemplate = async (query) => {
                 }
                 else {
                     if (query.name[i].page_url !== "")
-                    newQuery.page_url = query.name[i].page_url
+                        newQuery.page_url = query.name[i].page_url
                     else {
                         newQuery.page_url = '/' + URLParser.generateURL(query.name[i].name);
                     }
@@ -243,42 +243,55 @@ exports.useTemplate = async (query) => {
         let createPagesQuery = {
             store_id: query.store_id,
             name: allNewPages[i].name
-           
+
         }
-        await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, templateName,URLParser.generateURL(allNewPages[i].name));
+        await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, templateName, URLParser.generateURL(allNewPages[i].name));
         //await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, "template-default");
     }
 
     //DELETE ALL MENU
-    const allMenu = await menuService.getMenuByStoreId({store_id : query.store_id})
+    const allMenu = await menuService.getMenuByStoreId({ store_id: query.store_id })
     for (let i = 0; i < allMenu.length; i++) {
-        await menuService.deleteMenu({id : allMenu[i].id })
+        await menuService.deleteMenu({ id: allMenu[i].id })
     }
 
     //CREATE DEFAULT MENU 
     //HEADER
-   
-    for (let i = 0; i < 2; i++){
+
+    for (let i = 0; i < 2; i++) {
         const menuQuery = {
-            store_id : query.store_id, 
-            is_default : true
+            store_id: query.store_id,
+            is_default: true
         }
         menuQuery.name = i == 0 ? "Header Menu" : "Footer Menu"
         const newMenu = await menuService.createMenu(menuQuery)
-        if (i == 0){
+        if (i == 0) {
             let menuItemQuery = {
-                menu_id : newMenu.rows[0].id,
-                name : "Products", 
-                link :"/collections"
+                id: newMenu.rows[0].id,
+                listMenuItem: [
+                    {
+                        "title": "Home",
+                        "link": "/home",
+                        "expanded": false,
+                    },
+                    {
+                        "title": "Products",
+                        "link": "/collections",
+                        "expanded": false,
+                    },
+                    {
+                        "title": "Cart",
+                        "link": "/cart",
+                        "expanded": false,
+                    }
+                ]
             }
-            await menuItemService.createMenuItem(menuItemQuery)
-            menuItemQuery.name = "Home"
-            menuItemQuery.link = '/home'
-            await menuItemService.createMenuItem(menuItemQuery)
+
+            await menuService.updateSubMenu(menuItemQuery);
         }
     }
-    
-    
+
+
     return DBHelper.updateData({ template_id: query.template_id, id: query.store_id }, "stores", "id")
 }
 
