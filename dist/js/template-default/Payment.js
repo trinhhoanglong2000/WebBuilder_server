@@ -40,8 +40,7 @@ $(document).ready(async function () {
     }
     else {
         if (!JSON.parse(localStorage.getItem('paymentItems')) || JSON.parse(localStorage.getItem('paymentItems')).length == 0) {
-            const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-            window.location.replace(`${rootUrl}/cart`);
+            window.location.href = `/cart`
         }
         await PaymentGenerateCodeStart();
     }
@@ -155,7 +154,7 @@ function buy() {
                 $(rootEle).find(".ezMall-payment-alert").children().hide();
                 $(rootEle).find(".ezMall-payment-alert  .ezMall-popup-fail").show().css("display", "flex")
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-fail button").click(() => {
-                    window.location.replace(rootUrl);
+                    window.location.href = `/`
                 })
             }
         })

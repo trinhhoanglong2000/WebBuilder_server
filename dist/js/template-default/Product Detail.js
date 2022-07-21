@@ -267,8 +267,7 @@ function addToCart() {
 function buyNow() {
   
     if(addToCart()){
-        const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-        var myWindow = window.open(`${rootUrl}/payment`, "_self");
+        window.location.href = `/payment`
     }
 }
 
