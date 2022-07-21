@@ -97,6 +97,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
         $(tableBody).html("")
         $(tableHead).find("#cart-select-all-product").prop('checked', false);
         calculateTotal(tableBody, tableHead, ezMallSumary, rootEle);
+        updateCart()
     });
 
     $(tableHead).find("#cart-select-all-product").click((e) => {
@@ -187,6 +188,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
             cart = cart.splice(indexInArr,1);
             window.localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart()
         })
 
         $(tableBody).find(`#${id} input.ezMall-item-quantity`).change(() => {
@@ -210,6 +212,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
             cart[indexInArr].quantity = currentQuantity;
             window.localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart()
         });
 
         $(tableBody).find(`#${id} input.ezMall-cart-item-check`).change(() => {
@@ -227,5 +230,16 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
         $(rootEle).find("#ezMall-cart-zero-item").hide().removeClass("d-flex");
         $(rootEle).find("table").show();
         $(ezMallSumary).show();
+    }
+}
+
+function updateCart(){
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    let numberProduct = cart? cart.length : 0;
+    if (numberProduct == 0) {
+        $('i.fa.fa-shopping-bag span').css('display', 'none');
+    } else {
+        $('i.fa.fa-shopping-bag span').css('display', 'initial');
+        $('#numberSelectedProduct').html(numberProduct);
     }
 }
