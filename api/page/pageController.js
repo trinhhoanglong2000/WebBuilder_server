@@ -87,11 +87,11 @@ exports.update = async (req, res) => {
     const pageBody = req.body;
     //await pageService.renameHTMLFile(req.body.id,req.body.name)
     const result = await pageService.updatePage(pageBody);
-
-    if (result) {
+    const data = await pageService.getPagesByStoreIdAndId({store_id : pageBody.store_id, id : pageBody.id})
+    if (result && data) {
         res.status(http.Success).json({
             statusCode: http.Success,
-            data: result,
+            data: data.length > 0 ? data[0] : null,
             message: "Update page successfully!"
         })
     }
