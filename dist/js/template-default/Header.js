@@ -5,7 +5,7 @@ const generateHeaderDropdownMenu = (mNavigation) => {
         mNavigation.forEach((element) => {
             if (element.expanded && element.children) {
                 let dropdown =  `<li class="nav-item">
-                <a class="nav-link p-1" href="${element.link}">
+                <a class="nav-link" href="${element.link}">
                     ${element.title} <i class="fa fa-chevron-down" aria-hidden="true"></i>
                 </a>
                 <ul class="submenu">`;
@@ -67,7 +67,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
 
                 element.children.forEach((element) => {
                     if (element.expanded && element.children) {
-                        dropdown += `<li class="expand-li"> <a class="expanded" href="${element.link}"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
+                        dropdown += `<li class="expand-li"> <a class="expanded"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
                                         <ul class="navbar-nav expand-ul2"><li> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 
                         element.children.forEach((element) => {
@@ -115,15 +115,7 @@ function embedHeaderData() {
     .then((response) => {
         data = response.data;
 
-        $('nav[name="header"] .navbar-brand img').attr('src', data.logoURL)
         $('nav[name="header"] .navbar-brand h4').text(data.storeName)
-        if (data.logoURL) {
-            $('nav[name="header"] .navbar-brand img').removeClass("d-none");
-            $('nav[name="header"] .navbar-brand h4').addClass("d-none");
-        } else {
-            $('nav[name="header"] .navbar-brand img').addClass("d-none");
-            $('nav[name="header"] .navbar-brand h4').removeClass("d-none");
-        }
         
         $('nav[name="header"] .navbar-nav.dropdown').html(generateHeaderDropdownMenu(data.menuItems));
         $('nav[name="header"] .navbar-nav.expand').html(generateHeaderExpandMenu(data.menuItems));
