@@ -26,7 +26,7 @@ exports.changeMoney = async (query) => {
     const fromRate = await getCurreny(query.from)
     const toRate = await getCurreny(query.to)
     if (fromRate.length && toRate.length) {
-        return query.price * toRate[0].amount / fromRate[0].amount
+        return  query.price * toRate[0].amount / fromRate[0].amount
     }
     else {
         return null

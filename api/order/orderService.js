@@ -250,9 +250,6 @@ exports.getPaypalAccessToken = async (store_id) => {
 
     const GENERATE_ACCESS_TOKEN_URL = "https://api.sandbox.paypal.com/v1/oauth2/token"
     let storePayment = await getStorePaypalInfo(store_id);
-    console.log("getPaypalAccessToken")
-    console.log(store_id)
-    console.log(storePayment)
     if (storePayment == null) {
         return null;
     } else {
@@ -279,9 +276,7 @@ exports.getPaypalAccessToken = async (store_id) => {
 
 }
 
-exports. createPaypalOrder = async (store_id, productData, sumPrice, discount) => {
-    console.log(sumPrice)
-    console.log(discount)
+exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,order_id) => {
     if(!discount){
         discount = 0;
     }else {
@@ -291,6 +286,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount) =
     if (accessTokenData == null) {
         return null;
     }
+    let returnURL=  await storeService.findById(store_id).then(res=>res.store_link);
     var payload = {
         intent: "CAPTURE",
         purchase_units: [
@@ -331,8 +327,8 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount) =
             }
         ],
         application_context: {
-            return_url: "https://google.com",
-            cancel_url: "https://google.com"
+            return_url: `https://${returnURL}/pages/orders?id=${order_id}`,
+            cancel_url: `https://${returnURL}/pages/orders?id=${order_id}`
         }
     }
     var data = JSON.stringify(payload);

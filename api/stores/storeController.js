@@ -1019,7 +1019,13 @@ exports.createOrder = async (req, res) => {
     let totalProduct = 0
     const vndRate = 23000
     const usdRate = 0.000043
-    let currency = req.body.order.currency
+   
+    
+    if(orderQuery.payment_method == 1){
+        let currency = "USD"
+    }else{
+        let currency = req.body.order.currency
+    }
 
     let checkOutOfStock = false
     if (!productQuery) {
@@ -1038,13 +1044,13 @@ exports.createOrder = async (req, res) => {
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
 
-        if (query.currency == currency) {
+        if (query.currency == currency)  {
             originalPrice += query.quantity * query.price
         }
         else {
             const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price: query.price })
             originalPrice += query.quantity * priceFixed
-            query.price = priceFixed
+            query.price =  priceFixed
             query.currency = currency
         }
 
@@ -1223,14 +1229,11 @@ exports.createOrder = async (req, res) => {
         orderQuery.discount_price = originalPrice
     }
     orderQuery.total_products = totalProduct
-    
+
     // PAYPAL
     let paypalOrderRes = null;
-    console.log("Before paypal")
     if (orderQuery.payment_method == 1) {
-        console.log("inner paypal")
-        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice,  discountPrice);
-        console.log(paypalOrderRes)
+        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice, discountPrice,orderQuery.id);
         if (paypalOrderRes.id) {
             orderQuery.paypal_id = paypalOrderRes.id;
         }
@@ -1241,8 +1244,6 @@ exports.createOrder = async (req, res) => {
             })
         }
     }
-    console.log("After paypal")
-    
     const newOrder = await orderService.createOrder(orderQuery)
 
 
@@ -1315,7 +1316,7 @@ exports.getOrderById = async (req, res) => {
     returnData.order = order[0]
 
     //GET STATUS
-    const status = await orderService.getAllOrderStatus({ order_id: orderId })
+    let status = await orderService.getAllOrderStatus({ order_id: orderId })
     if (status) {
         if (status.length == 0) {
             res.status(http.Success).json({
@@ -1326,6 +1327,59 @@ exports.getOrderById = async (req, res) => {
             return
         }
     }
+    // CHECK PAYPAL STATUS
+    let paypalId = await orderService.getAllOrder({
+        id : orderId
+    }).then(res => res[0].paypal_id);
+    let currentStatus = status[0].status??"";
+    const result = await orderService.paypalCheckOrder(storeId, paypalId).catch(e => null)
+    if (result) {
+        if (result.status) {
+
+            // TRANG THAI DON
+            //PREPAID & RESTOCK -> PAID & RESTOCK -> CONFIRM
+            if (result.status == "CREATED") {
+              
+                returnData.approveLink = result.links.find(x => x.rel === "approve").href,
+                returnData.purchase_units= result.purchase_units
+            }
+            else if (result.status == "APPROVED") {
+                // Neu khach hang da thanh toan => Tien hanh capture de hoan tat don hang
+                const result = await orderService.paypalCaptureOrder(storeId, paypalId).catch(e => null)
+                if (result) {
+                    if (result.status == "COMPLETED") {
+                        let query = {
+                            status: currentStatus,
+                            order_id: orderId
+                        }
+                        const changeStatus = await orderService.changeOrderStatusPaid(query);
+                        status = await orderService.getAllOrderStatus({ order_id: orderId })
+                    }
+                }
+                else {
+                    res.status(http.ServerError).json({
+                        statusCode: http.ServerError,
+                        message: "Server error!"
+                    });
+                    return
+                }
+            } else  if (result.status == "COMPLETED") {
+                let query = {
+                    status: currentStatus,
+                    order_id: orderId
+                }
+                const changeStatus = await orderService.changeOrderStatusPaid(query);
+                status = await orderService.getAllOrderStatus({ order_id: orderId })
+            } 
+        } else {
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server error!"
+            })
+            return;
+        }
+    }
+
     returnData.status = status
 
     //GET PRODUCT

@@ -85,6 +85,9 @@ var createValidURL = exports.createValidURL = async (name, storeId) => {
 
 exports.updatePage = async (data) => {
   data.name = data.name.trim();
+  if (data.page_url == null || data.page_url == ""){
+    return
+  }
   data.page_url = "/pages" + data.page_url
   data.page_url = URLParser.generateURL(data.page_url.trim())
   const result = URLParser.checkValidURL(data.page_url)

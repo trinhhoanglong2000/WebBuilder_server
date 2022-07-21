@@ -97,9 +97,9 @@ function buy() {
     let dilivery = $(rootEle).find("input[name='delivery']:checked").val();
     let payment = $(rootEle).find("input[name='payment']:checked").val();
     let paymentItems = JSON.parse(localStorage.getItem('paymentItems'));
-    let currency = $(rootEle).find("#currency").val();
+    let currency =payment==1 ? "USD" : $(rootEle).find("#currency").val();
     let discountInfo = JSON.parse(localStorage.getItem('discount'));
-    
+
     var payload = {
         order: {
             email: email,
@@ -141,17 +141,15 @@ function buy() {
             body: data
         })
         .then(function (res) { return res.json(); })
-        .then(function (data) {
-            console.log(data)
-            if (data.statusCode == 201) {
+        .then(function (resData) {
+            if (resData.statusCode == 201) {
                 
                 localStorage.removeItem('paymentItems')
                 localStorage.removeItem('discount')
                 $(rootEle).find(".ezMall-payment-alert").children().hide()
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success").show().css("display", "flex")
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success button").click(() => {
-        
-                    window.location.replace(rootUrl);
+                    window.location.href= `/pages/orders?id=${resData.data[0].id}`;
                 })
             } else {
                 $(rootEle).find(".ezMall-payment-alert").children().hide();
@@ -383,7 +381,6 @@ function removeDiscount(){
     let rootEle = $("div[ez-mall-type='payment']")[0];
     window.localStorage.removeItem('discount');
     $(rootEle).find(".ezMall-discount-description-text").html("");
-    console.log($(rootEle).find(".ezMall-discount-description"))
     $(rootEle).find(".ezMall-discount-description").attr('style', 'display: none !important');
     loadPaymentData(rootEle, false)
 }
