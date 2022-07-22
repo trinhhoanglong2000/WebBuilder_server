@@ -91,11 +91,19 @@ exports.insertData = async (data, name, needId, returnData = "id") => {
                 arr1[i] = "'{" + arr1[i] + "}'"
             }
             else {
+
+                
                 if (arr1[i] != null && arr1[i] != ""){
                     arr1[i] = "'" + arr1[i] + "'"
                 }
                 else {
-                    arr1[i] = `null`
+                    if (arr1[i] === 0) {
+                        arr1[i] = "'" + arr1[i] + "'"
+                    }
+                    else {
+                        arr1[i] = `null`
+                    }
+                
                 }
                
             }
