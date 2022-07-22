@@ -109,116 +109,119 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
     })
 
     let totalCostInit = 0;
-    data.forEach(element => {
-        let totalPrice = (Number)(element.quantity) * (Number)(element.price)
-        totalCostInit += totalPrice;
-        let id = element.is_variant?  element.variant_id : element.id;
-        const rowHtml =
-            `
-        <tr id  = ${id} class= "ezMall-cart-item" >
-            <th class="name">
-                <div class="form-check">
-                    <div class="row">
-                        <div class="col-auto d-flex align-items-center">
-                            <input class="form-check-input ezMall-cart-item-check" type="checkbox" id=${"check-" + id} name=${"check-" + id} value="">
-                        </div>
-                        <div class="col-md-11 col-8">
-                            <div class="row">
-                                <div class="col-xl-4 row d-flex justify-content-center">
-                                    <img src=${element.thumnail} alt="Image"
-                                        style="height: 150px;width: auto;">
-                                </div>
-                                <div class="col-xl-8 row d-flex flex-column justify-content-center">
-                                    <div class="p-0 justify-content-center text-center my-3"> ${element.product_name} ${element.is_variant? ` - ${element.variant_name}`: ""} </div>
-                                    <div class="p-0 justify-content-center text-center eZmall-for-des"></div>
+    if(data){
+        data.forEach(element => {
+            let totalPrice = (Number)(element.quantity) * (Number)(element.price)
+            totalCostInit += totalPrice;
+            let id = element.is_variant?  element.variant_id : element.id;
+            const rowHtml =
+                `
+            <tr id  = ${id} class= "ezMall-cart-item" >
+                <th class="name">
+                    <div class="form-check">
+                        <div class="row">
+                            <div class="col-auto d-flex align-items-center">
+                                <input class="form-check-input ezMall-cart-item-check" type="checkbox" id=${"check-" + id} name=${"check-" + id} value="">
+                            </div>
+                            <div class="col-md-11 col-8">
+                                <div class="row">
+                                    <div class="col-xl-4 row d-flex justify-content-center">
+                                        <img src=${element.thumnail} alt="Image"
+                                            style="height: 150px;width: auto;">
+                                    </div>
+                                    <div class="col-xl-8 row d-flex flex-column justify-content-center">
+                                        <div class="p-0 justify-content-center text-center my-3"> ${element.product_name} ${element.is_variant? ` - ${element.variant_name}`: ""} </div>
+                                        <div class="p-0 justify-content-center text-center eZmall-for-des"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </th>
-            <td class="price">
-                <div class=" d-flex justify-content-center align-items-center " style="height:150px">
-                <div class="ezMall-item-price px-1"> ${element.price} </div>    
-                <div class= "ezMall-item-price-type">
-                ${element.currency}
-                </div>
-                
-            </td>
-            <td class="quantity">
-                <div class=" d-flex justify-content-center align-items-center" style="height:150px">
-                    <input type="number" min="0" id=${"val-" + id} class="form-control ezMall-item-quantity" value=${element.quantity}
-                        style="min-width: 70px; width: 70px;" />
-
-                </div>
-            </td>
-            <td class="ezMall-item-total justify-content-center align-items-center">
-                <div class="d-flex justify-content-center align-items-center" style="height:150px">${totalPrice} ${element.currency}</div>
-            </td>
-            <th scope="col">
-                <div class="d-flex justify-content-center align-items-center" style="height:150px">
-                    <button type="button"  class="ezMall-cart-item-delete btn fa fa-trash" data-toggle="button" aria-pressed="false"
-                        autocomplete="off" style="height: 29px;padding: 0px 10px;">
-                    </button>
-                </div>
-            </th>
-        </tr>                           
-                                
-        `
-
-        tableBody.insertAdjacentHTML("beforeend", rowHtml);
-        $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
-            let cart = JSON.parse(localStorage.getItem('cart'));
-            let indexInArr =cart.findIndex((item) =>{
-                if(element.is_variant){
-                   if(item.variant_id == id ){
-                    return true;
-                   } 
-                }else{
-                    if(item.id == id){
-                        return true
+                </th>
+                <td class="price">
+                    <div class=" d-flex justify-content-center align-items-center " style="height:150px">
+                    <div class="ezMall-item-price px-1"> ${element.price} </div>    
+                    <div class= "ezMall-item-price-type">
+                    ${element.currency}
+                    </div>
+                    
+                </td>
+                <td class="quantity">
+                    <div class=" d-flex justify-content-center align-items-center" style="height:150px">
+                        <input type="number" min="0" id=${"val-" + id} class="form-control ezMall-item-quantity" value=${element.quantity}
+                            style="min-width: 70px; width: 70px;" />
+    
+                    </div>
+                </td>
+                <td class="ezMall-item-total justify-content-center align-items-center">
+                    <div class="d-flex justify-content-center align-items-center" style="height:150px">${totalPrice} ${element.currency}</div>
+                </td>
+                <th scope="col">
+                    <div class="d-flex justify-content-center align-items-center" style="height:150px">
+                        <button type="button"  class="ezMall-cart-item-delete btn fa fa-trash" data-toggle="button" aria-pressed="false"
+                            autocomplete="off" style="height: 29px;padding: 0px 10px;">
+                        </button>
+                    </div>
+                </th>
+            </tr>                           
+                                    
+            `
+    
+            tableBody.insertAdjacentHTML("beforeend", rowHtml);
+            $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
+                let cart = JSON.parse(localStorage.getItem('cart'));
+                let indexInArr =cart.findIndex((item) =>{
+                    if(element.is_variant){
+                       if(item.variant_id == id ){
+                        return true;
+                       } 
+                    }else{
+                        if(item.id == id){
+                            return true
+                        }
                     }
-                }
-                return false;
+                    return false;
+                })
+                let itemRemove = $(tableBody).find(`#${id}`)
+                $(itemRemove).fadeOut(200).remove();
+                let totalCost = 0;
+                let items = $(tableBody).find(".ezMall-cart-item ");
+                calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
+                cart = cart.splice(indexInArr,1);
+                window.localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart()
             })
-            let itemRemove = $(tableBody).find(`#${id}`)
-            $(itemRemove).fadeOut(200).remove();
-            let totalCost = 0;
-            let items = $(tableBody).find(".ezMall-cart-item ");
-            calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
-            cart = cart.splice(indexInArr,1);
-            window.localStorage.setItem('cart', JSON.stringify(cart));
-            updateCart()
-        })
-
-        $(tableBody).find(`#${id} input.ezMall-item-quantity`).change(() => {
-            let cart = JSON.parse(localStorage.getItem('cart'));
-            let indexInArr =cart.findIndex((item) =>{
-                if(element.is_variant){
-                   if(item.variant_id == id ){
-                    return true;
-                   } 
-                }else{
-                    if(item.id == id){
-                        return true
+    
+            $(tableBody).find(`#${id} input.ezMall-item-quantity`).change(() => {
+                let cart = JSON.parse(localStorage.getItem('cart'));
+                let indexInArr =cart.findIndex((item) =>{
+                    if(element.is_variant){
+                       if(item.variant_id == id ){
+                        return true;
+                       } 
+                    }else{
+                        if(item.id == id){
+                            return true
+                        }
                     }
-                }
-                return false;
-            })
-            let currentQuantity = $(tableBody).find(`input#val-${id}`).val()
-            $(tableBody).find(`#${id} .ezMall-item-total div`).html((Number)(element.price) * currentQuantity + ` ${element.currency}`)
-            let items = $(tableBody).find(".ezMall-cart-item ");
-            let totalCost = 0;
-            calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
-            cart[indexInArr].quantity = currentQuantity;
-            window.localStorage.setItem('cart', JSON.stringify(cart));
-            updateCart()
+                    return false;
+                })
+                let currentQuantity = $(tableBody).find(`input#val-${id}`).val()
+                $(tableBody).find(`#${id} .ezMall-item-total div`).html((Number)(element.price) * currentQuantity + ` ${element.currency}`)
+                let items = $(tableBody).find(".ezMall-cart-item ");
+                let totalCost = 0;
+                calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
+                cart[indexInArr].quantity = currentQuantity;
+                window.localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart()
+            });
+    
+            $(tableBody).find(`#${id} input.ezMall-cart-item-check`).change(() => {
+                calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
+            });
         });
+    }
 
-        $(tableBody).find(`#${id} input.ezMall-cart-item-check`).change(() => {
-            calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
-        });
-    });
     let items =  $(tableBody).find(".ezMall-cart-item ");
     if (items.length == 0) {
         $(rootEle).find("#ezMall-cart-zero-item").show().addClass("d-flex");
