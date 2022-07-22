@@ -265,9 +265,8 @@ function addToCart() {
     return true
 }
 function buyNow() {
-  
-    if(addToCart()){
-        window.location.href = `/payment`
-    }
+    let itemData = JSON.parse(localStorage.getItem('productData'));
+    window.localStorage.setItem('paymentItems', JSON.stringify(itemData));
+    window.location.href = `/payment`
 }
 

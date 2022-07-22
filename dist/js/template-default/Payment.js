@@ -96,7 +96,7 @@ function buy() {
     let dilivery = $(rootEle).find("input[name='delivery']:checked").val();
     let payment = $(rootEle).find("input[name='payment']:checked").val();
     let paymentItems = JSON.parse(localStorage.getItem('paymentItems'));
-    let currency =payment==1 ? "USD" : $(rootEle).find("#currency").val();
+    let currency = payment == 1 ? "USD" : $(rootEle).find("#currency").val();
     let discountInfo = JSON.parse(localStorage.getItem('discount'));
 
     var payload = {
