@@ -1019,12 +1019,12 @@ exports.createOrder = async (req, res) => {
     let totalProduct = 0
     const vndRate = 23000
     const usdRate = 0.000043
-   
+    let currency = "USD"
     
     if(orderQuery.payment_method == 1){
-        let currency = "USD"
+        currency = "USD"
     }else{
-        let currency = req.body.order.currency
+        currency = req.body.order.currency
     }
 
     let checkOutOfStock = false

@@ -24,10 +24,6 @@ function embedOrderTrackingData() {
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId =$('nav[name="header"]').attr("store-id");
     let orderId = getOrderParam("id");
-
-    storeId = '747842bf-77df-406a-8c80-52aae4e1cfa0'
-    orderId = '1658153123803'
-
     $('.modal-loader').css('display', 'block')
     $('.modal-loader').find('#loader-popup').css('display', 'initial');
 
