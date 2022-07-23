@@ -1376,9 +1376,9 @@ exports.getOrderById = async (req, res) => {
                 return;
             }
         }
-    
-        returnData.status = status
+
     }
+    returnData.status = status
     //GET PRODUCT
     const allProduct = await orderService.getOrderProduct({ order_id: orderId })
     for (let i = 0; i < allProduct.length; i++) {
