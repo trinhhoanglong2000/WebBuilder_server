@@ -72,7 +72,7 @@ var getAllStoreOrder = exports.getAllStoreOrder = async (query) => {
     let arr = Object.keys(query)
     let arr1 = Object.values(query)
 
-    console.log(query)
+    //console.log(query)
     for (let i = 0; i < arr.length; i++) {
         let queryTemp = {}
         if (arr[i] == "id") {
@@ -282,6 +282,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
     }else {
         discount = parseFloat(discount).toFixed(2);
     }
+ 
     var accessTokenData = await this.getPaypalAccessToken(store_id)
     if (accessTokenData == null) {
         return null;
@@ -298,7 +299,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
                         quantity: item.quantity,
                         unit_amount: {
                             currency_code: item.currency,
-                            value: item.price
+                            value: parseFloat(item.price).toFixed(2)
                         }
                     }
                 }),
@@ -308,7 +309,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
                     breakdown: {
                         item_total: {
                             currency_code: "USD",
-                            value: sumPrice
+                            value: parseFloat(Number(sumPrice)).toFixed(2), 
                         },
                         shipping: {
                             currency_code: "USD",
@@ -331,8 +332,9 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
             cancel_url: `https://${returnURL}/pages/orders?id=${order_id}`
         }
     }
-    var data = JSON.stringify(payload);
 
+    var data = JSON.stringify(payload);
+   // console.log(data)
     return await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
         method: "post",
         headers: {
@@ -344,6 +346,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
     }).then((response) => {
         return response.json()
     }).then((order) => {
+       // console.log(order)
         return order
     });
 }

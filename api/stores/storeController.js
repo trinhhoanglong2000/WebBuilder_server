@@ -1044,18 +1044,6 @@ exports.createOrder = async (req, res) => {
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
 
-        if (query.currency == currency)  {
-            originalPrice += query.quantity * query.price
-        }
-        else {
-            const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price: query.price })
-            originalPrice += query.quantity * priceFixed
-            query.price =  priceFixed
-            query.currency = currency
-        }
-
-        totalProduct += query.quantity
-
         if (query.is_variant) {
             const variant = await productVariantService.getVariantById(query.variant_id)
             const product = await productService.findById(query.id)
@@ -1076,6 +1064,13 @@ exports.createOrder = async (req, res) => {
                         checkOutOfStock = true
                     }
                 }
+                
+                const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  variant[0].price })
+                originalPrice += query.quantity * priceFixed
+                query.price =  priceFixed
+                query.currency = currency
+                totalProduct += query.quantity
+                //console.log(query.quantity * priceFixed)
 
             } else {
                 res.status(http.ServerError).json({
@@ -1102,6 +1097,12 @@ exports.createOrder = async (req, res) => {
                     else {
                         checkOutOfStock = true
                     }
+
+                    const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
+                    originalPrice += query.quantity * priceFixed
+                    query.price =  priceFixed
+                    query.currency = currency
+                    totalProduct += query.quantity
                 }
             }
         }
@@ -1383,9 +1384,8 @@ exports.getOrderById = async (req, res) => {
                 return;
             }
         }
-    
-        returnData.status = status
     }
+    returnData.status = status
     //GET PRODUCT
     const allProduct = await orderService.getOrderProduct({ order_id: orderId })
     for (let i = 0; i < allProduct.length; i++) {
