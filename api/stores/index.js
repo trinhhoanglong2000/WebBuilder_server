@@ -77,3 +77,8 @@ router.put('/:id/paypal',authenticator.Authenticate, storeController.updatePaypa
 router.post('/:id/paypal',authenticator.Authenticate, storeController.createPaypal);
 
 router.get('/:id/paypal-status', storeController.getPaypalStatus);
+
+//CURRENCY
+
+router.get('/:id/currency',storeController.getCurrency)
+router.post('/:id', authenticator.Authenticate, storeController.updateStore)

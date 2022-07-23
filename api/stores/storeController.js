@@ -36,7 +36,7 @@ exports.createStore = async (req, res) => {
     const template = await templateService.getTemplate({ name: "template-default" })
     await templateService.useTemplate({ user_id: req.user.id, store_id: storeId, template_id: template[0].id })
     await storeService.publishStore(storeId)
-  
+
     //CREATE HEADER AND FOOTER
 
     if (newStore) {
@@ -53,7 +53,7 @@ exports.createStore = async (req, res) => {
             receiver: `${req.user.email}`,
             html: `<p>Your new Store named ${storeObj.name} have been successfully create. Please check it out</p>`
         }
-        await emailService.sendMailFromStore(query)
+        emailService.sendMailFromStore(query)
         res.status(http.Created).json({
             statusCode: http.Created,
             data: newStore,
@@ -848,7 +848,7 @@ exports.deleteStore = async (req, res) => {
 
     //fileService.deleteObjectByKey(`views/bodies/${storeNameConvert}/`)
     fileService.deleteFolderByKey(`views/bodies/${storeNameConvert}/`)
-    
+
     // fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
     //     console.log('The file has been deleted!');
     // }).catch(err => {
@@ -1013,10 +1013,10 @@ exports.createOrder = async (req, res) => {
     const vndRate = 23000
     const usdRate = 0.000043
     let currency = "USD"
-    
-    if(orderQuery.payment_method == 1){
+
+    if (orderQuery.payment_method == 1) {
         currency = "USD"
-    }else{
+    } else {
         currency = req.body.order.currency
     }
 
@@ -1029,18 +1029,20 @@ exports.createOrder = async (req, res) => {
         return
     }
 
-
     //CREATE ID
     const orderId = await orderService.createOrderId()
 
     //CHECK PRODUCT QUANTITY EXIST
+    let changeMoneyPromise = []
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
 
         if (query.is_variant) {
-            const variant = await productVariantService.getVariantById(query.variant_id)
-            const product = await productService.findById(query.id)
-
+            // const variant = await productVariantService.getVariantById(query.variant_id)
+            // const product = await productService.findById(query.id)
+            const resultPromise = await Promise.all([productVariantService.getVariantById(query.variant_id), productService.findById(query.id)])
+            const variant = resultPromise[0]
+            const product = resultPromise[1]
             if (variant.length > 0 && product.length > 0) {
                 const remainQuantity = variant[0].quantity - query.quantity
 
@@ -1057,10 +1059,10 @@ exports.createOrder = async (req, res) => {
                         checkOutOfStock = true
                     }
                 }
-                
-                const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  variant[0].price })
+                changeMoneyPromise.push(dataService.changeMoney({ from: query.currency, to: currency, price: variant[0].price }))
+                //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  variant[0].price })
                 originalPrice += query.quantity * priceFixed
-                query.price =  priceFixed
+                query.price = priceFixed
                 query.currency = currency
                 totalProduct += query.quantity
                 //console.log(query.quantity * priceFixed)
@@ -1091,9 +1093,10 @@ exports.createOrder = async (req, res) => {
                         checkOutOfStock = true
                     }
 
-                    const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
+                    changeMoneyPromise.push(dataService.changeMoney({ from: query.currency, to: currency, price: product[0].price }))
+                    //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
                     originalPrice += query.quantity * priceFixed
-                    query.price =  priceFixed
+                    query.price = priceFixed
                     query.currency = currency
                     totalProduct += query.quantity
                 }
@@ -1101,6 +1104,16 @@ exports.createOrder = async (req, res) => {
         }
     }
 
+    const dataMoney = await Promise.all(changeMoneyPromise)
+
+    for (let i = 0; i < productQuery.length; i++) {
+        const query = productQuery[i]
+
+        originalPrice += query.quantity * dataMoney[i]
+        query.price = dataMoney[i]
+        query.currency = currency
+        totalProduct += query.quantity
+    }
 
     //CHECK DISSCOUNT 
     if (orderQuery.discount_id) {
@@ -1182,8 +1195,9 @@ exports.createOrder = async (req, res) => {
             remainquantity = variant[0].quantity - query.quantity
 
             if (!checkOutOfStock) {
-                await productVariantService.updateVariant({ id: variant[0].id, quantity: remainquantity })
-                await productService.updateInventoryFromVariants(query.product_id)
+                await Promise.all([productVariantService.updateVariant({ id: variant[0].id, quantity: remainquantity }), productService.updateInventoryFromVariants(query.product_id)])
+                // await productVariantService.updateVariant({ id: variant[0].id, quantity: remainquantity })
+                // await productService.updateInventoryFromVariants(query.product_id)
             }
         }
         else {
@@ -1227,7 +1241,7 @@ exports.createOrder = async (req, res) => {
     // PAYPAL
     let paypalOrderRes = null;
     if (orderQuery.payment_method == 1) {
-        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice, discountPrice,orderQuery.id);
+        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice, discountPrice, orderQuery.id);
         if (paypalOrderRes.id) {
             orderQuery.paypal_id = paypalOrderRes.id;
         }
@@ -1241,6 +1255,27 @@ exports.createOrder = async (req, res) => {
     }
     const newOrder = await orderService.createOrder(orderQuery)
 
+    //MAIL
+    const storeData = await storeService.findById(orderQuery.store_id)
+    let mailStoreQuery = {
+        store_id: orderQuery.store_id,
+        subject: `Order #${orderQuery.id} successfully created`,
+        receiver: `${orderQuery.email}`,
+        html: `<p>Your order <a href=${storeData.store_link + "/orders?id=" + orderQuery.id}>#${orderQuery.id}</a> from ${storeData.name} has been successfully created</p> <br>
+        <p>You can view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a> to proceed.</p>
+        `
+    }
+    const account = await accountService.getUserInfo(storeData.user_id)
+    let mailQuery = {
+        subject: `Order #${orderQuery.id} successfully created`,
+        receiver: `${account[0].email}`,
+        html: `<p>New order #${orderQuery.id} have been create from store ${storeData.name}</p> <br>
+        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
+        `
+    }
+
+    emailService.adminSendMail(mailQuery)
+    emailService.sendMailFromStore(mailStoreQuery)
 
     if (newOrder) {
         res.status(http.Created).json({
@@ -1326,20 +1361,20 @@ exports.getOrderById = async (req, res) => {
     }
     // CHECK PAYPAL STATUS
     let paypalId = await orderService.getAllOrder({
-        id : orderId
+        id: orderId
     }).then(res => res[0].paypal_id);
-    let currentStatus = status[0].status??"";
-    if(paypalId){
+    let currentStatus = status[0].status ?? "";
+    if (paypalId) {
         const result = await orderService.paypalCheckOrder(storeId, paypalId).catch(e => null)
         if (result) {
             if (result.status) {
-    
+
                 // TRANG THAI DON
                 //PREPAID & RESTOCK -> PAID & RESTOCK -> CONFIRM
                 if (result.status == "CREATED") {
-                  
+
                     returnData.approveLink = result.links.find(x => x.rel === "approve").href,
-                    returnData.purchase_units= result.purchase_units
+                        returnData.purchase_units = result.purchase_units
                 }
                 else if (result.status == "APPROVED") {
                     // Neu khach hang da thanh toan => Tien hanh capture de hoan tat don hang
@@ -1361,14 +1396,14 @@ exports.getOrderById = async (req, res) => {
                         });
                         return
                     }
-                } else  if (result.status == "COMPLETED") {
+                } else if (result.status == "COMPLETED") {
                     let query = {
                         status: currentStatus,
                         order_id: orderId
                     }
                     const changeStatus = await orderService.changeOrderStatusPaid(query);
                     status = await orderService.getAllOrderStatus({ order_id: orderId })
-                } 
+                }
             } else {
                 res.status(http.ServerError).json({
                     statusCode: http.ServerError,
@@ -1874,3 +1909,45 @@ exports.getPaypalStatus = async (req, res) => {
         })
     }
 }
+
+exports.getCurrency = async (req, res) => {
+    const query = {
+        id: req.params.id
+    }
+
+    const result = await storeService.getStoreCurrency(query)
+
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result[0],
+            message: "Get store currency Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+
+exports.updateStore = async (req, res) => {
+    const query = req.body
+    query.id =  req.params.id
+    const result = await storeService.updateStoreInfo(query)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+       
+            message: "Update stores Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
+

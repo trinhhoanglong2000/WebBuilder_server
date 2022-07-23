@@ -10,6 +10,7 @@ const pageService = require('../page/pageService')
 const fileService =  require('../files/fileService')
 const fse = require('fs-extra');
 const { updateStoreData } = require('./storeController');
+const { config } = require('dotenv');
 
 exports.createStore = async (storeObj) => {
     if (storeObj.name) {
@@ -39,6 +40,14 @@ exports.findAll = async () => {
         console.log(error);
         return null;
     }
+}
+
+exports.getStoreCurrency = async (query) => {
+    const config = {
+        select : "currency",
+        where : {id : query.id}
+    }
+    return DBHelper.FindAll("stores",config)
 }
 
 exports.findByUserId = async (query) => {

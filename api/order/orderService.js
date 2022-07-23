@@ -19,27 +19,7 @@ exports.createOrder = async (query) => {
     }
     const result = await DBHelper.insertData(query, "orders", false, "id")
 
-    //MAIL
-    const storeData = await storeService.findById(query.store_id)
-    let mailStoreQuery = {
-        store_id: query.store_id,
-        subject: `Order #${query.id} successfully created`,
-        receiver: `${query.email}`,
-        html: `<p>Your order <a href=${storeData.store_link + "/orders?id=" + query.id}>#${query.id}</a> from ${storeData.name} has been successfully created</p> <br>
-        <p>You can view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a> to proceed.</p>
-        `
-    }
-    const account = await accountService.getUserInfo(storeData.user_id)
-    let mailQuery = {
-        subject: `Order #${query.id} successfully created`,
-        receiver: `${account[0].email}`,
-        html: `<p>New order #${query.id} have been create from store ${storeData.name}</p> <br>
-        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
-        `
-    }
-
-    await emailService.adminSendMail(mailQuery)
-    await emailService.sendMailFromStore(mailStoreQuery)
+    
     return result
 }
 
