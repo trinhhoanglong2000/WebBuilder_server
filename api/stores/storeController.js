@@ -1242,6 +1242,7 @@ exports.createOrder = async (req, res) => {
                 statusCode: http.ServerError,
                 message: "Server error!"
             })
+            return
         }
     }
     const newOrder = await orderService.createOrder(orderQuery)
@@ -1254,12 +1255,14 @@ exports.createOrder = async (req, res) => {
             paypalOrderRes: paypalOrderRes,
             message: "Create Order successfully!"
         })
+        return
     }
     else {
         res.status(http.ServerError).json({
             statusCode: http.ServerError,
             message: "Server error!"
         })
+        return
     }
 
 }
@@ -1332,56 +1335,57 @@ exports.getOrderById = async (req, res) => {
         id : orderId
     }).then(res => res[0].paypal_id);
     let currentStatus = status[0].status??"";
-    const result = await orderService.paypalCheckOrder(storeId, paypalId).catch(e => null)
-    if (result) {
-        if (result.status) {
-
-            // TRANG THAI DON
-            //PREPAID & RESTOCK -> PAID & RESTOCK -> CONFIRM
-            if (result.status == "CREATED") {
-              
-                returnData.approveLink = result.links.find(x => x.rel === "approve").href,
-                returnData.purchase_units= result.purchase_units
-            }
-            else if (result.status == "APPROVED") {
-                // Neu khach hang da thanh toan => Tien hanh capture de hoan tat don hang
-                const result = await orderService.paypalCaptureOrder(storeId, paypalId).catch(e => null)
-                if (result) {
-                    if (result.status == "COMPLETED") {
-                        let query = {
-                            status: currentStatus,
-                            order_id: orderId
+    if(paypalId){
+        const result = await orderService.paypalCheckOrder(storeId, paypalId).catch(e => null)
+        if (result) {
+            if (result.status) {
+    
+                // TRANG THAI DON
+                //PREPAID & RESTOCK -> PAID & RESTOCK -> CONFIRM
+                if (result.status == "CREATED") {
+                  
+                    returnData.approveLink = result.links.find(x => x.rel === "approve").href,
+                    returnData.purchase_units= result.purchase_units
+                }
+                else if (result.status == "APPROVED") {
+                    // Neu khach hang da thanh toan => Tien hanh capture de hoan tat don hang
+                    const result = await orderService.paypalCaptureOrder(storeId, paypalId).catch(e => null)
+                    if (result) {
+                        if (result.status == "COMPLETED") {
+                            let query = {
+                                status: currentStatus,
+                                order_id: orderId
+                            }
+                            const changeStatus = await orderService.changeOrderStatusPaid(query);
+                            status = await orderService.getAllOrderStatus({ order_id: orderId })
                         }
-                        const changeStatus = await orderService.changeOrderStatusPaid(query);
-                        status = await orderService.getAllOrderStatus({ order_id: orderId })
                     }
-                }
-                else {
-                    res.status(http.ServerError).json({
-                        statusCode: http.ServerError,
-                        message: "Server error!"
-                    });
-                    return
-                }
-            } else  if (result.status == "COMPLETED") {
-                let query = {
-                    status: currentStatus,
-                    order_id: orderId
-                }
-                const changeStatus = await orderService.changeOrderStatusPaid(query);
-                status = await orderService.getAllOrderStatus({ order_id: orderId })
-            } 
-        } else {
-            res.status(http.ServerError).json({
-                statusCode: http.ServerError,
-                message: "Server error!"
-            })
-            return;
+                    else {
+                        res.status(http.ServerError).json({
+                            statusCode: http.ServerError,
+                            message: "Server error!"
+                        });
+                        return
+                    }
+                } else  if (result.status == "COMPLETED") {
+                    let query = {
+                        status: currentStatus,
+                        order_id: orderId
+                    }
+                    const changeStatus = await orderService.changeOrderStatusPaid(query);
+                    status = await orderService.getAllOrderStatus({ order_id: orderId })
+                } 
+            } else {
+                res.status(http.ServerError).json({
+                    statusCode: http.ServerError,
+                    message: "Server error!"
+                })
+                return;
+            }
         }
+    
+        returnData.status = status
     }
-
-    returnData.status = status
-
     //GET PRODUCT
     const allProduct = await orderService.getOrderProduct({ order_id: orderId })
     for (let i = 0; i < allProduct.length; i++) {
