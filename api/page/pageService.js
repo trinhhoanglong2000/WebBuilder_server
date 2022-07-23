@@ -182,16 +182,7 @@ exports.savePageContent = async (storeId, pageId, content) => {
 exports.saveHTMLFile = async (storeId, pageId, content) => {
   URLParser.saveHTMLFile(storeId, pageId, content)
 };
-exports.createHTMLFile = async (storeId, pageId, content) => {
-  URLParser.createHTMLFile(storeId, pageId, content)
-};
-exports.removeHTMLFile = async (pageId) => {
-  URLParser.removeHTMLFile(pageId)
-}
 
-exports.renameHTMLFile = async (pageId, newName) => {
-  URLParser.renameHTMLFile(pageId, newName)
-}
 
 var getPagesByStoreIdAndId = exports.getPagesByStoreIdAndId = async (query) => {
   return DBHelper.getData("pages", query)

@@ -7,6 +7,7 @@ const DBHelper = require('../../helper/DBHelper/DBHelper')
 const URLParser = require('../../helper/common')
 const templateService = require('../template/templateService')
 const pageService = require('../page/pageService')
+const fileService =  require('../files/fileService')
 const fse = require('fs-extra');
 const { updateStoreData } = require('./storeController');
 
@@ -187,21 +188,21 @@ exports.deleteStores = async (productObj) => {
     const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
 
 
-    fse.rm(`views/partials/${storeNameConvert}`, { recursive: true, force: true })
-        .then(() => {
-            console.log('The file has been deleted!');
-        })
-        .catch(err => {
-            console.error(err)
-        });
-
-    fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true })
-        .then(() => {
-            console.log('The file has been deleted!');
-        })
-        .catch(err => {
-            console.error(err)
-        });
+    // fse.rm(`views/partials/${storeNameConvert}`, { recursive: true, force: true })
+    //     .then(() => {
+    //         console.log('The file has been deleted!');
+    //     })
+    //     .catch(err => {
+    //         console.error(err)
+    //     });
+   
+    // fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true })
+    //     .then(() => {
+    //         console.log('The file has been deleted!');
+    //     })
+    //     .catch(err => {
+    //         console.error(err)
+    //     });
     return DBHelper.deleteData("stores", productObj)
 }
 
@@ -212,19 +213,28 @@ exports.publishStore = async (storeId) => {
     }
     const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
 
-
-    fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true })
-        .then(() => {
-            console.log('The file has been deleted!');
-        })
-        .catch(err => {
-            console.error(err)
-        });
+    //Delete old bodies
+    await fileService.deleteFolderByKey(`views/bodies/${storeNameConvert}/`)
+    // fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true })
+    //     .then(() => {
+    //         console.log('The file has been deleted!');
+    //     })
+    //     .catch(err => {
+    //         console.error(err)
+    //     });
+    
     const allPages = await pageService.getPagesByStoreId({ store_id: storeId })
+
+    let conentList = []
     for (let i = 0; i < allPages.length; i++) {
-        const content = await pageService.findPageById(storeId, allPages[i].id)
-        await pageService.saveHTMLFile(storeId, allPages[i].id, content)
+        const content =  pageService.findPageById(storeId, allPages[i].id)
+        conentList.push(content)
     }
+    const result_content = await Promise.all(conentList)
+
+    await Promise.all(allPages.map((ele,i)=>{
+        return pageService.saveHTMLFile(storeId, allPages[i].id, result_content[i])
+    }))
     return true
 }
 

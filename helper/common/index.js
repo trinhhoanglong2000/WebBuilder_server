@@ -3,7 +3,7 @@ const storeService = require('../../api/stores/storeService');
 const templateService = require('../../api/template/templateService')
 const pageService = require('../../api/page/pageService')
 const fse = require('fs-extra')
-
+const fileService = require('../../api/files/fileService')
 var generateURL = exports.generateURL = (s) => {
   return s.trim().toLowerCase().replace(/\s+/g, '-')
 }
@@ -56,6 +56,8 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   let queryTemplate = {
     id: storeName.template_id
   }
+
+
   const templateName = await templateService.getTemplateById(queryTemplate)
 
   const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
@@ -105,40 +107,52 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
         ${js}
         `
     //HEADER HTML
-    fse.outputFile(`views/partials/${storeNameConvert}/header.hbs`, header)
-      .then(() => {
-        console.log('Header File has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
+    let key = `views/partials/${storeNameConvert}/header`
+    fileService.uploadTextFileToS3(header, key, 'txt');
+
+    // fse.outputFile(`views/partials/${storeNameConvert}/header.hbs`, header)
+    //   .then(() => {
+    //     console.log('Header File has been saved!');
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   });
 
     //FOOTER HTML
-    fse.outputFile(`views/partials/${storeNameConvert}/footer.hbs`, footer)
-      .then(() => {
-        console.log('Footer File has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
+    key = `views/partials/${storeNameConvert}/footer`
+    fileService.uploadTextFileToS3(footer, key, 'txt');
+
+    // fse.outputFile(`views/partials/${storeNameConvert}/footer.hbs`, footer)
+    //   .then(() => {
+    //     console.log('Footer File has been saved!');
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   });
 
     //MAIN HTML
-    fse.outputFile(`views/bodies/${storeNameConvert}/${pageNameConvert}/index.hbs`, HTML)
-      .then(() => {
-        console.log('Body Main File has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
+    key = `views/bodies/${storeNameConvert}${pageNameConvert}/index`
+    fileService.uploadTextFileToS3(HTML, key, 'txt');
+
+    // fse.outputFile(`views/bodies/${storeNameConvert}/${pageNameConvert}/index.hbs`, HTML)
+    //   .then(() => {
+    //     console.log('Body Main File has been saved!');
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   });
 
     //CONFIG HTML
-    fse.outputFile(`views/partials/${storeNameConvert}/pages/${pageNameConvert}/index.hbs`, pageConfig)
-      .then(() => {
-        console.log('Body Config File has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
+    key = `views/partials/${storeNameConvert}/pages${pageNameConvert}/index`
+    fileService.uploadTextFileToS3(pageConfig, key, 'txt');
+
+    // fse.outputFile(`views/partials/${storeNameConvert}/pages/${pageNameConvert}/index.hbs`, pageConfig)
+    //   .then(() => {
+    //     console.log('Body Config File has been saved!');
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   });
   }
 };
 
@@ -154,95 +168,20 @@ exports.createConfigHTML = async (storeId) => {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
                 `
-  fse.outputFile(`views/partials/${storeNameConvert}/config.hbs`, HTML)
-    .then(() => {
-      console.log('The file config has been saved!');
-    })
-    .catch(err => {
-      console.error(err)
-    });
-}
-exports.createHTMLFile = async (storeId, pageId, content) => {
-  const storeName = await storeService.findById(storeId)
 
-  //Get PageName
-  let queryPage = {
-    id: pageId,
-    store_id: storeId
-  }
-  const PageName = await pageService.getPagesByStoreIdAndId(queryPage)
-  let queryTemplate = {
-    id: storeName.template_id
-  }
-  const templateName = await templateService.getTemplateById(queryTemplate)
-  const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
-  const pageNameConvert = PageName[0] ? generateURL(PageName[0].name) : null;
 
-  // <script type="text/javascript" src="http://localhost:5000/files/dist/js/template-default/Header.js" id="Header" class="ScriptClass"></script>
-  if (storeNameConvert && pageNameConvert) {
-    const HTML =
-      `
-        `
-    fse.outputFile(`views/bodies/${storeNameConvert}/${pageNameConvert}/index.hbs`, HTML)
-      .then(() => {
-        console.log('The file Bodies has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
-  }
-};
-exports.removeHTMLFile = async (pageId) => {
-  let query = { id: pageId }
-  const storeResult = await pageService.FindPageByIdOnly(query)
-  const storeId = storeResult[0].store_id
-  const storeName = await storeService.findById(storeId)
 
-  //Get PageName
-  let queryPage = {
-    id: pageId,
-    store_id: storeId
-  }
-  const PageName = await pageService.getPagesByStoreIdAndId(queryPage)
+    const key = `views/partials/${storeNameConvert}/config`
+    fileService.uploadTextFileToS3(HTML, key, 'txt');
 
-  const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
-  const pageNameConvert = PageName[0] ? generateURL(PageName[0].name) : null;
-
-  fse.rm(`views/bodies/${storeNameConvert}/${pageNameConvert}`, { recursive: true, force: true })
-    .then(() => {
-      console.log('The file has been deleted!');
-    })
-    .catch(err => {
-      console.error(err)
-    });
-}
-
-exports.renameHTMLFile = async (pageId, newName) => {
-  let query = { id: pageId }
-  const storeResult = await pageService.FindPageByIdOnly(query)
-  const storeId = storeResult[0].store_id
-  const storeName = await storeService.findById(storeId)
-
-  //Get PageName
-  let queryPage = {
-    id: pageId,
-    store_id: storeId
-  }
-  const PageName = await pageService.getPagesByStoreIdAndId(queryPage)
-
-  const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
-  const pageNameConvert = PageName[0] ? generateURL(PageName[0].name) : null;
-  const newPageNameConvert = generateURL(newName)
-  if (fse.existsSync(`views/bodies/${storeNameConvert}/${pageNameConvert}`)) {
-
-    fse.rename(`views/bodies/${storeNameConvert}/${pageNameConvert}`, `views/bodies/${storeNameConvert}/${newPageNameConvert}`)
-      .then(() => {
-        console.log('The file has been saved!');
-      })
-      .catch(err => {
-        console.error(err)
-      });
-  }
+  // fileService.uploadTextFileToS3()
+  // fse.outputFile(`views/partials/${storeNameConvert}/config.hbs`, HTML)
+  //   .then(() => {
+  //     console.log('The file config has been saved!');
+  //   })
+  //   .catch(err => {
+  //     console.error(err)
+  //   });
 }
 
 exports.getTime = () => {

@@ -3,8 +3,10 @@ const router = express.Router();
 const fse = require('fs-extra')
 const http = require('../const')
 const dns = require('dns');
+const fileService = require('../api/files/fileService')
 router.get('/', async (req, res, next) => {
     {
+        console.log("!23")
         let hostURL = req.get('Host')
         let subdomain = req.subdomains;
         let urlArr = hostURL.split('.')
@@ -42,7 +44,8 @@ router.get('/', async (req, res, next) => {
             next()
             return
         }
-        if (!fse.existsSync(`views/bodies/${subdomain[0]}`)) {
+        const isExistFolder = await fileService.checkExistFile(`views/bodies/${subdomain[0]}/home/index.txt`)
+        if (!isExistFolder) {
             res.status(http.NotFound).json({
                 statusCode: http.NotFound,
                 message: "Not Found!"
@@ -61,26 +64,27 @@ router.get('/', async (req, res, next) => {
             // res.sendFile("index.html", {
             //     root: __dirname + `/${subdomain[0]}${wordPath[0]}`
             // })
-           
-            if (fse.existsSync(`views/bodies/${subdomain[0]}${wordPath[0]}`)) {
-                res.render(`bodies/${subdomain[0]}${wordPath[0]}/index`,
-                    {
-                        pageConfig: function () { return `${subdomain[0]}/pages${wordPath[0]}/index` },
-                        header: function () { return `${subdomain[0]}/header` },
-                        footer: function () { return `${subdomain[0]}/footer` },
-                        config: function () { return `${subdomain[0]}/config` }
-                    })
-            }
-            else {
-        
-                res.render(`bodies/${subdomain[0]}/page-not-found/index`,
-                    {
-                        pageConfig: function () { return `${subdomain[0]}/pages/page-not-found/index` },
-                        header: function () { return `${subdomain[0]}/header` },
-                        footer: function () { return `${subdomain[0]}/footer` },
-                        config: function () { return `${subdomain[0]}/config` }
-                    })
-            }
+            const isExist = await fileService.checkExistFile(`views/bodies/${subdomain[0]}${wordPath[0]}/index.txt`)
+
+            console.log("Going here")
+            let pageName = isExist ? wordPath[0] : "/page-not-found"
+            const pageConfig = await Promise.all([
+                fileService.getFile(`views/partials/${subdomain[0]}/pages${pageName}/index.txt`),
+                fileService.getFile(`views/partials/${subdomain[0]}/header.txt`),
+                fileService.getFile(`views/partials/${subdomain[0]}/footer.txt`),
+                fileService.getFile(`views/partials/${subdomain[0]}/config.txt`),
+                fileService.getFile(`views/bodies/${subdomain[0]}${pageName}/index.txt`),
+            ])
+            res.render(`bodies/index`,
+                {
+                    pageConfig: function () { return pageConfig[0] },
+                    header: function () { return pageConfig[1] },
+                    footer: function () { return pageConfig[2] },
+                    config: function () { return pageConfig[3] },
+                    main: function () { return pageConfig[4] }
+                })
+
+
         }
     }
 });

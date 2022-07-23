@@ -18,6 +18,7 @@ const emailService = require('../email/emailService')
 const accountService = require('../accounts/accountService')
 const dataService = require('../data/dataService')
 const discountService = require('../discount/discountService');
+const fileService = require('../files/fileService')
 const fse = require('fs-extra')
 const { query } = require('express');
 const { Query } = require('mongoose');
@@ -35,21 +36,7 @@ exports.createStore = async (req, res) => {
     const template = await templateService.getTemplate({ name: "template-default" })
     await templateService.useTemplate({ user_id: req.user.id, store_id: storeId, template_id: template[0].id })
     await storeService.publishStore(storeId)
-    // let page = await pageService.createPage({ store_id: storeId, name: "Home" }, "", true, "template-default");
-    // if (page) {
-    //     await pageService.createHTMLFile(storeId, page.rows[0].id)
-    // }
-
-    // page = await pageService.createPage({ store_id: storeId, name: "Products" }, "", true, "template-default");
-    // if (page) {
-    //     await pageService.createHTMLFile(storeId, page.rows[0].id)
-    // }
-
-    // page = await pageService.createPage({ store_id: storeId, name: "Cart" }, "", true, "template-default");
-    // if (page) {
-    //     await pageService.createHTMLFile(storeId, page.rows[0].id)
-    // }
-
+  
     //CREATE HEADER AND FOOTER
 
     if (newStore) {
@@ -859,17 +846,23 @@ exports.deleteStore = async (req, res) => {
     const storeNameConvert = storeName.name ? URLParser.generateURL(storeName.name) : null;
 
 
-    fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
-        console.log('The file has been deleted!');
-    }).catch(err => {
-        console.error(err)
-    });
+    //fileService.deleteObjectByKey(`views/bodies/${storeNameConvert}/`)
+    fileService.deleteFolderByKey(`views/bodies/${storeNameConvert}/`)
+    
+    // fse.rm(`views/bodies/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
+    //     console.log('The file has been deleted!');
+    // }).catch(err => {
+    //     console.error(err)
+    // });
 
-    fse.rm(`views/partials/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
-        console.log('The file has been deleted!');
-    }).catch(err => {
-        console.error(err)
-    });
+    //fileService.deleteObjectByKey(`views/partials/${storeNameConvert}/`)
+    fileService.deleteFolderByKey(`views/partials/${storeNameConvert}/`)
+
+    // fse.rm(`views/partials/${storeNameConvert}`, { recursive: true, force: true }).then(() => {
+    //     console.log('The file has been deleted!');
+    // }).catch(err => {
+    //     console.error(err)
+    // });
     //DELETE STORE
     const deleteStore = await storeService.deleteStores({ id: id })
     if (deleteStore) {
