@@ -23,13 +23,23 @@ exports.getDistrict = async (id) => {
 }
 
 exports.changeMoney = async (query) => {
-    const fromRate = await getCurreny(query.from)
-    const toRate = await getCurreny(query.to)
-    if (fromRate.length && toRate.length) {
-        return  query.price * toRate[0].amount / fromRate[0].amount
+    let dataFromCurrency = await getCurreny(query.from).then(res => res[0])
+    let dataToCurrency = await getCurreny(query.to).then(res => res[0])
+    let value = query.price
+
+    if(query.to == query.from){
+        return value
     }
-    else {
-        return null
+    switch (query.to) {
+        case "VND":
+            return Math.ceil(value * Number(dataToCurrency.amount) / Number(dataFromCurrency.amount));
+            break;
+        case "USD":
+            return parseFloat(value * Number(dataToCurrency.amount) / Number(dataFromCurrency.amount) + 0.004).toFixed(2);
+            break;
+        default:
+            return parseFloat(value * Number(dataToCurrency.amount) / Number(dataFromCurrency.amount) + 0.004).toFixed(2);
+            break;
     }
 }
 

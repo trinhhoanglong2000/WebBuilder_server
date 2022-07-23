@@ -31,7 +31,7 @@ function embedOrderTrackingData() {
     .then((response) => response.json())
     .then((response) => {
         data = response.data;
-        if ((response.statusCode === 200 || response.statusCode === 304) && data.length > 0) {
+        if ((response.statusCode === 200 || response.statusCode === 304) && data && data.length == null) {
             $('.modal-loader').css('display', 'none');
             
             $('div[name="trackingOrder"]').find('#order_id span').html(data.order.id)
@@ -99,7 +99,6 @@ function embedOrderTrackingData() {
                         trackingStep.eq(0).addClass('active');
                     }
                     trackingStep.eq(1).addClass('active');
-                    buttonCancel.css('display', 'initial');
                 } else if (data.status[1].status === "RESTOCK" || data.status[1].status === "CREATED") {
                     if (data.order.payment_method === 0){
                         trackingStep.eq(0).css('display', 'none');

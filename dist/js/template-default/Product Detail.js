@@ -185,7 +185,8 @@ function VariantCheck(variantId, optionId) {
     }
 }
 
-function addToCart() {
+function addToCart(isBuyNow = false) {
+    debugger
     $(".ezMall-popup-alert").show().css("display","flex").children().hide()
     $(".ezMall-popup-alert .ezMall-loading").show();
     let itemData = JSON.parse(localStorage.getItem('productData'));
@@ -207,7 +208,9 @@ function addToCart() {
         })
     }
     if (arrayAlert.length > 0) {
+        $(".ezMall-popup-alert .ezMall-loading").hide();
         $(`.ezMall-alert`).show();
+        $(".ezMall-popup-alert").hide()
         $(`.ezMall-alert-text-option`).html(arrayAlert.join(", "));
         return false
     } else {
@@ -231,42 +234,51 @@ function addToCart() {
         "description": productData.description,
         "optionName": optionName
     }
-    if (cart == null) {
-        cart = [];
-        cart.push(newItem)
-    } else {
-        let indexInArr =cart.findIndex((item) =>{
-            if(is_variant){
-               if(item.id == productData.id && item.variant_id == variantSelected.id && item.variant_name ==variantSelected.name){
-                return true;
-               } 
-            }else{
-                if(item.id == productData.id){
-                    return true
-                }
-            }
-            return false;
-        } )
-        if(indexInArr ==-1){
-            cart = [...cart, newItem]
-        }else{
-            cart[indexInArr].quantity=Number(cart[indexInArr].quantity) + Number(quantity);
-        }
-
+    if(isBuyNow){
+        let paymentItems = [];
+        paymentItems.push(newItem)
+        window.localStorage.setItem('paymentItems', JSON.stringify( paymentItems ));
     }
-    window.localStorage.setItem('cart', JSON.stringify(cart));
-    $("#numberSelectedProduct").html(cart? cart.length : 0 )
-    $(".ezMall-popup-alert").children().hide();
-    $(".ezMall-popup-alert .ezMall-popup-success").fadeIn()
-    setInterval(() => {
-        $(".ezMall-popup-alert .ezMall-popup-success").fadeOut()
-        $(".ezMall-popup-alert").fadeOut()
-    }, 1000);
+    else{
+        if (cart == null) {
+            cart = [];
+            cart.push(newItem)
+        } else {
+            let indexInArr =cart.findIndex((item) =>{
+                if(is_variant){
+                   if(item.id == productData.id && item.variant_id == variantSelected.id && item.variant_name ==variantSelected.name){
+                    return true;
+                   } 
+                }else{
+                    if(item.id == productData.id){
+                        return true
+                    }
+                }
+                return false;
+            } )
+            if(indexInArr ==-1){
+                cart = [...cart, newItem]
+            }else{
+                cart[indexInArr].quantity=Number(cart[indexInArr].quantity) + Number(quantity);
+            }
+    
+        }
+    
+        window.localStorage.setItem('cart', JSON.stringify(cart));
+        $("#numberSelectedProduct").html(cart? cart.length : 0 )
+        $(".ezMall-popup-alert").show().css("display","flex").css("background-color","rgba(255, 255, 255, 0.5)").children().hide()
+        $(".ezMall-popup-alert .ezMall-popup-success").fadeIn()
+        setInterval(() => {
+   
+            $(".ezMall-popup-alert .ezMall-popup-success").fadeOut()
+            $(".ezMall-popup-alert").fadeOut()
+        }, 1500);
+    }
     return true
 }
 function buyNow() {
-    let itemData = JSON.parse(localStorage.getItem('productData'));
-    window.localStorage.setItem('paymentItems', JSON.stringify(itemData));
-    window.location.href = `/payment`
+    if(addToCart(true)){
+        window.location.href = `/payment`
+    }
 }
 
