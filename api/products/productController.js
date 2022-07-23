@@ -274,32 +274,49 @@ exports.getProductById = async (req, res) => {
         }
         returnData.product = result
 
-        let resultOption = await productOptionService.getOptionFromProductId(id)
+        const PromiseResult = await Promise.all([productOptionService.getOptionFromProductId(id), productVariantService.getVariant(id),productCollectionSerice.getProductCollectionByProductId(id)])
+        let resultOption = PromiseResult[0]
         if (resultOption) {
-            for (let i = 0; i < resultOption.length; i++) {
-                const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[i].id)
-                resultOption[i].value = resultOptionValue
-            }
+            // for (let i = 0; i < resultOption.length; i++) {
+            //     const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[i].id)
+            //     resultOption[i].value = resultOptionValue
+            // }
+            const result = await Promise.all(resultOption.map((ele,i)=>{
+                return  productOptionService.getDataOptionValue(ele.id)
+            }))
+            resultOption.forEach((ele,index)=>{
+                ele.value = result[index]
+            })
             returnData.option = resultOption
         }
-        let resultVariant = await productVariantService.getVariant(id)
+        let resultVariant = PromiseResult[1]
         if (resultVariant) {
+            const PromiseArr = []
+            for (let i = 0; i < resultVariant.length; i++) {
+                let PromiseArrChildren = []
+                for (let j = 0; j < resultVariant[i].option_value_id.length; j++) {
+                    // const resultOptionValue = await productOptionService.getDataOptionValueById(resultVariant[i].option_value_id[j])
+                    // optionValue.push(resultOptionValue[0])
+                    PromiseArrChildren.push(productOptionService.getDataOptionValueById(resultVariant[i].option_value_id[j]))
+                }
+                // resultVariant[i].option_value = optionValue
+                // delete resultVariant[i].option_value_id
+                PromiseArr.push(Promise.all(PromiseArrChildren))
+            }
+            const PromiseResult = await Promise.all(PromiseArr)
             for (let i = 0; i < resultVariant.length; i++) {
                 let optionValue = []
                 for (let j = 0; j < resultVariant[i].option_value_id.length; j++) {
-                    const resultOptionValue = await productOptionService.getDataOptionValueById(resultVariant[i].option_value_id[j])
-                    optionValue.push(resultOptionValue[0])
+                    // const resultOptionValue = await productOptionService.getDataOptionValueById(resultVariant[i].option_value_id[j])
+                    optionValue.push(PromiseResult[i][j][0])
                 }
                 resultVariant[i].option_value = optionValue
                 delete resultVariant[i].option_value_id
             }
-
             returnData.variant = resultVariant
         }
-        let resultCollection = await productCollectionSerice.getProductCollectionByProductId(id)
+        let resultCollection = PromiseResult[2]
         returnData.collection = resultCollection
-
-        //console.log(returnData)
         res.status(http.Success).json({
             statusCode: http.Success,
             data: returnData,
