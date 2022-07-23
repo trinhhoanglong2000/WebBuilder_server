@@ -22,6 +22,7 @@ function payMent() {
             }
         }
         window.localStorage.setItem('paymentItems', JSON.stringify(listProductBuy));
+        window.location.href = "/payment"
     }
 }
 

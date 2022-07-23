@@ -1,6 +1,10 @@
 async function PaymentGenerateCodeStart() {
     $("div[ez-mall-type='payment']").each(async function (i) {
+        let rootEle = $("div[ez-mall-type='payment']")[0];
+        let storeId = $(rootEle).attr("ez-mall-store");
         const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+        var paypalStatus = await fetch(`${rootUrl}/stores/${storeId}/paypal-status`).then(res=>res);
+        //console.log("paypalStatus",paypalStatus)
         await fetch(`${rootUrl}/data/rate`,
         {
             mode: 'cors',
@@ -118,12 +122,12 @@ function buy() {
             return {
                 id: item.id,
                 quantity: item.quantity,
-                price: convertCurrency(item.price, item.currency, currency),
+                price: item.price,//convertCurrency(item.price, item.currency, currency),
                 product_name: item.product_name,
                 is_variant: item.is_variant,
                 variant_id: item.variant_id,
                 variant_name: item.variant_name,
-                currency: currency
+                currency:  item.currency
             }
         })
     }
@@ -148,7 +152,7 @@ function buy() {
                 $(rootEle).find(".ezMall-payment-alert").children().hide()
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success").show().css("display", "flex")
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success button").click(() => {
-                    window.location.href= `/pages/orders?id=${resData.data[0].id}`;
+                    window.location.href= `/orders?id=${resData.data[0].id}`;
                 })
             } else {
                 $(rootEle).find(".ezMall-payment-alert").children().hide();
@@ -295,10 +299,10 @@ function convertCurrency(value, fromCurrency, toCurrency) {
             return Math.ceil(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount));
             break;
         case "USD":
-            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.005).toFixed(2);
+            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.004).toFixed(2);
             break;
         default:
-            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.005).toFixed(2);
+            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.004).toFixed(2);
             break;
     }
 }
