@@ -1273,13 +1273,12 @@ exports.createOrder = async (req, res) => {
 
     //MAIL
     const storeData = await storeService.findById(orderQuery.store_id)
+    const mailStoreQueryData = emailService.createConfirmCustomerMailString(orderQuery,productQuery,storeData)
     let mailStoreQuery = {
         store_id: orderQuery.store_id,
         subject: `Order #${orderQuery.id} successfully created`,
         receiver: `${orderQuery.email}`,
-        html: `<p>Your order <a href=${storeData.store_link + "/orders?id=" + orderQuery.id}>#${orderQuery.id}</a> from ${storeData.name} has been successfully created</p> <br>
-        <p>You can view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a> to proceed.</p>
-        `
+        html: mailStoreQueryData
     }
     const account = await accountService.getUserInfo(storeData.user_id)
     let mailQuery = {
