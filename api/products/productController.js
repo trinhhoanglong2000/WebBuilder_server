@@ -190,17 +190,13 @@ exports.updateProduct = async (req, res) => {
 
             let updatePromise = []
             if (updateStatus == "Add") {
-                if (createVariantQuery.price){
-                    updatePromise.push(productService.updateProduct({id : productId, price: createVariantQuery.price}))
-                }
+               
                 updatePromise.push(productVariantService.createVariant(createVariantQuery))
                 // const creatVariant = await productVariantService.createVariant(createVariantQuery)
                 await Promise.all(updatePromise)
             }
             else if (updateStatus == "Change") {
-                if (createVariantQuery.price){
-                    updatePromise.push(productService.updateProduct({id : productId, price: createVariantQuery.price}))
-                }
+               
                 updatePromise.push(productVariantService.updateVariant(createVariantQuery))
                 // const updateVariant = await productVariantService.updateVariant(createVariantQuery)
                 await Promise.all(updatePromise)
@@ -216,18 +212,30 @@ exports.updateProduct = async (req, res) => {
         }
         
         quantity = 0
+        let price 
         const product = await productVariantService.getVariant(productId)
         for (let i = 0; i < product.length;i++){
+            if (i == 0){
+                price = product[i].price
+            }
+            if (product[i].price < price){
+                price = product[i].price
+            }
             quantity += product[i].quantity
         }
         let updateQuery = {
             "id": productId,
             "inventory": quantity
         }
+        if (price){
+            updateQuery.price = price
+        }
         const updateValue = await productService.updateProduct(updateQuery)
-
     }
-
+    // let price = await productService.updatePrice({product_id : productId})
+    // if (price){
+    //      await productService.updateProduct({"id": productId, price : price})
+    // }
     if (newProduct) {
         res.status(http.Created).json({
             statusCode: http.Created,
