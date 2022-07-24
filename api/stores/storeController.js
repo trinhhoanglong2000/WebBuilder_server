@@ -1061,10 +1061,10 @@ exports.createOrder = async (req, res) => {
                 }
                 changeMoneyPromise.push(dataService.changeMoney({ from: query.currency, to: currency, price: variant[0].price }))
                 //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  variant[0].price })
-                originalPrice += query.quantity * priceFixed
-                query.price = priceFixed
-                query.currency = currency
-                totalProduct += query.quantity
+                // originalPrice += query.quantity * priceFixed
+                // query.price = priceFixed
+                // query.currency = currency
+                // totalProduct += query.quantity
                 //console.log(query.quantity * priceFixed)
 
             } else {
@@ -1095,10 +1095,10 @@ exports.createOrder = async (req, res) => {
 
                     changeMoneyPromise.push(dataService.changeMoney({ from: query.currency, to: currency, price: product[0].price }))
                     //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
-                    originalPrice += query.quantity * priceFixed
-                    query.price = priceFixed
-                    query.currency = currency
-                    totalProduct += query.quantity
+                    // originalPrice += query.quantity * priceFixed
+                    // query.price = priceFixed
+                    // query.currency = currency
+                    // totalProduct += query.quantity
                 }
             }
         }

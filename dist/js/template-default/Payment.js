@@ -3,7 +3,10 @@ async function PaymentGenerateCodeStart() {
         let rootEle = $("div[ez-mall-type='payment']")[0];
         let storeId = $(rootEle).attr("ez-mall-store");
         const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-        var paypalStatus = await fetch(`${rootUrl}/stores/${storeId}/paypal-status`).then(res=>res);
+        var paypalStatus = await fetch(`${rootUrl}/stores/${storeId}/paypal-status`).then(res => res.json()).then(res => res.ok).catch(e => null);
+        if(paypalStatus){
+            $(rootEle).find('#payment1')[0].parentNode.remove();
+        }
         //console.log("paypalStatus",paypalStatus)
         await fetch(`${rootUrl}/data/rate`,
         {

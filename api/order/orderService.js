@@ -257,6 +257,7 @@ exports.getPaypalAccessToken = async (store_id) => {
 }
 
 exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,order_id) => {
+    console.log(store_id, productData, sumPrice, discount,order_id)
     if(!discount){
         discount = 0;
     }else {
@@ -308,8 +309,8 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
             }
         ],
         application_context: {
-            return_url: `https://${returnURL}/pages/orders?id=${order_id}`,
-            cancel_url: `https://${returnURL}/pages/orders?id=${order_id}`
+            return_url: `https://${returnURL}/orders?id=${order_id}`,
+            cancel_url: `https://${returnURL}/orders?id=${order_id}`
         }
     }
 

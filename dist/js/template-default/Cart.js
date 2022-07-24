@@ -31,6 +31,9 @@ async function CartGenerateCodeItem(e) {
     let tableHead = $(e).find(`table thead`)[0];
     let tableBody = $(e).find(`table tbody`)[0];
     let ezMallSumary = $(e).find(`.ezMallSumary`)[0];
+    let buttonGoShopping = $('#ezMall-cart-zero-item button').click(()=>{
+        window.location.href = "/collections"
+    })
     let cart = JSON.parse(localStorage.getItem('cart'));
     insertCartData(cart, tableHead, tableBody, ezMallSumary, rootEle)
 }
@@ -171,6 +174,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             tableBody.insertAdjacentHTML("beforeend", rowHtml);
             $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
                 let cart = JSON.parse(localStorage.getItem('cart'));
+                console.log(cart)
                 let indexInArr =cart.findIndex((item) =>{
                     if(element.is_variant){
                        if(item.variant_id == id ){
@@ -183,12 +187,15 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                     }
                     return false;
                 })
+                
                 let itemRemove = $(tableBody).find(`#${id}`)
                 $(itemRemove).fadeOut(200).remove();
                 let totalCost = 0;
                 let items = $(tableBody).find(".ezMall-cart-item ");
                 calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
+              
                 cart = cart.splice(indexInArr,1);
+                console.log(cart)
                 window.localStorage.setItem('cart', JSON.stringify(cart));
                 updateCart()
             })
