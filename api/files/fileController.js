@@ -35,41 +35,6 @@ exports.uploadAsset = async (req, res) => {
     });
 }
 
-exports.uploadImageToS3 = async (req, res) => {
-    const data = req.body.data;
-    let result = [];
-
-    for (let item of data) {
-        const buf = Buffer.from(item.replace(/^data:image\/\w+;base64,/, ""),'base64');
-        const type = item.split(';')[0].split('/')[1];
-
-        result.push(await s3.upload({
-            Body: buf,
-            Bucket: "ezmall-bucket",
-            ContentEncoding: 'base64',
-            ContentType: `image/${type}`,
-            ACL:'public-read',
-            Key: `assets/${uuidv4()}.${type}`
-        }).promise());
-    };
-
-    result = result.map( (element) => { return element.Location })
-
-    if (result && result.length > 0) {
-        return res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Uploaded!"
-        });
-    }
-
-    return res.status(http.ServerError).json({
-        statusCode: http.ServerError,
-        message: "Server Error!"
-    });
-    
-}
-
 exports.uploadProductImageToS3 = async (req, res) => {
     const data = req.body.data.data;
     const path = req.body.data.path
@@ -108,4 +73,40 @@ exports.deleteObject = async (req, res) => {
             message: "Server error!"
         })
     }
+}
+
+exports.uploadImageToS3 = async (req, res) => {
+    const data = req.body.data;
+    let store_id = req.params.id;
+    let result = [];
+
+    for (let item of data) {
+        const buf = Buffer.from(item.replace(/^data:image\/\w+;base64,/, ""),'base64');
+        const type = item.split(';')[0].split('/')[1];
+
+        result.push(await s3.upload({
+            Body: buf,
+            Bucket: "ezmall-bucket",
+            ContentEncoding: 'base64',
+            ContentType: `image/${type}`,
+            ACL:'public-read',
+            Key: `assets/${store_id}/${uuidv4()}.${type}`
+        }).promise());
+    };
+
+    result = result.map( (element) => { return element.Location })
+
+    if (result && result.length > 0) {
+        return res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Uploaded!"
+        });
+    }
+
+    return res.status(http.ServerError).json({
+        statusCode: http.ServerError,
+        message: "Server Error!"
+    });
+    
 }

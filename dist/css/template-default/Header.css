@@ -48,9 +48,13 @@
     text-decoration: none !important;
 }
 
+[name="header"].navbar .expand li.nav-item > a i {
+    padding: 5px;
+}
+
 [name="header"].navbar li.nav-item > a:hover,
-[name="header"].navbar li.nav-item > a:hover i,
-[name="header"].navbar i:hover {
+[name="header"].navbar .dropdown li.nav-item > a:hover i,
+[name="header"].navbar .expand li.nav-item > a i:hover {
     color: rgb(113, 167, 248);
 }
 

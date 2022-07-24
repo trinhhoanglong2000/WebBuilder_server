@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const storeController = require('./storeController')
+const storeController = require('./storeController');
+const fileController = require('../files/fileController');
 const authenticator = require('../../middleware/authentication');
 
 router.get('/', authenticator.Authenticate, storeController.getStoreByUserId);
@@ -82,3 +83,6 @@ router.get('/:id/paypal-status', storeController.getPaypalStatus);
 
 router.get('/:id/currency',storeController.getCurrency)
 router.post('/:id', authenticator.Authenticate, storeController.updateStore)
+
+// ASSET
+router.post('/:id/upload-image-to-s3', fileController.uploadImageToS3);

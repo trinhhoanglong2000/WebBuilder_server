@@ -22,7 +22,6 @@ var upload = multer({
 });
 
 router.post('/assets', upload.array('file'), fileController.uploadAsset)
-router.post('/upload-image-to-s3', fileController.uploadImageToS3);
 router.post('/upload-product-image', fileController.uploadProductImageToS3);
 router.put('/object', fileController.deleteObject);
 
