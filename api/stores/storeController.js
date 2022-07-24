@@ -541,6 +541,7 @@ exports.getHeaderData = async (req, res) => {
     const menuItems = menuService.getHeaderMenu(storeId)
 
     const result = await Promise.all([logoURL, storeName, menuItems]);
+   
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -781,6 +782,12 @@ exports.deleteStore = async (req, res) => {
     const query = {
         store_id: id
     }
+
+    //DELETE S3 FILES
+    fileService.deleteFolderByKey(`storeImages/${id}`)
+    fileService.deleteFolderByKey(`assets/${id}`)
+    fileService.deleteFolderByKey(`storeComponents/${id}`)
+
 
     //Get Data Collections
     const bannerCollection = await bannercollectionService.getCollectionsByStoreId(query);

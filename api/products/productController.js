@@ -4,6 +4,7 @@ const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const productCollectionSerice = require('../collections/productcollections/productcollectionService');
+const fileService = require('../files/fileService')
 exports.updateProduct = async (req, res) => {
     // update produt
     const productId = req.params.id;
@@ -166,9 +167,10 @@ exports.updateProduct = async (req, res) => {
 
             }
             let resultPromise = await Promise.all(option_value_Promise)
+         
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
-                if (resultPromise[i][0]) {
-                    option_value_id.push(resultPromise[i][0].id)
+                if (resultPromise[j][0]) {
+                    option_value_id.push(resultPromise[j][0].id)
                 }
 
             }
@@ -250,6 +252,7 @@ exports.deleteProduct = async (req, res) => {
 
     let productRelativeQuery = {}
     productRelativeQuery.product_id = id
+
     const deleteProduct_Variant = await productService.deleteProductRelative("product_variant", productRelativeQuery)
     const deleteProduct_ProductOptionValue = await productService.deleteProductRelative("product_optionvalue", productRelativeQuery)
     const deleteProduct_ProductOption = await productService.deleteProductRelative("product_option", productRelativeQuery)
