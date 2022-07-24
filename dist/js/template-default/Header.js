@@ -60,14 +60,14 @@ const generateHeaderExpandMenu = (mNavigation) => {
         mNavigation.forEach((element) => {
             if (element.expanded && element.children) {
                 let dropdown =  `<li class="nav-item">
-                <a class="sx-nav-link expanded">
+                <a class="sx-nav-link expanded" href="${element.link}">
                     ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i>
                 </a>
                 <ul class="navbar-nav expand-ul"><li class="expand-li"> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 
                 element.children.forEach((element) => {
                     if (element.expanded && element.children) {
-                        dropdown += `<li class="expand-li"> <a class="expanded"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
+                        dropdown += `<li class="expand-li"> <a class="expanded" href="${element.link}"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
                                         <ul class="navbar-nav expand-ul2"><li> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 
                         element.children.forEach((element) => {
@@ -115,7 +115,9 @@ function embedHeaderData() {
     .then((response) => {
         data = response.data;
 
-        $('nav[name="header"] .navbar-brand h4').text(data.storeName)
+        $('nav[name="header"] .navbar-brand').attr("href", "/home");
+
+        $('nav[name="header"] .navbar-brand h4').text(data.storeName);
         
         $('nav[name="header"] .navbar-nav.dropdown').html(generateHeaderDropdownMenu(data.menuItems));
         $('nav[name="header"] .navbar-nav.expand').html(generateHeaderExpandMenu(data.menuItems));
@@ -148,23 +150,24 @@ function embedHeaderData() {
             $('#numberSelectedProduct').html(numberProduct);
         }
 
-        $('nav[name="header"] .sx-nav-link.expanded').on('click', function() {
+        $('nav[name="header"] .sx-nav-link.expanded i').on('click', function() {
+            debugger
             $('nav[name="header"] .expand > .nav-item > a.sx-nav-link').css('display', 'none');
-            $(this).parent().css('display', 'initial')
-            $(this).siblings('.expand-ul').css('display', 'flex');
+            $(this).parent().parent().css('display', 'initial')
+            $(this).parent().siblings('.expand-ul').css('display', 'flex');
        
-            $(this).siblings('.expand-ul').find('li.expand-li > .back-button').on('click', function() {
+            $(this).parent().siblings('.expand-ul').find('li.expand-li > .back-button').on('click', function() {
                 $('nav[name="header"] .expand > .nav-item > a.sx-nav-link').css('display', 'flex');
                 $(this).parents('ul.expand-ul').css('display', 'none');
             });
 
-            $(this).siblings('.expand-ul').find('li > a.expanded').on('click', function() {
-                $(this).parents('ul.expand-ul').find('li.expand-li > a').css('display', 'none');
-                $(this).siblings('.expand-ul2').css('display', 'flex');
+            $(this).parent().siblings('.expand-ul').find('li > a.expanded i').on('click', function() {
+                $(this).parent().parents('ul.expand-ul').find('li.expand-li > a').css('display', 'none');
+                $(this).parent().siblings('.expand-ul2').css('display', 'flex');
 
-                $(this).siblings('.expand-ul2').find('li > .back-button').on('click', function() {
-                    $(this).parents('ul.expand-ul2').css('display', 'none');
-                    $(this).parents('ul.expand-ul').find('li.expand-li > a').css('display', 'flex');
+                $(this).parent().siblings('.expand-ul2').find('li > .back-button').on('click', function() {
+                    $(this).parent().parents('ul.expand-ul2').css('display', 'none');
+                    $(this).parent().parents('ul.expand-ul').find('li.expand-li > a').css('display', 'flex');
                 });
             });
         })

@@ -666,7 +666,8 @@ exports.createProduct = async (req, res) => {
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
             let updateQuery = {
                 "id": productId,
-                "inventory": quantity
+                "inventory": quantity,
+                "price" : createVariantQuery.price
             }
             const updateValue = await productService.updateProduct(updateQuery)
         }

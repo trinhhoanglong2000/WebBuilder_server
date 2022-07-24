@@ -152,17 +152,27 @@ exports.updateProduct = async (req, res) => {
     if (variantQuery) {
         for (let i = 0; i < variantQuery.length; i++) {
             let option_value_id = []
+            let option_value_Promise = []
             let createVariantQuery = variantQuery[i]
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
                 let query = createVariantQuery.option_value[j]
 
                 query.product_id = productId
-                const findOptionValue = await productOptionService.findDataOptionValue(query)
-                if (findOptionValue[0]) {
-                    option_value_id.push(findOptionValue[0].id)
+                option_value_Promise.push(productOptionService.findDataOptionValue(query))
+                //const findOptionValue = await productOptionService.findDataOptionValue(query)
+                // if (findOptionValue[0]) {
+                //     option_value_id.push(findOptionValue[0].id)
+                // }
+
+            }
+            let resultPromise = await Promise.all(option_value_Promise)
+            for (let j = 0; j < createVariantQuery.option_value.length; j++) {
+                if (resultPromise[i][0]) {
+                    option_value_id.push(resultPromise[i][0].id)
                 }
 
             }
+
             quantity += createVariantQuery.quantity
             let updateStatus = createVariantQuery.update
 
@@ -172,11 +182,27 @@ exports.updateProduct = async (req, res) => {
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
 
+            if (createVariantQuery.price){
+                await productService.updateProduct({id : productId, price: createVariantQuery.price})
+            }
+
+            let updatePromise = []
             if (updateStatus == "Add") {
-                const creatVariant = await productVariantService.createVariant(createVariantQuery)
+                if (createVariantQuery.price){
+                    updatePromise.push(productService.updateProduct({id : productId, price: createVariantQuery.price}))
+                }
+                updatePromise.push(productVariantService.createVariant(createVariantQuery))
+                // const creatVariant = await productVariantService.createVariant(createVariantQuery)
+                await Promise.all(updatePromise)
             }
             else if (updateStatus == "Change") {
-                const updateVariant = await productVariantService.updateVariant(createVariantQuery)
+                if (createVariantQuery.price){
+                    updatePromise.push(productService.updateProduct({id : productId, price: createVariantQuery.price}))
+                }
+                updatePromise.push(productVariantService.updateVariant(createVariantQuery))
+                // const updateVariant = await productVariantService.updateVariant(createVariantQuery)
+                await Promise.all(updatePromise)
+            
             }
             else if (updateStatus == "Delete") {
                 quantity -= createVariantQuery.quantity
@@ -184,8 +210,7 @@ exports.updateProduct = async (req, res) => {
                     id: createVariantQuery.id
                 }
                 const deleteVariant = await productVariantService.deleteVariant(query)
-            }
-            
+            }         
         }
         
         quantity = 0
