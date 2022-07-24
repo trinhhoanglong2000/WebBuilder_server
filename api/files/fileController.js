@@ -71,8 +71,8 @@ exports.uploadImageToS3 = async (req, res) => {
 }
 
 exports.uploadProductImageToS3 = async (req, res) => {
-    const data = req.body.data;
-    const path = req.body.path
+    const data = req.body.data.data;
+    const path = req.body.data.path
     //    storeImages/:store_id/[products,banners,collections]:
     const result = await fileService.postImage(path, data);
     if (result) {
