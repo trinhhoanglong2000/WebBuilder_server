@@ -63,12 +63,19 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
   const pageNameConvert = PageName[0] ? generateURL(PageName[0].page_url) : null;
 
+
+
   //Create HTML FOOTER HEADER AND BODY
 
-  const footer = content.html.match(/(?<=<\/main>)(?:.|\n)*/gm)[0]
-  const header = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
+  const footer1 = content.html.match(/(?<=<\/main>)(?:.|\n)*/gm)[0]
+  const header1 = content.html.match(/^<nav(?:.|\n)*<\/nav>/gm)[0]
   const main = content.html.match(/<main class=\"main-content\">(?:.|\n)*<\/main>/gm)[0]
 
+  //Create HTML FOOTER HEADER
+  const data = JSON.parse(await fileService.getFile(`storeComponents/${storeId}.json`))
+
+  const footer = data["footer-html"]
+  const header = data["header-html"]
   //Components
   let componentArr = []
   const _components = JSON.parse(content.components)
@@ -171,8 +178,8 @@ exports.createConfigHTML = async (storeId) => {
 
 
 
-    const key = `views/partials/${storeNameConvert}/config`
-    fileService.uploadTextFileToS3(HTML, key, 'txt');
+  const key = `views/partials/${storeNameConvert}/config`
+  fileService.uploadTextFileToS3(HTML, key, 'txt');
 
   // fileService.uploadTextFileToS3()
   // fse.outputFile(`views/partials/${storeNameConvert}/config.hbs`, HTML)

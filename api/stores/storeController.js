@@ -541,6 +541,7 @@ exports.getHeaderData = async (req, res) => {
     const menuItems = menuService.getHeaderMenu(storeId)
 
     const result = await Promise.all([logoURL, storeName, menuItems]);
+   
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -647,10 +648,14 @@ exports.createProduct = async (req, res) => {
     }
 
     //Create Variant
+    let newPrice
     if (variantQuery) {
         for (let i = 0; i < variantQuery.length; i++) {
             let option_value_id = []
             let createVariantQuery = variantQuery[i]
+            if (i == 0){
+                newPrice = createVariantQuery.price
+            }
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
                 let query = createVariantQuery.option_value[j]
 
@@ -659,20 +664,24 @@ exports.createProduct = async (req, res) => {
                 //console.log(findOptionValue)
                 option_value_id.push(findOptionValue[0].id)
             }
-            quantity += createVariantQuery.quantity
+            quantity += createVariantQuery.quantity ?? 0
             delete createVariantQuery.option_value
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
-            let updateQuery = {
-                "id": productId,
-                "inventory": quantity,
-                "price" : createVariantQuery.price
+            if (createVariantQuery.price < newPrice){
+                newPrice =  createVariantQuery.price
             }
-            const updateValue = await productService.updateProduct(updateQuery)
         }
-
     }
+  
+    let updateQuery = {
+        "id": productId,
+        "inventory": quantity,
+        "price" : newPrice
+    }
+    console.log(updateQuery)
+    const updateValue = await productService.updateProduct(updateQuery)
     if (newProduct) {
         res.status(http.Created).json({
             statusCode: http.Created,
@@ -781,6 +790,12 @@ exports.deleteStore = async (req, res) => {
     const query = {
         store_id: id
     }
+
+    //DELETE S3 FILES
+    fileService.deleteFolderByKey(`storeImages/${id}`)
+    fileService.deleteFolderByKey(`assets/${id}`)
+    fileService.deleteFolderByKey(`storeComponents/${id}`)
+
 
     //Get Data Collections
     const bannerCollection = await bannercollectionService.getCollectionsByStoreId(query);

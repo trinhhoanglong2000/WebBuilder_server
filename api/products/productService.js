@@ -308,3 +308,20 @@ exports.updateInventory = async (query) => {
     }
     return result
 }
+
+
+exports.updatePrice = async (query) => {
+    const data = await variantService.getVariant(query.product_id)
+    let min
+    for (let i = 0 ; i < data.length; i++){
+        if ( i== 0){
+            min = data[i].price
+        }
+        if (data[i].price < min){
+            min = data[i].price
+        }
+    }
+    return min
+}
+
+

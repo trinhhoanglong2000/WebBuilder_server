@@ -6,7 +6,6 @@ const dns = require('dns');
 const fileService = require('../api/files/fileService')
 router.get('/', async (req, res, next) => {
     {
-        console.log("!23")
         let hostURL = req.get('Host')
         let subdomain = req.subdomains;
         let urlArr = hostURL.split('.')

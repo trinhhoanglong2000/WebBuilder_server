@@ -8,6 +8,7 @@ const pageService = require('../page/pageService')
 const URLParser = require('../../helper/common/index')
 const menuService = require('../menu/menuService')
 const menuItemService = require('../menuItem/menuItemService')
+const fileService = require('../files/fileService')
 exports.getTemplate = async (query) => {
 
     let config = {
@@ -231,6 +232,18 @@ exports.useTemplate = async (query) => {
         return null
     }
 
+
+    // CREATE NEW STORE COMPONENT
+
+
+    const storeComponent = await fileService.getFile(`templates/${template[0].name}/_store-component.json`)
+
+    const id_store_content = storeComponent.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
+    const content = JSON.parse(storeComponent.toString('utf-8').replace(id_store_content, `${query.store_id}`).replace(id_store_content, `${query.store_id}`));
+    
+    await fileService.uploadTextFileToS3(JSON.stringify(content),`storeComponents/${query.store_id}`,'json')
+    
+
     //DELETE ALL PAGES
     const DefaultData = await Promise.all([pageService.getPagesByStoreId({ store_id: query.store_id }), menuService.getMenuByStoreId({ store_id: query.store_id })])
     const allPages = DefaultData[0]
@@ -251,6 +264,8 @@ exports.useTemplate = async (query) => {
         return menuService.deleteMenu({ id: ele.id })
     }))
     await Promise.all([DeletePage, DeleteMenu])
+
+
     //INSERT NEW PAGES 
     const allNewPages = await getAllTemplateInit({ template_id: query.template_id })
     let PromiseArr = []
@@ -265,6 +280,8 @@ exports.useTemplate = async (query) => {
         //await pageService.createPage(createPagesQuery, allNewPages[i].page_url, allNewPages[i].is_default, "template-default");
     }
     await Promise.all(PromiseArr)
+
+
 
     //CREATE DEFAULT MENU 
     let newMenuPromiseArr = []

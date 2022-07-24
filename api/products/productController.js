@@ -4,6 +4,7 @@ const http = require('../../const');
 const productOptionService = require('../products_option/ProductOptionService')
 const productVariantService = require('../variants/VariantsService')
 const productCollectionSerice = require('../collections/productcollections/productcollectionService');
+const fileService = require('../files/fileService')
 exports.updateProduct = async (req, res) => {
     // update produt
     const productId = req.params.id;
@@ -166,9 +167,10 @@ exports.updateProduct = async (req, res) => {
 
             }
             let resultPromise = await Promise.all(option_value_Promise)
+         
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
-                if (resultPromise[i][0]) {
-                    option_value_id.push(resultPromise[i][0].id)
+                if (resultPromise[j][0]) {
+                    option_value_id.push(resultPromise[j][0].id)
                 }
 
             }
@@ -188,17 +190,13 @@ exports.updateProduct = async (req, res) => {
 
             let updatePromise = []
             if (updateStatus == "Add") {
-                if (createVariantQuery.price){
-                    updatePromise.push(productService.updateProduct({id : productId, price: createVariantQuery.price}))
-                }
+               
                 updatePromise.push(productVariantService.createVariant(createVariantQuery))
                 // const creatVariant = await productVariantService.createVariant(createVariantQuery)
                 await Promise.all(updatePromise)
             }
             else if (updateStatus == "Change") {
-                if (createVariantQuery.price){
-                    updatePromise.push(productService.updateProduct({id : productId, price: createVariantQuery.price}))
-                }
+               
                 updatePromise.push(productVariantService.updateVariant(createVariantQuery))
                 // const updateVariant = await productVariantService.updateVariant(createVariantQuery)
                 await Promise.all(updatePromise)
@@ -214,18 +212,30 @@ exports.updateProduct = async (req, res) => {
         }
         
         quantity = 0
+        let price 
         const product = await productVariantService.getVariant(productId)
         for (let i = 0; i < product.length;i++){
+            if (i == 0){
+                price = product[i].price
+            }
+            if (product[i].price < price){
+                price = product[i].price
+            }
             quantity += product[i].quantity
         }
         let updateQuery = {
             "id": productId,
             "inventory": quantity
         }
+        if (price){
+            updateQuery.price = price
+        }
         const updateValue = await productService.updateProduct(updateQuery)
-
     }
-
+    // let price = await productService.updatePrice({product_id : productId})
+    // if (price){
+    //      await productService.updateProduct({"id": productId, price : price})
+    // }
     if (newProduct) {
         res.status(http.Created).json({
             statusCode: http.Created,
@@ -250,6 +260,7 @@ exports.deleteProduct = async (req, res) => {
 
     let productRelativeQuery = {}
     productRelativeQuery.product_id = id
+
     const deleteProduct_Variant = await productService.deleteProductRelative("product_variant", productRelativeQuery)
     const deleteProduct_ProductOptionValue = await productService.deleteProductRelative("product_optionvalue", productRelativeQuery)
     const deleteProduct_ProductOption = await productService.deleteProductRelative("product_option", productRelativeQuery)
