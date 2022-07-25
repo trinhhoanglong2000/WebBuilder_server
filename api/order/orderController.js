@@ -97,10 +97,41 @@ exports.deleteOrderStatus = async (req, res) => {
     delete query["store_id"]
     query.order_id = req.params.id
     query.status = "DELETED"
-    const result = await orderService.CreateStatusdeleteOrder(query)
-
     const storeData = await storeService.findById(storeId)
     const orderData = await orderService.getAllOrder({ id: query.order_id })
+    let paypalId = orderData[0].paypal_id
+
+    // Payment refund start
+   
+    if(orderData[0].payment_method == 1){
+        let refundFlag = true;
+        const checkStatus = await orderService.paypalCheckOrder(storeId, paypalId).catch(e => null)
+        if (checkStatus.status == "COMPLETED") {
+            refundFlag = false
+            const purchase_units = checkStatus.purchase_units[0]
+            const capture = purchase_units.payments.captures[0];
+            const amount = capture.amount
+            const refundLinks = capture.links.find(item => item.rel === "refund")
+            if(refundLinks){
+                const resRefund = await orderService.paypalRefundOrder(storeId, refundLinks.href, amount)
+                if(resRefund){
+                    if(resRefund.id && res.status){
+                        refundFlag = true
+                    }
+                }
+            }
+        }   
+        if(!refundFlag){
+            res.status(http.ServerError).json({
+                statusCode: http.ServerError,
+                message: "Server Error"
+            })
+            return
+        }
+    }
+    // Payment refund end
+
+    const result = await orderService.CreateStatusdeleteOrder(query)
     if (orderData.length) {
         let mailStoreQuery = {
             store_id: storeId,

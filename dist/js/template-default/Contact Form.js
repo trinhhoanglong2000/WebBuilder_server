@@ -34,7 +34,7 @@ function embedContact() {
     
                 let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
                 let storeId = $('nav[name="header"]').attr("store-id");
-                debugger
+                
                 let requestOptions = {
                     method: 'POST',
                     body: JSON.stringify({

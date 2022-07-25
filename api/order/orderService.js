@@ -361,3 +361,28 @@ exports.paypalCheckOrder = async (store_id, paypal_order_id) => {
             return await response.json()
         })
 }
+exports.paypalRefundOrder = async (store_id, refundLink, amount) => {
+    var accessTokenData = await this.getPaypalAccessToken(store_id)
+    if (accessTokenData == null) {
+        return null
+    }
+    var payload = {
+        amount: amount,
+        invoice_id:  new Date().getTime(),
+        note_to_payer: "Null"
+    }
+    var data = JSON.stringify(payload);
+    console.log(payload)
+    console.log(refundLink)
+    return await fetch(refundLink, {
+        method: "post",
+        headers: {
+            'Authorization': 'Bearer ' + accessTokenData.access_token,
+            'Content-Type': 'application/json',
+        },
+        body: data
+    })
+        .then(async (response) => {
+            return await response.json()
+        })
+}
