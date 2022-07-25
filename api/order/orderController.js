@@ -111,16 +111,17 @@ exports.deleteOrderStatus = async (req, res) => {
             `
         }
         const account = await accountService.getUserInfo(storeData.user_id)
+        
+        const html = emailService.createUserMailString(`<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
+        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>`)
         let mailQuery = {
             subject: `Order #${query.order_id} successfully change delete status`,
             receiver: `${account[0].email}`,
-            html: `<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
-            <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>
-            `
+            html: html
         }
 
-        await emailService.adminSendMail(mailQuery)
-        await emailService.sendMailFromStore(mailStoreQuery)
+        emailService.adminSendMail(mailQuery)
+        emailService.sendMailFromStore(mailStoreQuery)
     }
 
     if (result) {

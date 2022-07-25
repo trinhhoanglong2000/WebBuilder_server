@@ -47,11 +47,12 @@ exports.createStore = async (req, res) => {
         //     receiver
         // }
 
+        let html = emailService.createUserMailString(`<p>Your new Store named <strong>${storeObj.name}</strong> have been successfully create. Please check it out</p>`)
         let query = {
             store_id: storeId,
             subject: `EASYMALL New Store Created`,
             receiver: `${req.user.email}`,
-            html: `<p>Your new Store named ${storeObj.name} have been successfully create. Please check it out</p>`
+            html: html
         }
         emailService.sendMailFromStore(query)
         res.status(http.Created).json({
@@ -1647,16 +1648,18 @@ exports.sendContact = async (req, res) => {
         `
     }
     const account = await accountService.getUserInfo(storeData.user_id)
+
+    let html = emailService.createUserMailString(`<p>A customer with these following informations has subbmited a form <br>
+    - Name  : ${query.name} <br>
+    - Email : ${query.email} <br>
+    - Phone : ${query.phone} <br>
+    - Comment on store : ${query.comment} <br>
+    Please check it out!</p>
+`)
     let mailQuery = {
         subject: `New Contact Form from ${storeData.name}`,
         receiver: `${account[0].email}`,
-        html: `<p>A customer with these following informations has subbmited a form <br>
-            - Name  : ${query.name} <br>
-            - Email : ${query.email} <br>
-            - Phone : ${query.phone} <br>
-            - Comment on store : ${query.comment} <br>
-            Please check it out!</p>
-        `
+        html: html
     }
 
     await emailService.adminSendMail(mailQuery)
