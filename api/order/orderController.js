@@ -27,13 +27,23 @@ exports.changeOrderStatus = async (req, res) => {
     delete query["store_id"]
     query.order_id = req.params.id
     const result = await orderService.changeOrderStatus(query)
-
     if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Successfully Change Status"
-        })
+        
+        if (result == "Fail"){
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data: false,
+                message: "Fail to change restock status"
+            })
+        }
+        else {
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data: result,
+                message: "Successfully Change Status"
+            })
+        }
+        
     }
     else {
         res.status(http.NotAcceptable).json({
