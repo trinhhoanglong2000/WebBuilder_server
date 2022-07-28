@@ -119,3 +119,28 @@ exports.getConfigEmail = async (req, res) => {
         })
     }
 };
+
+exports.resendVeifyEmail = async (req, res) => {
+    const email = req.body.email
+    const result = await emailService.resendVerifyEmail(email)
+
+    if (result) {
+        if (result.success) {
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                message: "resend verify email successfully"
+            })
+        } else {
+            res.status(http.NotAcceptable).json({
+                statusCode: http.NotAcceptable,
+                message: result.message
+            })
+        }
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+};

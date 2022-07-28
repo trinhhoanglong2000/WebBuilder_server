@@ -2,6 +2,7 @@ const DBHelper = require('../../helper/DBHelper/DBHelper')
 const bcrypt = require('../../helper/genSalt')
 
 exports.createVerification = async (user_id, unique_string) => {
+    await DBHelper.deleteData('verification', { user_id: user_id })
     const data = {
         user_id: user_id,
         unique_string: unique_string
