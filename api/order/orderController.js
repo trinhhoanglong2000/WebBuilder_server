@@ -27,13 +27,23 @@ exports.changeOrderStatus = async (req, res) => {
     delete query["store_id"]
     query.order_id = req.params.id
     const result = await orderService.changeOrderStatus(query)
-
     if (result) {
-        res.status(http.Success).json({
-            statusCode: http.Success,
-            data: result,
-            message: "Successfully Change Status"
-        })
+        
+        if (result == "Fail"){
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data: false,
+                message: "Fail to change restock status"
+            })
+        }
+        else {
+            res.status(http.Success).json({
+                statusCode: http.Success,
+                data: result,
+                message: "Successfully Change Status"
+            })
+        }
+        
     }
     else {
         res.status(http.NotAcceptable).json({
@@ -142,16 +152,17 @@ exports.deleteOrderStatus = async (req, res) => {
             `
         }
         const account = await accountService.getUserInfo(storeData.user_id)
+        
+        const html = emailService.createUserMailString(`<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
+        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>`)
         let mailQuery = {
             subject: `Order #${query.order_id} successfully change delete status`,
             receiver: `${account[0].email}`,
-            html: `<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
-            <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>
-            `
+            html: html
         }
 
-        await emailService.adminSendMail(mailQuery)
-        await emailService.sendMailFromStore(mailStoreQuery)
+        emailService.adminSendMail(mailQuery)
+        emailService.sendMailFromStore(mailStoreQuery)
     }
 
     if (result) {
@@ -199,17 +210,19 @@ exports.restoreOrder = async (req, res) => {
         })
         return
     }
-
+    console.log(status)
     if (status.length > 1) {
         if (status[0].status == "DELETED") {
-            if (status[1].status == "CREATE" || status[1].status == "RESTOCK") {
-                query.status = status[length - 2]
-                result = await orderService.changeOrderStatus(query)
+           
+            if (status[1].status == "CREATE" || status[1].status == "RESTOCK" || status[1].status == "PRE-PAID" || status[1].status == "PREPAID & RESTOCK") {
+                query.status = status[1].status
             }
             else {
                 query.status = "CONFIRMED"
-                result = await orderService.CreateStatusdeleteOrder(query)
             }
+            console.log(query)
+            result = await orderService.createOrderStatus(query)
+
         }
         else {
             res.status(http.NotAcceptable).json({
@@ -226,6 +239,7 @@ exports.restoreOrder = async (req, res) => {
         })
         return
     }
+
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,

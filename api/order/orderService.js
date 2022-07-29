@@ -130,6 +130,28 @@ exports.changeOrderStatus = async (query) => {
     let newStatus
     if (query.status == "RESTOCK" || query.status == "PAID & RESTOCK") {
         const allProduct = await getOrderProduct({ order_id: query.order_id })
+
+        for (let i = 0; i < allProduct.length; i++) {
+            if (allProduct[i].is_variant) {
+                const variant = await variantService.getVariantById(allProduct[i].variant_id)
+                if (variant.length > 0) {
+                    let remainQuantity = variant[0].quantity - allProduct[i].quantity
+                    if (remainQuantity < 0){
+                        return "Fail"
+                    }
+                }
+            }
+            else {
+                const product = await productService.findById(allProduct[i].product_id)
+                if (product.length > 0) {
+                    let remainQuantity = product[0].inventory - allProduct[i].quantity
+                    if (remainQuantity < 0) {
+                        return "Fail"
+                    }
+                }
+            }
+        }
+
         for (let i = 0; i < allProduct.length; i++) {
             if (allProduct[i].is_variant) {
                 const variant = await variantService.getVariantById(allProduct[i].variant_id)
