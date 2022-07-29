@@ -19,7 +19,7 @@ exports.createOrder = async (query) => {
     }
     const result = await DBHelper.insertData(query, "orders", false, "id")
 
-    
+
     return result
 }
 
@@ -113,7 +113,7 @@ var getAllOrder = exports.getAllOrder = async (query) => {
     return DBHelper.FindAll("orders", config)
 }
 
-exports.getAllOrderStatus = async (query) => {
+var getAllOrderStatus = exports.getAllOrderStatus = async (query) => {
     const config = {
         where: {
             "order_id": query.order_id
@@ -136,7 +136,7 @@ exports.changeOrderStatus = async (query) => {
                 const variant = await variantService.getVariantById(allProduct[i].variant_id)
                 if (variant.length > 0) {
                     let remainQuantity = variant[0].quantity - allProduct[i].quantity
-                    if (remainQuantity < 0){
+                    if (remainQuantity < 0) {
                         return "Fail"
                     }
                 }
@@ -220,7 +220,66 @@ exports.changeOrderStatusPaid = async (query) => {
 }
 
 exports.CreateStatusdeleteOrder = async (query) => {
+
+    // Return Data
+    const status = await getAllOrderStatus({ order_id: query.order_id })
+    if (status) {
+     
+        if (status[0].status != "PREPAID & RESTOCK" && status[0].status != "PAID & RESTOCK" && status[0].status != "RESTOCK") {
+          
+            const products = await getOrderProduct({ order_id: query.order_id })
+            for (let i = 0; i < products.length; i++) {
+                let data
+        
+                if (!products[i].is_variant) {
+                    data = await productService.findById(products[i].product_id)
+                    
+                }
+                else {
+                    data = await variantService.getVariantById(products[i].variant_id)
+                }
+             
+                if (data) {
+                    if (data[0]) {
+                        let query = {
+                            id: products[i].product_id,
+                            quantity: products[i].is_variant ? data[0].quantity + products[i].quantity : data[0].inventory + products[i].quantity,
+                            is_variant: products[0].is_variant,
+                            variant_id: products[0].variant_id
+                        }
+                        await productService.updateInventory(query)
+                    }
+                }
+            }
+        }
+    }
+
     return DBHelper.insertData(query, "order_status", true, "id")
+}
+
+exports.RestoreOrderProduct = async (query) => {
+    const products = await getOrderProduct({ order_id: query.order_id })
+    for (let i = 0; i < products.length; i++) {
+        let data
+        if (!products[i].is_variant) {
+            data = await productService.findById(products[i].product_id)
+        }
+        else {
+            data = await variantService.getVariantById(products[i].variant_id)
+        }
+        if (data) {
+            if (data[0]) {
+                let query = {
+                    id: products[i].product_id,
+                    quantity: products[i].is_variant ? data[0].quantity - products[i].quantity : data[0].inventory - products[i].quantity,
+                    is_variant: products[0].is_variant,
+                    variant_id: products[0].variant_id
+                }
+                query.quantity = query.quantity >=0 ? query.quantity : 0
+                await productService.updateInventory(query)
+            }
+        }
+    }
 }
 exports.deleteOrderStatus = async (query) => {
     return DBHelper.deleteData("order_status", query)
@@ -278,25 +337,25 @@ exports.getPaypalAccessToken = async (store_id) => {
 
 }
 
-exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,order_id) => {
-    if(!discount){
+exports.createPaypalOrder = async (store_id, productData, sumPrice, discount, order_id) => {
+    if (!discount) {
         discount = 0;
-    }else {
+    } else {
         discount = parseFloat(discount).toFixed(2);
     }
- 
+
     var accessTokenData = await this.getPaypalAccessToken(store_id)
     if (accessTokenData == null) {
         return null;
     }
-    let returnURL=  await storeService.findById(store_id).then(res=>res.store_link);
+    let returnURL = await storeService.findById(store_id).then(res => res.store_link);
     var payload = {
         intent: "CAPTURE",
         purchase_units: [
             {
-                items:  productData.map((item) => {
+                items: productData.map((item) => {
                     return {
-                        name: item.is_variant ? `${item.product_name } / ${item.variant_name}` :item.product_name ,
+                        name: item.is_variant ? `${item.product_name} / ${item.variant_name}` : item.product_name,
                         description: "",
                         quantity: item.quantity,
                         unit_amount: {
@@ -307,11 +366,11 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
                 }),
                 amount: {
                     currency_code: "USD",
-                    value: parseFloat( Number(sumPrice) - Number(discount)).toFixed(2),
+                    value: parseFloat(Number(sumPrice) - Number(discount)).toFixed(2),
                     breakdown: {
                         item_total: {
                             currency_code: "USD",
-                            value: parseFloat(Number(sumPrice)).toFixed(2), 
+                            value: parseFloat(Number(sumPrice)).toFixed(2),
                         },
                         shipping: {
                             currency_code: "USD",
@@ -319,7 +378,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
                         },
                         shipping_discount: {
                             currency_code: "USD",
-                            value:  0.00
+                            value: 0.00
                         },
                         discount: {
                             currency_code: "USD",
@@ -336,7 +395,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
     }
 
     var data = JSON.stringify(payload);
-   // console.log(data)
+    // console.log(data)
     return await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
         method: "post",
         headers: {
@@ -348,7 +407,7 @@ exports. createPaypalOrder = async (store_id, productData, sumPrice, discount,or
     }).then((response) => {
         return response.json()
     }).then((order) => {
-       // console.log(order)
+        // console.log(order)
         return order
     });
 }
