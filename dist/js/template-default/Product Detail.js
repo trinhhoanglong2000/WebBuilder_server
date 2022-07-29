@@ -3,7 +3,7 @@
 function changeThumnail(id) {
     $(".ezMall-stick-slide .img-thumbnail").attr('src', $(`#${id} img`)[0].src);
 }
-function getParam(param){
+function getParam(param) {
     let url = new URL(window.location.href);
     var value = url.searchParams.get(param);
     return value
@@ -14,18 +14,18 @@ function insertProductData(rootEle, data) {
     }
     window.localStorage.setItem('productData', JSON.stringify(data));
     let productData = data.product[0];
+    let variantData = productData.is_variant? data.variant: [];
     let imageArr = productData.images ? productData.images : [];
     let options = productData.is_variant ? data.option : [];
     // For render image
-    $(rootEle).find(`.ezMall-price .price`).html(productData.price);
     $(rootEle).find(`.ezMall-quantity-remain`).html(productData.inventory);
     $(rootEle).find(`ezMall-quantity-input`).prop("max", productData.inventory);
     $(rootEle).find(".ezMall-header").html(productData.title)
     $(rootEle).find(".ezMall-type-value").html(productData.type)
     $(rootEle).find(".ezMall-status-value").html(productData.status)
     $(rootEle).find(".ezMall-description").html(productData.description)
-    $(rootEle).find(".ezMall-price .price").html(productData.price)
-    $(rootEle).find(".ezMall-price .currency").html(productData.currency)
+    $(rootEle).find(`.ezMall-price .price`).html(priceToString(productData.is_variant? variantData[0].price: productData.price, productData.currency));
+    //$(rootEle).find(".ezMall-price .currency").html(productData.currency)
     $(rootEle).find(".ezMall-stick-slide").html("")
     let thumbnailImage = $(rootEle).find(".img-thumbnail")[0];
     $(thumbnailImage).prop("src", imageArr[0]);
@@ -87,10 +87,10 @@ async function ProductDetailGenerateCodeItem(e) {
     const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let reqUrl = `${rootUrl}/products/9ecd724b-6041-4a5e-b2c1-e98ed37628de`;
     let productId = getParam("id");
-    if(productId){
+    if (productId) {
         reqUrl = `${rootUrl}/products/${productId}`;
     }
-    $(".ezMall-popup-alert").show().css("display","flex").children().hide();
+    $(".ezMall-popup-alert").show().css("display", "flex").children().hide();
     $(".ezMall-loading").show();
     await fetch(reqUrl
         , {
@@ -102,9 +102,9 @@ async function ProductDetailGenerateCodeItem(e) {
             if (res.message = "Get product successfully!") {
                 insertProductData(e, res.data);
             } else {
-
+                window.location.href = "/"
             }
-        }).finally(()=>{
+        }).finally(() => {
             $(".ezMall-popup-alert").hide()
         })
 }
@@ -128,7 +128,7 @@ $(document).ready(function () {
 
 function VariantCheck(variantId, optionId) {
     let itemData = JSON.parse(localStorage.getItem('productData'));
-    let productData = itemData.product[0];
+    let productData = itemData ? itemData.product[0] : [];
     let variantData = itemData.variant;
     let option = itemData.option;
     let indexOption = option.findIndex((item) => item.id === variantId)
@@ -163,14 +163,14 @@ function VariantCheck(variantId, optionId) {
         }
     }
     if (variantValid != null && variantValid.length == 1) {
-        $(`.ezMall-price .price`).html(variantValid[0].price);
+        $(`.ezMall-price .price`).html( priceToString(variantValid[0].price, productData.currency));
         $(`.ezMall-quantity-remain`).html(variantValid[0].quantity);
         $(`.ezMall-quantity-input`).prop("max", variantValid[0].quantity);
         if ($(`.ezMall-quantity-input`).val > variantValid[0].quantity) {
             $(`.ezMall-quantity-input`).val(variantValid[0].quantity)
         }
     } else {
-        $(`.ezMall-price .price`).html(productData.price);
+        $(`.ezMall-price .price`).html(priceToString(productData.price, productData.currency));
         $(`.ezMall-quantity-remain`).html(productData.inventory);
         $(`.ezMall-quantity-input`).prop("max", productData.inventory);
         if ($(`.ezMall-quantity-input`).val > productData.inventory) {
@@ -186,17 +186,24 @@ function VariantCheck(variantId, optionId) {
 }
 
 function addToCart(isBuyNow = false) {
-    debugger
-    $(".ezMall-popup-alert").show().css("display","flex").children().hide()
+    $(`.ezMall-quantity-input`).css("border-color", "black").css("background","none")
+    $(".ezMall-popup-alert").show().css("display", "flex").children().hide()
     $(".ezMall-popup-alert .ezMall-loading").show();
+ 
     let itemData = JSON.parse(localStorage.getItem('productData'));
-    let productData = itemData.product[0];
+
+    let productData = itemData ? itemData.product[0] : [];
     let variantData = itemData.variant;
-    let options =productData.is_variant? itemData.option : [];
+    let options = productData.is_variant ? itemData.option : [];
     let optionName = options.map(item => item.name).join("/");
     let is_variant = productData.is_variant;
     let arrayOption = [];
     let arrayAlert = [];
+
+    
+    let continue_sell= productData.continue_sell;
+    
+
     if (is_variant) {
         options.forEach(option => {
             let optionChecked = $(`#${option.id} input[type=radio]:checked`);
@@ -207,6 +214,8 @@ function addToCart(isBuyNow = false) {
             }
         })
     }
+
+   
     if (arrayAlert.length > 0) {
         $(".ezMall-popup-alert .ezMall-loading").hide();
         $(`.ezMall-alert`).show();
@@ -220,7 +229,27 @@ function addToCart(isBuyNow = false) {
     let variantSelected = is_variant ? variantData.find(element => element.option_value.map(item => item.id).join(",") == joinString) : null;
 
     let cart = JSON.parse(localStorage.getItem('cart'));
+
     let quantity = Number($(`input.ezMall-quantity-input`).first().val())
+    if(quantity == 0){
+        $(`.ezMall-quantity-input`).css("border-color", "red").css("background","#ffdddd")
+        return false
+    }
+    if(!continue_sell){
+        let maxProduct =  Number($(`.ezMall-quantity-input`).attr("max"));
+        if (quantity > maxProduct){
+            $(".ezMall-popup-alert .ezMall-loading").hide();
+            $(".ezMall-popup-alert").hide()
+            $(".ezMall-alert-text-config").hide()
+            $(`.ezMall-alert`).show();
+            $(`.ezMall-alert-text-option`).html(`${maxProduct} products remain`)
+            $(`.ezMall-quantity-input`).css("border-color", "red").css("background","#ffdddd")
+            return false
+        }else{
+            $(`.ezMall-alert`).hide();
+        }
+    }
+
     let newItem = {
         "id": productData.id,
         "quantity": Number(quantity),
@@ -230,55 +259,83 @@ function addToCart(isBuyNow = false) {
         "is_variant": productData.is_variant,
         "variant_id": is_variant ? variantSelected.id : null,
         "variant_name": is_variant ? variantSelected.name : null,
-        "thumnail": productData.images.length > 0? productData.images[0]: "https://dummyimage.com/150x150/000/fff",
+        "thumnail": productData.images.length > 0 ? productData.images[0] : "https://dummyimage.com/150x150/000/fff",
         "description": productData.description,
         "optionName": optionName
     }
-    if(isBuyNow){
+    if (isBuyNow) {
         let paymentItems = [];
         paymentItems.push(newItem)
-        window.localStorage.setItem('paymentItems', JSON.stringify( paymentItems ));
+        window.localStorage.setItem('paymentItems', JSON.stringify(paymentItems));
     }
-    else{
+    else {
         if (cart == null) {
             cart = [];
             cart.push(newItem)
         } else {
-            let indexInArr =cart.findIndex((item) =>{
-                if(is_variant){
-                   if(item.id == productData.id && item.variant_id == variantSelected.id && item.variant_name ==variantSelected.name){
-                    return true;
-                   } 
-                }else{
-                    if(item.id == productData.id){
+            let indexInArr = cart.findIndex((item) => {
+                if (is_variant) {
+                    if (item.id == productData.id && item.variant_id == variantSelected.id && item.variant_name == variantSelected.name) {
+                        return true;
+                    }
+                } else {
+                    if (item.id == productData.id) {
                         return true
                     }
                 }
                 return false;
-            } )
-            if(indexInArr ==-1){
+            })
+            if (indexInArr == -1) {
                 cart = [...cart, newItem]
-            }else{
-                cart[indexInArr].quantity=Number(cart[indexInArr].quantity) + Number(quantity);
+            } else {
+                cart[indexInArr].quantity = Number(cart[indexInArr].quantity) + Number(quantity);
             }
-    
+
         }
-    
+
         window.localStorage.setItem('cart', JSON.stringify(cart));
-        $("#numberSelectedProduct").html(cart? cart.length : 0 )
-        $(".ezMall-popup-alert").show().css("display","flex").css("background-color","rgba(255, 255, 255, 0.5)").children().hide()
+        $("#numberSelectedProduct").html(cart ? cart.length : 0)
+        $(".ezMall-popup-alert").show().css("display", "flex").css("background-color", "rgba(255, 255, 255, 0.5)").children().hide()
         $(".ezMall-popup-alert .ezMall-popup-success").fadeIn()
-        setInterval(() => {
-   
+        setTimeout(() => {
+
             $(".ezMall-popup-alert .ezMall-popup-success").fadeOut()
             $(".ezMall-popup-alert").fadeOut()
         }, 1500);
     }
+    updateCart()
     return true
 }
 function buyNow() {
-    if(addToCart(true)){
+    if (addToCart(true)) {
         window.location.href = `/payment`
     }
 }
 
+function updateCart() {
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    if (!cart) {
+        cart = []
+    }
+    let numberProduct = cart ? cart.length : 0;
+    if (numberProduct == 0) {
+        $('i.fa.fa-shopping-bag span').css('display', 'none');
+    } else {
+        $('i.fa.fa-shopping-bag span').css('display', 'initial');
+        $('#numberSelectedProduct').html(numberProduct);
+    }
+}
+
+function priceToString(value, currency) {
+    switch (currency) {
+        case "VND":
+            return Math.ceil(Number(value)).toLocaleString('fi-FI', { style: 'currency', currency: 'VND' });
+            break;
+        case "USD":
+            return Number(value).toLocaleString('fi-FI', { style: 'currency', currency: 'USD' });
+            break;
+        default:
+            return `${value}`
+            break;
+    }
+}

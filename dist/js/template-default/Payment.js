@@ -54,12 +54,8 @@ $(document).ready(async function () {
 })
 
 function buy() {
-  
-
     let isOmitFill = false;
-
     let rootEle = $("div[ez-mall-type='payment']")[0];
-
     $(rootEle).find(".ezMall-payment-alert").show().css("display", "flex").children().hide()
     $(rootEle).find(".ezMall-payment-alert .ezMall-loading").show();
     let storeId = $(rootEle).attr("ez-mall-store");
@@ -149,7 +145,32 @@ function buy() {
         .then(function (res) { return res.json(); })
         .then(function (resData) {
             if (resData.statusCode == 201) {
-                
+                let cart = JSON.parse(localStorage.getItem('cart'));
+                if (!cart){
+                    []
+                }
+                paymentItems.forEach(product =>{
+                    let indexInArr =cart.findIndex((item) =>{
+                        if(product.is_variant){
+                           if(item.variant_id == product.variant_id ){
+                            return true;
+                           } 
+                        }else{
+                            if(item.id == product.id){
+                                return true
+                            }
+                        }
+                        return false;
+                    })
+                    console.log(product.quantity)
+                    let remainQuantity = Number(cart[indexInArr].quantity) - Number(product.quantity);
+                    if(remainQuantity){
+                        cart[indexInArr].quantity=remainQuantity
+                    }else{
+                        cart = cart.length == 1 ? [] : cart.splice(indexInArr,1);
+                    }
+                })
+                window.localStorage.setItem('cart', JSON.stringify(cart));
                 localStorage.removeItem('paymentItems')
                 localStorage.removeItem('discount')
                 $(rootEle).find(".ezMall-payment-alert").children().hide()
@@ -160,6 +181,7 @@ function buy() {
             } else {
                 $(rootEle).find(".ezMall-payment-alert").children().hide();
                 $(rootEle).find(".ezMall-payment-alert  .ezMall-popup-fail").show().css("display", "flex")
+                $(rootEle).find(".ezMall-payment-alert  .ezMall-popup-fail .ezMalll-msg").html(resData.message)
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-fail button").click(() => {
                     window.location.href = `/`
                 })

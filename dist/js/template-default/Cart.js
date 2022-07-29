@@ -10,6 +10,9 @@ function payMent() {
             }
         }
         let cart = JSON.parse(localStorage.getItem('cart'));
+        if(!cart){
+            cart = []
+        }
         for (let i = 0; i < cart.length; i++) {
             if (cart[i].is_variant) {
                 if (listIdCheck.includes(cart[i].variant_id)) {
@@ -34,7 +37,24 @@ async function CartGenerateCodeItem(e) {
     let buttonGoShopping = $('#ezMall-cart-zero-item button').click(()=>{
         window.location.href = "/collections"
     })
+    const storeId = $('nav').attr("store-id");
+    const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+    const url = `${rootUrl}/stores/${storeId}/currency`
+    const currency = await fetch(url,
+        {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+    }).then(res=> res)//.then(res=>res).catch(e => console.log(e))
+
+    window.localStorage.setItem('currency', JSON.stringify(currency));
+
     let cart = JSON.parse(localStorage.getItem('cart'));
+    if(!cart){
+        cart = []
+    }
     insertCartData(cart, tableHead, tableBody, ezMallSumary, rootEle)
 }
 function CartGenerateCodeStart() {
@@ -73,9 +93,26 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
             $(tableHead).find("#cart-select-all-product").prop("checked", true)
         }
     }
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    if(!cart){
+        cart = []
+    }
     for (let i = 0; i < items.length; i++) {
+        let id = $(items[i]).attr("id");
+        let itemData = cart.find((item) =>{
+            if(item.is_variant){
+               if(item.variant_id == id ){
+                return true;
+               } 
+            }else{
+                if(item.id ==id){
+                    return true
+                }
+            }
+            return false;
+        })
         let quantity = $(items[i]).find(".ezMall-item-quantity").val();
-        let price = $(items[i]).find(".ezMall-item-price").html();
+        let price = itemData.price
         let isCheck = $(items[i]).find(".ezMall-cart-item-check").is(':checked');
         if (isCheck) {
             totalCost += (Number)(price) * quantity;
@@ -83,7 +120,7 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
             $(tableHead).find("#cart-select-all-product").prop("checked", false)
         }
     }
-    $(ezMallSumary).find(".ezMallSumary-total-cost").html(totalCost);
+    $(ezMallSumary).find(".ezMallSumary-total-cost").html(priceToString(totalCost, "VND") );
    
 }
 function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
@@ -144,7 +181,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                 </th>
                 <td class="price">
                     <div class=" d-flex justify-content-center align-items-center " style="height:150px">
-                    <div class="ezMall-item-price px-1"> ${element.price} </div>    
+                    <div class="ezMall-item-price px-1"> ${priceToString(element.price,element.currency)} </div>    
                     <div class= "ezMall-item-price-type">
                     ${element.currency}
                     </div>
@@ -158,7 +195,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                     </div>
                 </td>
                 <td class="ezMall-item-total justify-content-center align-items-center">
-                    <div class="d-flex justify-content-center align-items-center" style="height:150px">${totalPrice} ${element.currency}</div>
+                    <div class="d-flex justify-content-center align-items-center" style="height:150px">${priceToString(totalPrice,element.currency)}</div>
                 </td>
                 <th scope="col">
                     <div class="d-flex justify-content-center align-items-center" style="height:150px">
@@ -174,7 +211,9 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             tableBody.insertAdjacentHTML("beforeend", rowHtml);
             $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
                 let cart = JSON.parse(localStorage.getItem('cart'));
-                console.log(cart)
+                if(!cart){
+                    cart = []
+                }
                 let indexInArr =cart.findIndex((item) =>{
                     if(element.is_variant){
                        if(item.variant_id == id ){
@@ -194,14 +233,16 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                 let items = $(tableBody).find(".ezMall-cart-item ");
                 calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
               
-                cart = cart.splice(indexInArr,1);
-                console.log(cart)
+                cart = cart.length == 1 ? [] : cart.splice(indexInArr,1);
                 window.localStorage.setItem('cart', JSON.stringify(cart));
                 updateCart()
             })
     
             $(tableBody).find(`#${id} input.ezMall-item-quantity`).change(() => {
                 let cart = JSON.parse(localStorage.getItem('cart'));
+                if(!cart){
+                    cart = []
+                }
                 let indexInArr =cart.findIndex((item) =>{
                     if(element.is_variant){
                        if(item.variant_id == id ){
@@ -246,11 +287,27 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
 
 function updateCart(){
     let cart = JSON.parse(localStorage.getItem('cart'));
+    if(!cart){
+        cart = []
+    }
     let numberProduct = cart? cart.length : 0;
     if (numberProduct == 0) {
         $('i.fa.fa-shopping-bag span').css('display', 'none');
     } else {
         $('i.fa.fa-shopping-bag span').css('display', 'initial');
         $('#numberSelectedProduct').html(numberProduct);
+    }
+}
+function priceToString(value, currency) {
+    switch (currency) {
+        case "VND":
+            return Math.ceil(Number(value)).toLocaleString('fi-FI', { style: 'currency', currency: 'VND' });
+            break;
+        case "USD":
+            return Number(value).toLocaleString('fi-FI', { style: 'currency', currency: 'USD' });
+            break;
+        default:
+            return `${value}`
+            break;
     }
 }

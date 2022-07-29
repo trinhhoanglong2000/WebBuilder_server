@@ -1,3 +1,10 @@
 .ezMallCart h2{
     font-size: 16px;
 }
+
+.ezMallCart *{
+    font-size: 25px!important;
+}
+.ezMall-item-price-type{
+    display: none;
+}

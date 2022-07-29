@@ -372,8 +372,6 @@ exports.paypalRefundOrder = async (store_id, refundLink, amount) => {
         note_to_payer: "Null"
     }
     var data = JSON.stringify(payload);
-    console.log(payload)
-    console.log(refundLink)
     return await fetch(refundLink, {
         method: "post",
         headers: {
