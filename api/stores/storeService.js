@@ -140,7 +140,7 @@ exports.getStoreLogoById = async (id) => {
 exports.uploadStoreLogo = async (id, img) => {
     let location = img
     if (img.substr(0, 5) === 'data:') {
-        location = await fileService.uploadImageToS3(`storeImages/${id}/logo`, img);
+        location = await fileService.uploadImageToS3(`storeImages/${id}/logo/${uuidv4()}`, img);
     }
 
     try {
