@@ -270,6 +270,9 @@ exports.publishStore = async (storeId) => {
     await Promise.all(allPages.map((ele,i)=>{
         return pageService.saveHTMLFile(storeId, allPages[i].id, result_content[i])
     }))
+
+    // Store LOGO
+    URLParser.createConfigHTML(storeName.id,storeName.logo_url)
     return true
 }
 

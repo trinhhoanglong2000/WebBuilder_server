@@ -65,7 +65,6 @@ router.get('/', async (req, res, next) => {
             // })
             const isExist = await fileService.checkExistFile(`views/bodies/${subdomain[0]}${wordPath[0]}/index.txt`)
 
-            console.log("Going here")
             let pageName = isExist ? wordPath[0] : "/page-not-found"
             const pageConfig = await Promise.all([
                 fileService.getFile(`views/partials/${subdomain[0]}/pages${pageName}/index.txt`),

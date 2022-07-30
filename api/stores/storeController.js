@@ -26,6 +26,7 @@ exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
     storeObj.user_id = req.user.id;
+    storeObj.logo_url = "https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png"
     const newStore = await storeService.createStore(storeObj);
 
     const storeId = newStore ? newStore.rows[0].id : ""
@@ -1445,9 +1446,10 @@ exports.getOrderById = async (req, res) => {
     const allProduct = await orderService.getOrderProduct({ order_id: orderId })
     for (let i = 0; i < allProduct.length; i++) {
         const productFound = await productService.findById(allProduct[i].product_id)
+
         if (productFound.length > 0) {
             allProduct[i].existed = true
-            allProduct[i].thumbnail = productService[0].thumbnail
+            allProduct[i].thumbnail = productFound[0].thumbnail
         }
         else {
             allProduct[i].existed = false

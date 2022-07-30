@@ -183,7 +183,6 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   URLParser.saveHTMLFile(storeId, pageId, content)
 };
 
-
 var getPagesByStoreIdAndId = exports.getPagesByStoreIdAndId = async (query) => {
   return DBHelper.getData("pages", query)
 }
