@@ -82,7 +82,7 @@ exports.postImage = async (folder, data) => {
 
 exports.deleteObject = async (url) => {
   try {
-    const key = url.substring(54);
+    const key = url.substr(54);
     const params = {
       Bucket: "ezmall-bucket",
       Key: key

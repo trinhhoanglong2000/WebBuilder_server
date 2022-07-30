@@ -123,7 +123,7 @@ exports.getStoreComponents = async (storeId) => {
 }
 
 
-exports.getStoreLogoById = async (id) => {
+let getStoreLogoById = exports.getStoreLogoById = async (id) => {
     try {
         const result = await db.query(`
             SELECT logo_url 
@@ -138,6 +138,12 @@ exports.getStoreLogoById = async (id) => {
 }
 
 exports.uploadStoreLogo = async (id, img) => {
+
+    const oldURL = await getStoreLogoById(id).then(res => res.logo_url);
+    if (oldURL) {
+        await fileService.deleteObject(oldURL);
+    }
+
     let location = img
     if (img.substr(0, 5) === 'data:') {
         location = await fileService.uploadImageToS3(`storeImages/${id}/logo/${uuidv4()}`, img);
