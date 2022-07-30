@@ -171,8 +171,8 @@
     padding: 0px;
 }
 
-[name='header'].header-icon {
-    padding-left: 10px;
+[name='header'] .header-icon {
+    min-width: 100px;
 }
 
 [name="header"].navbar li a i {
