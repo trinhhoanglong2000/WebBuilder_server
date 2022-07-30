@@ -129,10 +129,12 @@ $(document).ready(function () {
 function VariantCheck(variantId, optionId) {
     let itemData = JSON.parse(localStorage.getItem('productData'));
     let productData = itemData ? itemData.product[0] : [];
+    let continue_sell= productData.continue_sell;
     let variantData = itemData.variant;
     let option = itemData.option;
     let indexOption = option.findIndex((item) => item.id === variantId)
     let variantValid = variantData.filter(variant => variant.option_value.filter(option => option.id == optionId).length > 0)
+    
     for (let i = 0; i < indexOption; i++) {
         let checkedInput = $(`#${option[i].id} input[type=radio]:checked`);
         if (checkedInput != null && checkedInput.length > 0) {
@@ -147,7 +149,11 @@ function VariantCheck(variantId, optionId) {
         $(`#${option[i].id} input[type=radio] + label`).addClass("disabled");
         variantValid.forEach(item => {
             item.option_value.forEach(optionValid => {
-                $(`#${option[i].id} #${optionValid.id} + label `).removeClass("disabled");
+                
+                if(item.quantity !=0 ||!continue_sell){
+                    $(`#${option[i].id} #${optionValid.id} + label `).removeClass("disabled");
+                }
+
                 if (checkedInput != null && checkedInput.length > 0 && removeAfterOptionFlag == false) {
                     if ($(checkedInput)[0].id == optionValid.id) {
                         $(checkedInput).prop("checked", true);

@@ -151,7 +151,6 @@ function embedHeaderData() {
         }
 
         $('nav[name="header"] .sx-nav-link.expanded i').on('click', function() {
-            debugger
             $('nav[name="header"] .expand > .nav-item > a.sx-nav-link').css('display', 'none');
             $(this).parent().parent().css('display', 'initial')
             $(this).parent().siblings('.expand-ul').css('display', 'flex');

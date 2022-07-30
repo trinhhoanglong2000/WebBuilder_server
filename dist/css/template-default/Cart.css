@@ -1,10 +1,20 @@
-.ezMallCart h2{
-    font-size: 16px;
-}
-
 .ezMallCart *{
-    font-size: 25px!important;
+    font-size: 16px!important;
 }
 .ezMall-item-price-type{
     display: none;
+}
+table.ezMallCart {
+    margin: auto !important;
+    width: 100%;
+}
+
+a.ezMall-item-link{
+    text-decoration:none ;
+    color: black;
+    
+}
+a.ezMall-item-link:hover{
+    text-decoration:underline ;
+    color:rgb(10, 88, 202) ;
 }

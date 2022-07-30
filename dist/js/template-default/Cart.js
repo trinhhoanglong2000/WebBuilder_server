@@ -10,7 +10,7 @@ function payMent() {
             }
         }
         let cart = JSON.parse(localStorage.getItem('cart'));
-        if(!cart){
+        if (!cart) {
             cart = []
         }
         for (let i = 0; i < cart.length; i++) {
@@ -34,7 +34,7 @@ async function CartGenerateCodeItem(e) {
     let tableHead = $(e).find(`table thead`)[0];
     let tableBody = $(e).find(`table tbody`)[0];
     let ezMallSumary = $(e).find(`.ezMallSumary`)[0];
-    let buttonGoShopping = $('#ezMall-cart-zero-item button').click(()=>{
+    let buttonGoShopping = $('#ezMall-cart-zero-item button').click(() => {
         window.location.href = "/collections"
     })
     const storeId = $('nav').attr("store-id");
@@ -42,17 +42,32 @@ async function CartGenerateCodeItem(e) {
     const url = `${rootUrl}/stores/${storeId}/currency`
     const currency = await fetch(url,
         {
-            method: "GET",
+            mode: 'cors',
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-    }).then(res=> res)//.then(res=>res).catch(e => console.log(e))
+                'Access-Control-Allow-Origin': '*'
+            }
+        }).then(res => res.json()).then(res => res.data.currency).catch(e => "USD").finally(async data => {
 
-    window.localStorage.setItem('currency', JSON.stringify(currency));
+            const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
+            await fetch(`${rootUrl}/data/rate`,
+                {
+                    mode: 'cors',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                }).then(res => res.json()).then(currencyRes => {
+                    console.log(currencyRes)
+                    if (currencyRes.statusCode === 200) {
+                        window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+                    }
+                })
+
+
+        })
+    window.localStorage.setItem('storeCurrency', JSON.stringify(currency));
 
     let cart = JSON.parse(localStorage.getItem('cart'));
-    if(!cart){
+    if (!cart) {
         cart = []
     }
     insertCartData(cart, tableHead, tableBody, ezMallSumary, rootEle)
@@ -76,6 +91,7 @@ $(document).ready(function () {
 })
 
 function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
+    let currency = JSON.parse(localStorage.getItem('storeCurrency'));
     let totalCost = 0;
     let items = $(tableBody).find(".ezMall-cart-item ");
     let checkedInput = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check:checked")
@@ -94,25 +110,25 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
         }
     }
     let cart = JSON.parse(localStorage.getItem('cart'));
-    if(!cart){
+    if (!cart) {
         cart = []
     }
     for (let i = 0; i < items.length; i++) {
         let id = $(items[i]).attr("id");
-        let itemData = cart.find((item) =>{
-            if(item.is_variant){
-               if(item.variant_id == id ){
-                return true;
-               } 
-            }else{
-                if(item.id ==id){
+        let itemData = cart.find((item) => {
+            if (item.is_variant) {
+                if (item.variant_id == id) {
+                    return true;
+                }
+            } else {
+                if (item.id == id) {
                     return true
                 }
             }
             return false;
         })
         let quantity = $(items[i]).find(".ezMall-item-quantity").val();
-        let price = itemData.price
+        let price = convertCurrency(itemData.price, itemData.currency, currency)
         let isCheck = $(items[i]).find(".ezMall-cart-item-check").is(':checked');
         if (isCheck) {
             totalCost += (Number)(price) * quantity;
@@ -120,11 +136,11 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
             $(tableHead).find("#cart-select-all-product").prop("checked", false)
         }
     }
-    $(ezMallSumary).find(".ezMallSumary-total-cost").html(priceToString(totalCost, "VND") );
-   
+    $(ezMallSumary).find(".ezMallSumary-total-cost").html(priceToString(totalCost, currency));
+
 }
 function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
-  
+    let currency = JSON.parse(localStorage.getItem('storeCurrency'));
     $(ezMallSumary).find("#ezMall-cart-sumary-unchecked-all").click(() => {
         let checkedInput = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check:checked ")
         for (let i = 0; i < checkedInput.length; i++) {
@@ -132,6 +148,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
         }
         calculateTotal(tableBody, tableHead, ezMallSumary, rootEle);
     })
+    $(ezMallSumary).find(".ezMallSumary-total-cost").html(priceToString(0, currency));
 
     $(tableHead).find(".ezMall-head-remove-all-items").click(() => {
         window.localStorage.setItem('cart', JSON.stringify([]));
@@ -150,11 +167,13 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
     })
 
     let totalCostInit = 0;
-    if(data){
+    if (data) {
         data.forEach(element => {
+            element.price = convertCurrency(element.price, element.currency, currency)
+            element.currency = currency
             let totalPrice = (Number)(element.quantity) * (Number)(element.price)
             totalCostInit += totalPrice;
-            let id = element.is_variant?  element.variant_id : element.id;
+            let id = element.is_variant ? element.variant_id : element.id;
             const rowHtml =
                 `
             <tr id  = ${id} class= "ezMall-cart-item" >
@@ -165,23 +184,25 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                                 <input class="form-check-input ezMall-cart-item-check" type="checkbox" id=${"check-" + id} name=${"check-" + id} value="">
                             </div>
                             <div class="col-md-11 col-8">
-                                <div class="row">
+                                <a class="row ezMall-item-link" href="/products?id=${element.id}">
+           
                                     <div class="col-xl-4 row d-flex justify-content-center">
                                         <img src=${element.thumnail} alt="Image"
                                             style="height: 150px;width: auto;">
                                     </div>
                                     <div class="col-xl-8 row d-flex flex-column justify-content-center">
-                                        <div class="p-0 justify-content-center text-center my-3"> ${element.product_name} ${element.is_variant? ` - ${element.variant_name}`: ""} </div>
+                                    
+                                        <div class="p-0 justify-content-center text-center my-3"> ${element.product_name} ${element.is_variant ? ` - ${element.variant_name}` : ""} </div>
                                         <div class="p-0 justify-content-center text-center eZmall-for-des"></div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </th>
                 <td class="price">
                     <div class=" d-flex justify-content-center align-items-center " style="height:150px">
-                    <div class="ezMall-item-price px-1"> ${priceToString(element.price,element.currency)} </div>    
+                    <div class="ezMall-item-price px-1"> ${priceToString(element.price, element.currency)} </div>    
                     <div class= "ezMall-item-price-type">
                     ${element.currency}
                     </div>
@@ -195,7 +216,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                     </div>
                 </td>
                 <td class="ezMall-item-total justify-content-center align-items-center">
-                    <div class="d-flex justify-content-center align-items-center" style="height:150px">${priceToString(totalPrice,element.currency)}</div>
+                    <div class="d-flex justify-content-center align-items-center" style="height:150px">${priceToString(totalPrice, element.currency)}</div>
                 </td>
                 <th scope="col">
                     <div class="d-flex justify-content-center align-items-center" style="height:150px">
@@ -207,49 +228,49 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             </tr>                           
                                     
             `
-    
+
             tableBody.insertAdjacentHTML("beforeend", rowHtml);
             $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
                 let cart = JSON.parse(localStorage.getItem('cart'));
-                if(!cart){
+                if (!cart) {
                     cart = []
                 }
-                let indexInArr =cart.findIndex((item) =>{
-                    if(element.is_variant){
-                       if(item.variant_id == id ){
-                        return true;
-                       } 
-                    }else{
-                        if(item.id == id){
+                let indexInArr = cart.findIndex((item) => {
+                    if (element.is_variant) {
+                        if (item.variant_id == id) {
+                            return true;
+                        }
+                    } else {
+                        if (item.id == id) {
                             return true
                         }
                     }
                     return false;
                 })
-                
+
                 let itemRemove = $(tableBody).find(`#${id}`)
                 $(itemRemove).fadeOut(200).remove();
                 let totalCost = 0;
                 let items = $(tableBody).find(".ezMall-cart-item ");
                 calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
-              
-                cart = cart.length == 1 ? [] : cart.splice(indexInArr,1);
+
+                cart = cart.length == 1 ? [] : cart.splice(indexInArr, 1);
                 window.localStorage.setItem('cart', JSON.stringify(cart));
                 updateCart()
             })
-    
+
             $(tableBody).find(`#${id} input.ezMall-item-quantity`).change(() => {
                 let cart = JSON.parse(localStorage.getItem('cart'));
-                if(!cart){
+                if (!cart) {
                     cart = []
                 }
-                let indexInArr =cart.findIndex((item) =>{
-                    if(element.is_variant){
-                       if(item.variant_id == id ){
-                        return true;
-                       } 
-                    }else{
-                        if(item.id == id){
+                let indexInArr = cart.findIndex((item) => {
+                    if (element.is_variant) {
+                        if (item.variant_id == id) {
+                            return true;
+                        }
+                    } else {
+                        if (item.id == id) {
                             return true
                         }
                     }
@@ -264,14 +285,14 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                 window.localStorage.setItem('cart', JSON.stringify(cart));
                 updateCart()
             });
-    
+
             $(tableBody).find(`#${id} input.ezMall-cart-item-check`).change(() => {
                 calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
             });
         });
     }
 
-    let items =  $(tableBody).find(".ezMall-cart-item ");
+    let items = $(tableBody).find(".ezMall-cart-item ");
     if (items.length == 0) {
         $(rootEle).find("#ezMall-cart-zero-item").show().addClass("d-flex");
         $(rootEle).find("table").hide();
@@ -285,12 +306,12 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
     }
 }
 
-function updateCart(){
+function updateCart() {
     let cart = JSON.parse(localStorage.getItem('cart'));
-    if(!cart){
+    if (!cart) {
         cart = []
     }
-    let numberProduct = cart? cart.length : 0;
+    let numberProduct = cart ? cart.length : 0;
     if (numberProduct == 0) {
         $('i.fa.fa-shopping-bag span').css('display', 'none');
     } else {
@@ -308,6 +329,24 @@ function priceToString(value, currency) {
             break;
         default:
             return `${value}`
+            break;
+    }
+}
+
+function convertCurrency(value, fromCurrency, toCurrency) {
+    let currencyOptions = JSON.parse(localStorage.getItem('currency'));
+    let dataFromCurrency = currencyOptions.findIndex(item => item.currency == fromCurrency);
+    let dataToCurrency = currencyOptions.findIndex(item => item.currency == toCurrency);
+
+    switch (toCurrency) {
+        case "VND":
+            return Math.ceil(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount));
+            break;
+        case "USD":
+            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.004).toFixed(2);
+            break;
+        default:
+            return parseFloat(value * Number(currencyOptions[dataToCurrency].amount) / Number(currencyOptions[dataFromCurrency].amount) + 0.004).toFixed(2);
             break;
     }
 }

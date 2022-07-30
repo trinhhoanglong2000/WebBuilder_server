@@ -7,7 +7,16 @@ async function PaymentGenerateCodeStart() {
         if(!paypalStatus){
             $(rootEle).find('#payment1')[0].parentNode.remove();
         }
-        //console.log("paypalStatus",paypalStatus)
+        const url = `${rootUrl}/stores/${storeId}/currency`
+        const storeCurrency = await fetch(url,
+            {
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }).then(res => res.json()).then(res => res.data.currency).catch(e => "USD")
+        window.localStorage.setItem('storeCurrency', JSON.stringify(storeCurrency));
+        $(rootEle).find("#currency").val(storeCurrency) 
         await fetch(`${rootUrl}/data/rate`,
         {
             mode: 'cors',
@@ -162,7 +171,6 @@ function buy() {
                         }
                         return false;
                     })
-                    console.log(product.quantity)
                     let remainQuantity = Number(cart[indexInArr].quantity) - Number(product.quantity);
                     if(remainQuantity){
                         cart[indexInArr].quantity=remainQuantity
@@ -223,6 +231,7 @@ async function loadPaymentData(rootEle, firstRun) {
         let paymentCurrencySelectCoptainer = $(rootEle).find("#currency")[0];
         let currencyOptions = JSON.parse(localStorage.getItem('currency'))
         $(paymentCurrencySelectCoptainer).html("")
+
         currencyOptions.forEach((element, index) => {
             const rowHtml =
                 `                            
@@ -230,6 +239,8 @@ async function loadPaymentData(rootEle, firstRun) {
             `
             paymentCurrencySelectCoptainer.insertAdjacentHTML("beforeend", rowHtml);
         });
+        let storeCurrency = JSON.parse(localStorage.getItem('storeCurrency'));
+        $(rootEle).find("#currency").val(storeCurrency) 
         $(paymentCurrencySelectCoptainer).on("change", async () => {
             await loadPaymentData(rootEle, false)
         })
