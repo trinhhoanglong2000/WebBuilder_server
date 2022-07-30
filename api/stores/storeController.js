@@ -1980,3 +1980,20 @@ exports.updateStore = async (req, res) => {
     }
 }
 
+exports.uploadLogo = async (req, res) => {
+    const {id, img} = req.body
+    const result = await storeService.uploadStoreLogo(id, img)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update logo Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}
