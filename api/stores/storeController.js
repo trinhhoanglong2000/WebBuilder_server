@@ -681,7 +681,7 @@ exports.createProduct = async (req, res) => {
         "inventory": quantity,
         "price" : newPrice
     }
-    console.log(updateQuery)
+
     const updateValue = await productService.updateProduct(updateQuery)
     if (newProduct) {
         res.status(http.Created).json({
@@ -1097,6 +1097,8 @@ exports.createOrder = async (req, res) => {
 
             if (product.length > 0) {
                 const remainQuantity = product[0].inventory - query.quantity
+
+               
                 if (remainQuantity < 0) {
                     if (!product[0].continue_sell) {
                         res.status(http.Success).json({
@@ -1110,19 +1112,20 @@ exports.createOrder = async (req, res) => {
                         checkOutOfStock = true
                     }
 
-                    changeMoneyPromise.push(dataService.changeMoney({ from: query.currency, to: currency, price: product[0].price }))
+                    
+            
                     //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
                     // originalPrice += query.quantity * priceFixed
                     // query.price = priceFixed
                     // query.currency = currency
                     // totalProduct += query.quantity
                 }
+                changeMoneyPromise.push(dataService.changeMoney({ from: query.currency, to: currency, price: product[0].price }))
             }
         }
     }
 
     const dataMoney = await Promise.all(changeMoneyPromise)
-
     for (let i = 0; i < productQuery.length; i++) {
         const query = productQuery[i]
 

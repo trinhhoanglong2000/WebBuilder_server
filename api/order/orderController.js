@@ -210,19 +210,22 @@ exports.restoreOrder = async (req, res) => {
         })
         return
     }
-    console.log(status)
     if (status.length > 1) {
         if (status[0].status == "DELETED") {
            
-            if (status[1].status == "CREATE" || status[1].status == "RESTOCK" || status[1].status == "PRE-PAID" || status[1].status == "PREPAID & RESTOCK") {
+            if (status[1].status == "CREATE" || status[1].status == "RESTOCK" || status[1].status == "PRE-PAID" || status[1].status == "PREPAID & RESTOCK" ||status[1].status == "PAID & RESTOCK") {
                 query.status = status[1].status
             }
             else {
                 query.status = "CONFIRMED"
             }
-            console.log(query)
-            result = await orderService.createOrderStatus(query)
+            
+            if (status[1].status != "PREPAID & RESTOCK" && status[1].status != "PAID & RESTOCK" && status[1].status != "RESTOCK") {
+                await orderService.RestoreOrderProduct({order_id : query.order_id})
+            }
 
+            result = await orderService.createOrderStatus(query)
+            
         }
         else {
             res.status(http.NotAcceptable).json({
