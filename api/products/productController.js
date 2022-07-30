@@ -41,7 +41,7 @@ exports.updateProduct = async (req, res) => {
     //Update Option
 
     if (productOptionQuery) {
-       
+
         const option = await productOptionService.getOptionFromProductId(productId)
         if (!option) {
             res.status(http.ServerError).json({
@@ -52,7 +52,7 @@ exports.updateProduct = async (req, res) => {
         }
         let productOptionQueryWithoutDelete = productOptionQuery.filter((e) => e.update === "Delete")
         let countOption = 0
-    
+
         while (countOption < option.length) {
             const found = productOptionQueryWithoutDelete.find(e => e.id === option[countOption].id)
             if (found) {
@@ -62,7 +62,7 @@ exports.updateProduct = async (req, res) => {
                 countOption++
             }
         }
-      
+
         for (let i = 0; i < productOptionQuery.length; i++) {
             let optionId
 
@@ -167,7 +167,7 @@ exports.updateProduct = async (req, res) => {
 
             }
             let resultPromise = await Promise.all(option_value_Promise)
-         
+
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
                 if (resultPromise[j][0]) {
                     option_value_id.push(resultPromise[j][0].id)
@@ -184,23 +184,23 @@ exports.updateProduct = async (req, res) => {
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
 
-            if (createVariantQuery.price){
-                await productService.updateProduct({id : productId, price: createVariantQuery.price})
+            if (createVariantQuery.price) {
+                await productService.updateProduct({ id: productId, price: createVariantQuery.price })
             }
 
             let updatePromise = []
             if (updateStatus == "Add") {
-               
+
                 updatePromise.push(productVariantService.createVariant(createVariantQuery))
                 // const creatVariant = await productVariantService.createVariant(createVariantQuery)
                 await Promise.all(updatePromise)
             }
             else if (updateStatus == "Change") {
-               
+
                 updatePromise.push(productVariantService.updateVariant(createVariantQuery))
                 // const updateVariant = await productVariantService.updateVariant(createVariantQuery)
                 await Promise.all(updatePromise)
-            
+
             }
             else if (updateStatus == "Delete") {
                 quantity -= createVariantQuery.quantity
@@ -208,17 +208,17 @@ exports.updateProduct = async (req, res) => {
                     id: createVariantQuery.id
                 }
                 const deleteVariant = await productVariantService.deleteVariant(query)
-            }         
+            }
         }
-        
+
         quantity = 0
-        let price 
+        let price
         const product = await productVariantService.getVariant(productId)
-        for (let i = 0; i < product.length;i++){
-            if (i == 0){
+        for (let i = 0; i < product.length; i++) {
+            if (i == 0) {
                 price = product[i].price
             }
-            if (product[i].price < price){
+            if (product[i].price < price) {
                 price = product[i].price
             }
             quantity += product[i].quantity
@@ -227,7 +227,7 @@ exports.updateProduct = async (req, res) => {
             "id": productId,
             "inventory": quantity
         }
-        if (price){
+        if (price) {
             updateQuery.price = price
         }
         const updateValue = await productService.updateProduct(updateQuery)
@@ -300,27 +300,45 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
     const id = req.params.id;
+    const storeId = req.query.store_id
+
+    if (!storeId) {
+        res.status(http.BadRequest).json({
+            statusCode: http.BadRequest,
+      
+            message: "Get product unsuccessfully!"
+        })
+        return
+    }
+
     const result = await productService.findById(id);
     let returnData = {}
     if (result.length > 0) {
-        
-        if (result[0].description){
+        if (result[0].store_id != storeId) {
+            res.status(http.BadRequest).json({
+                statusCode: http.BadRequest,
+    
+                message: "Get product unsuccessfully!"
+            })
+            return
+        }
+        if (result[0].description) {
             const content = await productService.getDescription(result[0].id)
             result[0].description = content
         }
         returnData.product = result
 
-        const PromiseResult = await Promise.all([productOptionService.getOptionFromProductId(id), productVariantService.getVariant(id),productCollectionSerice.getProductCollectionByProductId(id)])
+        const PromiseResult = await Promise.all([productOptionService.getOptionFromProductId(id), productVariantService.getVariant(id), productCollectionSerice.getProductCollectionByProductId(id)])
         let resultOption = PromiseResult[0]
         if (resultOption) {
             // for (let i = 0; i < resultOption.length; i++) {
             //     const resultOptionValue = await productOptionService.getDataOptionValue(resultOption[i].id)
             //     resultOption[i].value = resultOptionValue
             // }
-            const result = await Promise.all(resultOption.map((ele,i)=>{
-                return  productOptionService.getDataOptionValue(ele.id)
+            const result = await Promise.all(resultOption.map((ele, i) => {
+                return productOptionService.getDataOptionValue(ele.id)
             }))
-            resultOption.forEach((ele,index)=>{
+            resultOption.forEach((ele, index) => {
                 ele.value = result[index]
             })
             returnData.option = resultOption

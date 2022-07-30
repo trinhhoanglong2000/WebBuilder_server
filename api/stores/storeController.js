@@ -1285,12 +1285,14 @@ exports.createOrder = async (req, res) => {
         html: mailStoreQueryData
     }
     const account = await accountService.getUserInfo(storeData.user_id)
+    
+    let html = emailService.createUserMailString(`<p>New order #${orderQuery.id} have been create from store ${storeData.name}</p> <br>
+    <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
+    `)
     let mailQuery = {
         subject: `Order #${orderQuery.id} successfully created`,
         receiver: `${account[0].email}`,
-        html: `<p>New order #${orderQuery.id} have been create from store ${storeData.name}</p> <br>
-        <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
-        `
+        html: html
     }
 
     emailService.adminSendMail(mailQuery)
