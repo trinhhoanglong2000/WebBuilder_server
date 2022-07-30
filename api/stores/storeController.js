@@ -542,7 +542,7 @@ exports.getHeaderData = async (req, res) => {
     const menuItems = menuService.getHeaderMenu(storeId)
 
     const result = await Promise.all([logoURL, storeName, menuItems]);
-   
+
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -654,7 +654,7 @@ exports.createProduct = async (req, res) => {
         for (let i = 0; i < variantQuery.length; i++) {
             let option_value_id = []
             let createVariantQuery = variantQuery[i]
-            if (i == 0){
+            if (i == 0) {
                 newPrice = createVariantQuery.price
             }
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
@@ -670,16 +670,16 @@ exports.createProduct = async (req, res) => {
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
-            if (createVariantQuery.price < newPrice){
-                newPrice =  createVariantQuery.price
+            if (createVariantQuery.price < newPrice) {
+                newPrice = createVariantQuery.price
             }
         }
     }
-  
+
     let updateQuery = {
         "id": productId,
         "inventory": quantity,
-        "price" : newPrice
+        "price": newPrice
     }
 
     const updateValue = await productService.updateProduct(updateQuery)
@@ -805,6 +805,11 @@ exports.deleteStore = async (req, res) => {
 
     const pages = await pageService.getPagesByStoreId({ store_id: id })
     const menuItem = await menuService.getMenuByStoreId({ store_id: id })
+
+    // Delte disscount
+
+    await discountService.deleteDiscount({ store_id: id })
+
     //Delete Data Collection
     if (bannerCollection.length > 0) {
         for (let i = 0; i < bannerCollection.length; i++) {
@@ -1098,7 +1103,7 @@ exports.createOrder = async (req, res) => {
             if (product.length > 0) {
                 const remainQuantity = product[0].inventory - query.quantity
 
-               
+
                 if (remainQuantity < 0) {
                     if (!product[0].continue_sell) {
                         res.status(http.Success).json({
@@ -1112,8 +1117,8 @@ exports.createOrder = async (req, res) => {
                         checkOutOfStock = true
                     }
 
-                    
-            
+
+
                     //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
                     // originalPrice += query.quantity * priceFixed
                     // query.price = priceFixed
@@ -1172,7 +1177,7 @@ exports.createOrder = async (req, res) => {
                             discountPrice = originalPrice * discountResult[0].amount
                         }
                         else {
-                            discountPrice = discountResult[0].amount
+                            discountPrice = discountResult[0].amount/100
                         }
                         if (discountResult[0].quantity != -1) {
                             await discountService.updateDiscount({ id: orderQuery.discount_id, quantity: discountResult[0].quantity - 1 })
@@ -1277,7 +1282,7 @@ exports.createOrder = async (req, res) => {
 
     //MAIL
     const storeData = await storeService.findById(orderQuery.store_id)
-    const mailStoreQueryData = emailService.createConfirmCustomerMailString(orderQuery,productQuery,storeData)
+    const mailStoreQueryData = emailService.createConfirmCustomerMailString(orderQuery, productQuery, storeData)
     let mailStoreQuery = {
         store_id: orderQuery.store_id,
         subject: `Order #${orderQuery.id} successfully created`,
@@ -1285,7 +1290,7 @@ exports.createOrder = async (req, res) => {
         html: mailStoreQueryData
     }
     const account = await accountService.getUserInfo(storeData.user_id)
-    
+
     let html = emailService.createUserMailString(`<p>New order #${orderQuery.id} have been create from store ${storeData.name}</p> <br>
     <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
     `)
@@ -1442,6 +1447,7 @@ exports.getOrderById = async (req, res) => {
         const productFound = await productService.findById(allProduct[i].product_id)
         if (productFound.length > 0) {
             allProduct[i].existed = true
+            allProduct[i].thumbnail = productService[0].thumbnail
         }
         else {
             allProduct[i].existed = false
@@ -1957,12 +1963,12 @@ exports.getCurrency = async (req, res) => {
 
 exports.updateStore = async (req, res) => {
     const query = req.body
-    query.id =  req.params.id
+    query.id = req.params.id
     const result = await storeService.updateStoreInfo(query)
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
-       
+
             message: "Update stores Successfully!"
         })
     }
