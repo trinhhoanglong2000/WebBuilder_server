@@ -196,6 +196,9 @@
 [name="products-collections"] .star-rating li {
     padding: 0;
 }
+[name="products-collections"] .star-rating {
+    display:none
+}
 
 [name="products-collections"] .star-rating i {
     font-size: 14px;
