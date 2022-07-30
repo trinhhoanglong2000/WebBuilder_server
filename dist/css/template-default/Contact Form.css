@@ -36,6 +36,7 @@
 [name="contactForm"] .btn-ok {
     background-color: #65ca3e;
     border-color: #65ca3e;
+    min-width: 130px;
 }
 
 [name="contactForm"] .btn-ok:hover {

@@ -21,12 +21,12 @@ function embedOrderTrackingScriptForm(deploy) {
                 .then((response) => response.json())
                 .then((response) => {
                     if (response.statusCode === 200 || response.statusCode === 304) {
-                        if (response.data.length > 0 && deploy) {
-                            window.location.href = `/orders?id=${orderId}`
-                        } else if (response.data.length <= 0) {
+                        if (response.data.length <= 0) {
                             notifyAlert.html('Order could not be found!')
                             notifyAlert.css('display', 'initial');
-                        } 
+                        } else if (deploy) {
+                            window.location.href = `/orders?id=${orderId}`
+                        }
                     } else {
                         errorAlert.html('Server error!')
                         errorAlert.css('display', 'initial');
