@@ -4,7 +4,7 @@ async function PaymentGenerateCodeStart() {
         let storeId = $(rootEle).attr("ez-mall-store");
         const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
         var paypalStatus = await fetch(`${rootUrl}/stores/${storeId}/paypal-status`).then(res => res.json()).then(res => res.data.have_paypal).catch(e => null);
-        if(!paypalStatus){
+        if (!paypalStatus) {
             $(rootEle).find('#payment1')[0].parentNode.remove();
         }
         const url = `${rootUrl}/stores/${storeId}/currency`
@@ -16,32 +16,32 @@ async function PaymentGenerateCodeStart() {
                 }
             }).then(res => res.json()).then(res => res.data.currency).catch(e => "USD")
         window.localStorage.setItem('storeCurrency', JSON.stringify(storeCurrency));
-        $(rootEle).find("#currency").val(storeCurrency) 
+        $(rootEle).find("#currency").val(storeCurrency)
         await fetch(`${rootUrl}/data/rate`,
-        {
-            mode: 'cors',
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-            }
-        }).then(res => res.json()).then(currencyRes => {
-            if (currencyRes.statusCode === 200) {
-                window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
-            }
-        }).finally(async () => {
-            await fetch(`${rootUrl}/data/city`
-                , {
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Allow-Origin': '*'
-                    }
-                }).then(res => res.json()).then(cityRes => {
-                    if (cityRes.statusCode === 200) {
-                        window.localStorage.setItem('city', JSON.stringify(cityRes.data));
-                    }
-                }).finally(async () => {
-                    await loadPaymentData(this, true)
-                })
-        })
+            {
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }).then(res => res.json()).then(currencyRes => {
+                if (currencyRes.statusCode === 200) {
+                    window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+                }
+            }).finally(async () => {
+                await fetch(`${rootUrl}/data/city`
+                    , {
+                        mode: 'cors',
+                        headers: {
+                            'Access-Control-Allow-Origin': '*'
+                        }
+                    }).then(res => res.json()).then(cityRes => {
+                        if (cityRes.statusCode === 200) {
+                            window.localStorage.setItem('city', JSON.stringify(cityRes.data));
+                        }
+                    }).finally(async () => {
+                        await loadPaymentData(this, true)
+                    })
+            })
     });
 }
 
@@ -51,7 +51,7 @@ $(document).ready(async function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(async function () {
             await PaymentGenerateCodeStart();
-            
+
         })
     }
     else {
@@ -135,7 +135,7 @@ function buy() {
                 is_variant: item.is_variant,
                 variant_id: item.variant_id,
                 variant_name: item.variant_name,
-                currency:  item.currency
+                currency: item.currency
             }
         })
     }
@@ -154,37 +154,42 @@ function buy() {
         .then(function (res) { return res.json(); })
         .then(function (resData) {
             if (resData.statusCode == 201) {
-                let cart = JSON.parse(localStorage.getItem('cart'));
-                if (!cart){
-                    []
-                }
-                paymentItems.forEach(product =>{
-                    let indexInArr =cart.findIndex((item) =>{
-                        if(product.is_variant){
-                           if(item.variant_id == product.variant_id ){
-                            return true;
-                           } 
-                        }else{
-                            if(item.id == product.id){
+
+                paymentItems.forEach(product => {
+                    let cart = JSON.parse(localStorage.getItem('cart'));
+                    if (!cart) {
+                        []
+                    }
+                    let indexInArr = cart.findIndex((item) => {
+                        debugger
+                        if (product.is_variant) {
+                            if (item.variant_id == product.variant_id) {
+                                return true;
+                            }
+                        } else {
+                            if (item.id == product.id) {
                                 return true
                             }
                         }
                         return false;
                     })
-                    let remainQuantity = Number(cart[indexInArr].quantity) - Number(product.quantity);
-                    if(remainQuantity){
-                        cart[indexInArr].quantity=remainQuantity
-                    }else{
-                        cart = cart.length == 1 ? [] : cart.splice(indexInArr,1);
+                    if(indexInArr !=-1){
+                        let remainQuantity = Number(cart[indexInArr].quantity) - Number(product.quantity);
+                        if (remainQuantity !=0) {
+                            cart[indexInArr].quantity = remainQuantity
+                        } else {
+                            cart.splice(indexInArr, 1);
+                        }
                     }
+                    window.localStorage.setItem('cart', JSON.stringify(cart));
                 })
-                window.localStorage.setItem('cart', JSON.stringify(cart));
+           
                 localStorage.removeItem('paymentItems')
                 localStorage.removeItem('discount')
                 $(rootEle).find(".ezMall-payment-alert").children().hide()
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success").show().css("display", "flex")
                 $(rootEle).find(".ezMall-payment-alert .ezMall-popup-success button").click(() => {
-                    window.location.href= `/orders?id=${resData.data[0].id}`;
+                    window.location.href = `/orders?id=${resData.data[0].id}`;
                 })
             } else {
                 $(rootEle).find(".ezMall-payment-alert").children().hide();
@@ -240,7 +245,7 @@ async function loadPaymentData(rootEle, firstRun) {
             paymentCurrencySelectCoptainer.insertAdjacentHTML("beforeend", rowHtml);
         });
         let storeCurrency = JSON.parse(localStorage.getItem('storeCurrency'));
-        $(rootEle).find("#currency").val(storeCurrency) 
+        $(rootEle).find("#currency").val(storeCurrency)
         $(paymentCurrencySelectCoptainer).on("change", async () => {
             await loadPaymentData(rootEle, false)
         })
@@ -273,44 +278,61 @@ async function loadPaymentData(rootEle, firstRun) {
     let paymentFinalBillCost = $(rootEle).find(".ezMall-final-bill-cost")[0];
     let sumPrice = 0;
     cart.forEach(element => {
-        let variantName = element.variant_name.split("/");
-        let optionName = element.optionName.split("/");
-        let variantInfo = [];
-        for (let i = 0; i < optionName.length; i++) {
-            variantInfo.push(`${optionName[i]}: ${variantName[i]}`)
-        }
         let converCurrency = convertCurrency(Number(element.quantity) * Number(element.price), element.currency, paymentCurrencyVal)
-
-        const rowHtml =
-            `
-        <div class=" px-1">
-            <div class=" py-2 d-flex flex-column justify-content-between" >
-                <div class = "row fw-bold"">
-                    ${element.product_name} 
-                </div>
-                <div class = "justify-content-between align-items-end d-flex">
-                    <div class = " px-2 fw-bold text-secondary fst-italic">
-                    ${variantInfo.join("<br/>")} 
-                    </div>
-                    <div class = "d-flex flex-row fst-italic text-secondary">
-                        <span class="fw-bold"> 
-                            x
-                        </span>
-                        <span class="fw-bold">
-                            ${element.quantity} 
-                        </span>
-                    </div>
-                    <div class ="justify-content-end align-items-end d-flex fw-bold">
-                        <div class="text-end">${priceToString(converCurrency, paymentCurrencyVal)}</td>
-                    </div> 
-                </div>
-                
-            </div
-        </div>                                   
-                        
-         `
-
         sumPrice += Number(converCurrency);
+        let variantInfo = [];
+        let rowHtml = '';
+        if (element.is_variant) {
+            let variantName = element.variant_name.split("/");
+            let optionName = element.optionName.split("/");
+
+            for (let i = 0; i < optionName.length; i++) {
+                variantInfo.push(`${optionName[i]}: ${variantName[i]}`)
+            }
+            rowHtml =
+                `
+                <div class=" px-1">
+                    <div class=" py-2 d-flex flex-column justify-content-between" >
+                        <div class = "row fw-bold"">
+                            ${element.product_name} 
+                        </div>
+                        <div class = "justify-content-between align-items-end d-flex">
+                            <div class = " px-2 fw-bold text-secondary fst-italic">
+                            ${variantInfo.join("<br/>")} 
+                            </div>
+                            <div class = "d-flex flex-row fst-italic text-secondary">
+                                <span class="fw-bold">
+                                    x${element.quantity} 
+                                </span>
+                            </div>
+                            <div class ="justify-content-end align-items-end d-flex fw-bold">
+                                <div class="text-end">${priceToString(converCurrency, paymentCurrencyVal)}</td>
+                            </div> 
+                        </div>
+                        
+                    </div
+                </div>                                   
+                                
+                `
+        }else{
+            rowHtml =
+                `
+                <div class=" px-1">
+                    <div class=" py-2 d-flex justify-content-between" >
+                        <div class = "row fw-bold"">
+                            ${element.product_name} 
+                        </div>
+                        <div class = "fst-italic text-secondary">
+                                <span class="fw-bold">x${element.quantity}</span>
+                        </div>
+                        <div class ="fw-bold">
+                                <div class="text-end">${priceToString(converCurrency, paymentCurrencyVal)}</td>
+                        </div> 
+                    </div
+                </div>                                   
+                                
+                `
+        }
         paymentCartContainer.insertAdjacentHTML("beforeend", rowHtml);
     });
     // Render sumary
@@ -390,9 +412,9 @@ function useDiscount() {
         .then(function (resData) {
             if (resData.statusCode == 200 && data) {
                 window.localStorage.setItem('discount', JSON.stringify(resData.data[0]));
-                 $(rootEle).find(".ezMall-discount-description").show();
-                let discount_text= $(rootEle).find(".ezMall-discount-description-text").html(resData.data[0].code);
-            }else{
+                $(rootEle).find(".ezMall-discount-description").show();
+                let discount_text = $(rootEle).find(".ezMall-discount-description-text").html(resData.data[0].code);
+            } else {
                 window.localStorage.removeItem('discount');
                 $(rootEle).find(".ezMall-discount-description").hide();
             }
@@ -410,13 +432,13 @@ function calculatorDiscount(sumPrice, paymentCurrencyVal) {
         if (discountInfo.type == 1) {
             value = convertCurrency(Number(amount), discountCurrency, paymentCurrencyVal)
         } else if (discountInfo.type == 0) {
-            value = convertCurrency(Number(amount) * Number(sumPrice), discountCurrency, paymentCurrencyVal)
+            value = convertCurrency(Number(amount) * Number(sumPrice)/100, discountCurrency, paymentCurrencyVal)
         }
     }
     return value;
 }
 
-function removeDiscount(){
+function removeDiscount() {
     let rootEle = $("div[ez-mall-type='payment']")[0];
     window.localStorage.removeItem('discount');
     $(rootEle).find(".ezMall-discount-description-text").html("");

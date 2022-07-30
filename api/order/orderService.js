@@ -395,7 +395,7 @@ exports.createPaypalOrder = async (store_id, productData, sumPrice, discount, or
     }
 
     var data = JSON.stringify(payload);
-    // console.log(data)
+    //console.log(data)
     return await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
         method: "post",
         headers: {
@@ -407,7 +407,7 @@ exports.createPaypalOrder = async (store_id, productData, sumPrice, discount, or
     }).then((response) => {
         return response.json()
     }).then((order) => {
-        // console.log(order)
+        //console.log(order)
         return order
     });
 }

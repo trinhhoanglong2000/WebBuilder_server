@@ -210,7 +210,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                 </td>
                 <td class="quantity">
                     <div class=" d-flex justify-content-center align-items-center" style="height:150px">
-                        <input type="number" min="0" id=${"val-" + id} class="form-control ezMall-item-quantity" value=${element.quantity}
+                        <input type="number" min="1" id=${"val-" + id} class="form-control ezMall-item-quantity" value=${element.quantity}
                             style="min-width: 70px; width: 70px;" />
     
                     </div>
@@ -231,6 +231,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
 
             tableBody.insertAdjacentHTML("beforeend", rowHtml);
             $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
+                debugger
                 let cart = JSON.parse(localStorage.getItem('cart'));
                 if (!cart) {
                     cart = []
@@ -252,11 +253,11 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                 $(itemRemove).fadeOut(200).remove();
                 let totalCost = 0;
                 let items = $(tableBody).find(".ezMall-cart-item ");
-                calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
-
-                cart = cart.length == 1 ? [] : cart.splice(indexInArr, 1);
+                cart.splice(indexInArr, 1);
                 window.localStorage.setItem('cart', JSON.stringify(cart));
                 updateCart()
+                calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)
+           
             })
 
             $(tableBody).find(`#${id} input.ezMall-item-quantity`).change(() => {
@@ -277,6 +278,10 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                     return false;
                 })
                 let currentQuantity = $(tableBody).find(`input#val-${id}`).val()
+                if(currentQuantity <=0){
+                    $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click();
+                    return
+                }
                 $(tableBody).find(`#${id} .ezMall-item-total div`).html((Number)(element.price) * currentQuantity + ` ${element.currency}`)
                 let items = $(tableBody).find(".ezMall-cart-item ");
                 let totalCost = 0;

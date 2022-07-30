@@ -1138,7 +1138,6 @@ exports.createOrder = async (req, res) => {
     //CHECK DISSCOUNT 
     if (orderQuery.discount_id) {
         const discountResult = await discountService.findDiscount({ id: orderQuery.discount_id })
-
         if (discountResult) {
             if (discountResult.length == 1) {
                 const currentTime = new Date()
@@ -1169,7 +1168,7 @@ exports.createOrder = async (req, res) => {
                     }
                     else {
                         if (discountResult[0].type == 0) {
-                            discountPrice = originalPrice * discountResult[0].amount
+                            discountPrice = originalPrice * discountResult[0].amount/100
                         }
                         else {
                             discountPrice = discountResult[0].amount
@@ -1252,7 +1251,7 @@ exports.createOrder = async (req, res) => {
     orderQuery.id = orderId
     orderQuery.original_price = originalPrice
     orderQuery.discount_price = discountPrice
-
+    
     if (discountPrice > originalPrice) {
         orderQuery.discount_price = originalPrice
     }
@@ -1261,7 +1260,7 @@ exports.createOrder = async (req, res) => {
     // PAYPAL
     let paypalOrderRes = null;
     if (orderQuery.payment_method == 1) {
-        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice, discountPrice, orderQuery.id);
+        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery,  orderQuery.original_price, orderQuery.discount_price, orderQuery.id);
         if (paypalOrderRes.id) {
             orderQuery.paypal_id = paypalOrderRes.id;
         }
