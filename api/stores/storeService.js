@@ -137,6 +137,26 @@ exports.getStoreLogoById = async (id) => {
     }
 }
 
+exports.uploadStoreLogo = async (id, img) => {
+    let location = img
+    if (img.substr(0, 5) === 'data:') {
+        location = await fileService.uploadImageToS3(`storeImages/${id}/logo`, img);
+    }
+
+    try {
+        const result = await db.query(`
+            UPDATE stores 
+            SET logo_url = '${location}'
+            WHERE (id = '${id}')
+            RETURNING logo_url; 
+        `)
+        return result.rows[0];
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 exports.getStoreNameById = async (id) => {
     try {
         const result = await db.query(`
