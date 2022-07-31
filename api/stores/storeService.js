@@ -123,12 +123,38 @@ exports.getStoreComponents = async (storeId) => {
 }
 
 
-exports.getStoreLogoById = async (id) => {
+let getStoreLogoById = exports.getStoreLogoById = async (id) => {
     try {
         const result = await db.query(`
             SELECT logo_url 
             FROM stores 
             WHERE (id = '${id}')
+        `)
+        return result.rows[0];
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.uploadStoreLogo = async (id, img) => {
+
+    const oldURL = await getStoreLogoById(id).then(res => res.logo_url);
+    if (oldURL) {
+        await fileService.deleteObject(oldURL);
+    }
+
+    let location = img
+    if (img.substr(0, 5) === 'data:') {
+        location = await fileService.uploadImageToS3(`storeImages/${id}/logo/${uuidv4()}`, img);
+    }
+
+    try {
+        const result = await db.query(`
+            UPDATE stores 
+            SET logo_url = '${location}'
+            WHERE (id = '${id}')
+            RETURNING logo_url; 
         `)
         return result.rows[0];
     } catch (error) {
@@ -244,6 +270,9 @@ exports.publishStore = async (storeId) => {
     await Promise.all(allPages.map((ele,i)=>{
         return pageService.saveHTMLFile(storeId, allPages[i].id, result_content[i])
     }))
+
+    // Store LOGO
+    URLParser.createConfigHTML(storeName.id,storeName.logo_url)
     return true
 }
 

@@ -63,7 +63,7 @@
   font-size: 20px;
   position: absolute;
   top: 6px;
-  right: -10;
+  right: -10px;
   z-index: 1;
 }
 
@@ -189,6 +189,17 @@
   border-radius: 5px;
   margin: 15px auto;
 }
+
+[name="trackingOrder"] #show_order_details {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+[name="trackingOrder"] #order_note {
+  word-break: break-all;
+}
+
 
 @media only screen and (max-width: 1350px) {
   [name="trackingOrder"] .product-bill {
@@ -323,7 +334,7 @@
   padding: 0px;
   margin: 0px;
   position: relative;
-  top: -25;
+  top: -25px;
   font-weight: bold;
 }
 

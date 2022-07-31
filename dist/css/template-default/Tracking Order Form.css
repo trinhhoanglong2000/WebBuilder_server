@@ -10,7 +10,7 @@
 }
 
 [name="trackingOrderForm"] .input-form input{
-  margin: 5px;
+  margin: 15px 5px;
 }
 
 [name="trackingOrderForm"] .input-form .error {
@@ -43,7 +43,6 @@
   background-color: #96e477;
   border-color: #96e477;
 }
-
 
 @media only screen and (max-width: 480px) {
   [name="trackingOrderForm"] .input-form {
