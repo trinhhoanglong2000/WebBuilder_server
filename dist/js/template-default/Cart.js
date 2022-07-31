@@ -1,4 +1,7 @@
 function payMent() {
+    if ($('[data-gjs-type="wrapper"]').length>0){
+        return
+    } 
     let listIdCheck = [];
     let listProductBuy = [];
     let productCheck = $(".ezMall-cart-item");
@@ -30,6 +33,7 @@ function payMent() {
 }
 
 async function CartGenerateCodeItem(e) {
+    
     let rootEle = $(e)
     let tableHead = $(e).find(`table thead`)[0];
     let tableBody = $(e).find(`table tbody`)[0];
@@ -80,7 +84,7 @@ function CartGenerateCodeStart() {
 
 //SetListenOnChangeAtrribute();
 $(document).ready(function () {
-    if ($('[data-gjs-type="wrapper"]').length) {
+    if ($('[data-gjs-type="wrapper"]').length>0) {
         // $('[data-gjs-type="wrapper"]').ready(function () {
         //     CartGenerateCodeStart();
         // })
@@ -91,6 +95,7 @@ $(document).ready(function () {
 })
 
 function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
+    
     let currency = JSON.parse(localStorage.getItem('storeCurrency'));
     let totalCost = 0;
     let items = $(tableBody).find(".ezMall-cart-item ");

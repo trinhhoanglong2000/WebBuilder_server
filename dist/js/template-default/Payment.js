@@ -1,4 +1,5 @@
 async function PaymentGenerateCodeStart() {
+    
     $("div[ez-mall-type='payment']").each(async function (i) {
         let rootEle = $("div[ez-mall-type='payment']")[0];
         let storeId = $(rootEle).attr("ez-mall-store");
@@ -49,10 +50,10 @@ async function PaymentGenerateCodeStart() {
 $(document).ready(async function () {
     localStorage.removeItem('discount')
     if ($('[data-gjs-type="wrapper"]').length) {
-        $('[data-gjs-type="wrapper"]').ready(async function () {
-            await PaymentGenerateCodeStart();
+        // $('[data-gjs-type="wrapper"]').ready(async function () {
+        //     await PaymentGenerateCodeStart();
 
-        })
+        // })
     }
     else {
         if (!JSON.parse(localStorage.getItem('paymentItems')) || JSON.parse(localStorage.getItem('paymentItems')).length == 0) {
@@ -63,6 +64,9 @@ $(document).ready(async function () {
 })
 
 function buy() {
+    if ($('[data-gjs-type="wrapper"]').length>0){
+        return
+    } 
     let isOmitFill = false;
     let rootEle = $("div[ez-mall-type='payment']")[0];
     $(rootEle).find(".ezMall-payment-alert").show().css("display", "flex").children().hide()
@@ -231,6 +235,9 @@ async function getDistrict(rootEle) {
     })
 }
 async function loadPaymentData(rootEle, firstRun) {
+    if ($('[data-gjs-type="wrapper"]').length>0){
+        return
+    } 
     if (firstRun) {
         // Render Currency
         let paymentCurrencySelectCoptainer = $(rootEle).find("#currency")[0];

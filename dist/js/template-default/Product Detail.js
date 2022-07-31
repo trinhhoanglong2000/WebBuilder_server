@@ -9,6 +9,9 @@ function getParam(param) {
     return value
 }
 function insertProductData(rootEle, data) {
+    if ($('[data-gjs-type="wrapper"]').length>0){
+        return
+    } 
     if ($(rootEle).find(".slick-initialized").length != 0) {
         return;
     }
@@ -199,6 +202,9 @@ function VariantCheck(variantId, optionId) {
 }
 
 function addToCart(isBuyNow = false) {
+    if ($('[data-gjs-type="wrapper"]').length>0){
+        return false
+    } 
     $(`.ezMall-quantity-input`).css("border-color", "black").css("background","none")
     $(".ezMall-popup-alert").show().css("display", "flex").children().hide()
     $(".ezMall-popup-alert .ezMall-loading").show();
@@ -273,7 +279,7 @@ function addToCart(isBuyNow = false) {
         "is_variant": productData.is_variant,
         "variant_id": is_variant ? variantSelected.id : null,
         "variant_name": is_variant ? variantSelected.name : null,
-        "thumnail": productData.images.length > 0 ? productData.images[0] : "https://dummyimage.com/150x150/000/fff",
+        "thumnail": productData.images && productData.images.length > 0 ? productData.images[0] : "https://dummyimage.com/150x150/000/fff",
         "description": productData.description,
         "optionName": optionName
     }
