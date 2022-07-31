@@ -93,7 +93,7 @@ function embedOrderTrackingData(deploy) {
                 let btnPayment = $('div[name="trackingOrder"]').find('#show_order_details button.btn-payment'); 
                 if (data.status && data.status.length && data.status[0].status === "DELETED") {
                     $('div[name="trackingOrder"]').find('#order_status span').html("Canceled");
-                    
+                    btnPayment.css('display', 'none')
                     buttonCancel.css('display', 'none');
 
                     if (data.status[0].status === "PREPAID & RESTOCK" || data.status[0].status === "PRE-PAID") {
@@ -200,7 +200,7 @@ function embedOrderTrackingData(deploy) {
                 
                     var parsed = new Date(date);
                     parsed.setHours( parsed.getHours() + 10 )
-                    return parsed.getUTCFullYear() + "-" + zeroPad(parsed.getMonth() + 1) + "-" + zeroPad(parsed.getDate()) 
+                    return zeroPad(parsed.getDate()) + "/" + zeroPad(parsed.getMonth() + 1) + "/" + parsed.getUTCFullYear()
                     + " " + zeroPad(parsed.getHours()) + ":" + zeroPad(parsed.getMinutes()) + ":" + zeroPad(parsed.getSeconds());
                 }
 
@@ -256,7 +256,8 @@ function embedOrderTrackingData(deploy) {
 
                                     $('#tracking-order').find('.track .step.active').last().addClass('cancel');
                                     $('div[name="trackingOrder"]').find('#order_status span').html("Canceled");
-                                    $('div[name="trackingOrder"]').find('#order_note span').html(data.status[0].note);
+                                    $('div[name="trackingOrder"]').find('#order_note span').html(note);
+                                    buttonCancel.css("display", "none");
                                 } else {
                                     $('.modal-loader').find('#loader-popup').css('display', 'none');
                                     $('.modal-loader').find('#error-popup').find('#title').html('Server error... !');
