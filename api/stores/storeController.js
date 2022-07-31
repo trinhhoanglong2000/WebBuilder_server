@@ -26,6 +26,7 @@ exports.createStore = async (req, res) => {
     // create new store
     const storeObj = req.body;
     storeObj.user_id = req.user.id;
+    storeObj.logo_url = "https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png"
     const newStore = await storeService.createStore(storeObj);
 
     const storeId = newStore ? newStore.rows[0].id : ""
@@ -542,7 +543,7 @@ exports.getHeaderData = async (req, res) => {
     const menuItems = menuService.getHeaderMenu(storeId)
 
     const result = await Promise.all([logoURL, storeName, menuItems]);
-   
+
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
@@ -650,7 +651,7 @@ exports.createProduct = async (req, res) => {
         for (let i = 0; i < variantQuery.length; i++) {
             let option_value_id = []
             let createVariantQuery = variantQuery[i]
-            if (i == 0){
+            if (i == 0) {
                 newPrice = createVariantQuery.price
             }
             for (let j = 0; j < createVariantQuery.option_value.length; j++) {
@@ -666,16 +667,16 @@ exports.createProduct = async (req, res) => {
             createVariantQuery.option_value_id = option_value_id
             createVariantQuery.product_id = productId
             const createOptionValue = await productVariantService.createVariant(createVariantQuery)
-            if (createVariantQuery.price < newPrice){
-                newPrice =  createVariantQuery.price
+            if (createVariantQuery.price < newPrice) {
+                newPrice = createVariantQuery.price
             }
         }
     }
-  
+
     let updateQuery = {
         "id": productId,
         "inventory": quantity,
-        "price" : newPrice
+        "price": newPrice
     }
 
     const updateValue = await productService.updateProduct(updateQuery)
@@ -801,6 +802,11 @@ exports.deleteStore = async (req, res) => {
 
     const pages = await pageService.getPagesByStoreId({ store_id: id })
     const menuItem = await menuService.getMenuByStoreId({ store_id: id })
+
+    // Delte disscount
+
+    await discountService.deleteDiscount({ store_id: id })
+
     //Delete Data Collection
     if (bannerCollection.length > 0) {
         for (let i = 0; i < bannerCollection.length; i++) {
@@ -1094,7 +1100,7 @@ exports.createOrder = async (req, res) => {
             if (product.length > 0) {
                 const remainQuantity = product[0].inventory - query.quantity
 
-               
+
                 if (remainQuantity < 0) {
                     if (!product[0].continue_sell) {
                         res.status(http.Success).json({
@@ -1108,8 +1114,8 @@ exports.createOrder = async (req, res) => {
                         checkOutOfStock = true
                     }
 
-                    
-            
+
+
                     //const priceFixed = await dataService.changeMoney({ from: query.currency, to: currency, price:  product[0].price })
                     // originalPrice += query.quantity * priceFixed
                     // query.price = priceFixed
@@ -1134,7 +1140,6 @@ exports.createOrder = async (req, res) => {
     //CHECK DISSCOUNT 
     if (orderQuery.discount_id) {
         const discountResult = await discountService.findDiscount({ id: orderQuery.discount_id })
-
         if (discountResult) {
             if (discountResult.length == 1) {
                 const currentTime = new Date()
@@ -1165,10 +1170,10 @@ exports.createOrder = async (req, res) => {
                     }
                     else {
                         if (discountResult[0].type == 0) {
-                            discountPrice = originalPrice * discountResult[0].amount
+                            discountPrice = originalPrice * discountResult[0].amount/100
                         }
                         else {
-                            discountPrice = discountResult[0].amount
+                            discountPrice = discountResult[0].amount/100
                         }
                         if (discountResult[0].quantity != -1) {
                             await discountService.updateDiscount({ id: orderQuery.discount_id, quantity: discountResult[0].quantity - 1 })
@@ -1248,7 +1253,7 @@ exports.createOrder = async (req, res) => {
     orderQuery.id = orderId
     orderQuery.original_price = originalPrice
     orderQuery.discount_price = discountPrice
-
+    
     if (discountPrice > originalPrice) {
         orderQuery.discount_price = originalPrice
     }
@@ -1257,7 +1262,7 @@ exports.createOrder = async (req, res) => {
     // PAYPAL
     let paypalOrderRes = null;
     if (orderQuery.payment_method == 1) {
-        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, originalPrice, discountPrice, orderQuery.id);
+        paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery,  orderQuery.original_price, orderQuery.discount_price, orderQuery.id);
         if (paypalOrderRes.id) {
             orderQuery.paypal_id = paypalOrderRes.id;
         }
@@ -1273,7 +1278,7 @@ exports.createOrder = async (req, res) => {
 
     //MAIL
     const storeData = await storeService.findById(orderQuery.store_id)
-    const mailStoreQueryData = emailService.createConfirmCustomerMailString(orderQuery,productQuery,storeData)
+    const mailStoreQueryData = emailService.createConfirmCustomerMailString(orderQuery, productQuery, storeData)
     let mailStoreQuery = {
         store_id: orderQuery.store_id,
         subject: `Order #${orderQuery.id} successfully created`,
@@ -1281,7 +1286,7 @@ exports.createOrder = async (req, res) => {
         html: mailStoreQueryData
     }
     const account = await accountService.getUserInfo(storeData.user_id)
-    
+
     let html = emailService.createUserMailString(`<p>New order #${orderQuery.id} have been create from store ${storeData.name}</p> <br>
     <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a> to proceed.</p>
     `)
@@ -1436,8 +1441,10 @@ exports.getOrderById = async (req, res) => {
     const allProduct = await orderService.getOrderProduct({ order_id: orderId })
     for (let i = 0; i < allProduct.length; i++) {
         const productFound = await productService.findById(allProduct[i].product_id)
+
         if (productFound.length > 0) {
             allProduct[i].existed = true
+            allProduct[i].thumbnail = productFound[0].thumbnail
         }
         else {
             allProduct[i].existed = false
@@ -1953,12 +1960,12 @@ exports.getCurrency = async (req, res) => {
 
 exports.updateStore = async (req, res) => {
     const query = req.body
-    query.id =  req.params.id
+    query.id = req.params.id
     const result = await storeService.updateStoreInfo(query)
     if (result) {
         res.status(http.Success).json({
             statusCode: http.Success,
-       
+
             message: "Update stores Successfully!"
         })
     }
@@ -1970,3 +1977,20 @@ exports.updateStore = async (req, res) => {
     }
 }
 
+exports.uploadLogo = async (req, res) => {
+    const {id, img} = req.body
+    const result = await storeService.uploadStoreLogo(id, img)
+    if (result) {
+        res.status(http.Success).json({
+            statusCode: http.Success,
+            data: result,
+            message: "Update logo Successfully!"
+        })
+    }
+    else {
+        res.status(http.ServerError).json({
+            statusCode: http.ServerError,
+            message: "Server error!"
+        })
+    }
+}

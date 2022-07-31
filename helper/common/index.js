@@ -138,6 +138,7 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
     //   });
 
     //MAIN HTML
+  
     key = `views/bodies/${storeNameConvert}${pageNameConvert}/index`
     fileService.uploadTextFileToS3(HTML, key, 'txt');
 
@@ -163,7 +164,7 @@ exports.saveHTMLFile = async (storeId, pageId, content) => {
   }
 };
 
-exports.createConfigHTML = async (storeId) => {
+exports.createConfigHTML = async (storeId, link = "") => {
   const storeName = await storeService.findById(storeId)
   const storeNameConvert = storeName.name ? generateURL(storeName.name) : null;
   const HTML = `
@@ -174,6 +175,7 @@ exports.createConfigHTML = async (storeId) => {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+    <link rel="icon" type="image/x-icon" href="${link}">
                 `
 
 

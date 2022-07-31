@@ -60,6 +60,7 @@ router.post('/:id/publish',authenticator.Authenticate, storeController.publishSt
 router.post('/:id/contact-form', storeController.sendContact)
 //Update store info
 router.put('/', authenticator.Authenticate, storeController.updateStoreInfo);
+router.put('/upload-logo', authenticator.Authenticate, storeController.uploadLogo);
 
 
 //GET ANALYST

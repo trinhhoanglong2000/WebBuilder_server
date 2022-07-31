@@ -17,18 +17,24 @@ function insertProductData(rootEle, data) {
     let variantData = productData.is_variant? data.variant: [];
     let imageArr = productData.images ? productData.images : [];
     let options = productData.is_variant ? data.option : [];
+    let continue_sell= productData.continue_sell;
+    console.log(continue_sell)
+    if(continue_sell){
+       console.log($(rootEle).find('.ezMall-quantity i')) 
+       $(rootEle).find('.ezMall-quantity i')[0].style.setProperty('display','none','important');
+    }
     // For render image
     $(rootEle).find(`.ezMall-quantity-remain`).html(productData.inventory);
     $(rootEle).find(`ezMall-quantity-input`).prop("max", productData.inventory);
     $(rootEle).find(".ezMall-header").html(productData.title)
-    $(rootEle).find(".ezMall-type-value").html(productData.type)
+    $(rootEle).find(".ezMall-type-value").html(productData.type ?? "None")
     $(rootEle).find(".ezMall-status-value").html(productData.status)
     $(rootEle).find(".ezMall-description").html(productData.description)
     $(rootEle).find(`.ezMall-price .price`).html(priceToString(productData.is_variant? variantData[0].price: productData.price, productData.currency));
     //$(rootEle).find(".ezMall-price .currency").html(productData.currency)
     $(rootEle).find(".ezMall-stick-slide").html("")
     let thumbnailImage = $(rootEle).find(".img-thumbnail")[0];
-    $(thumbnailImage).prop("src", imageArr[0]);
+    $(thumbnailImage).prop("src", imageArr[0]??"https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png");
     let imagesContainerEle = $(rootEle).find(".ezMall-stick-slide")[0];
     imageArr.forEach((item, index) => {
         let imageItem = `
@@ -84,11 +90,12 @@ function insertProductData(rootEle, data) {
     });
 }
 async function ProductDetailGenerateCodeItem(e) {
+    const storeId = $('nav').attr("store-id");
     const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
-    let reqUrl = `${rootUrl}/products/9ecd724b-6041-4a5e-b2c1-e98ed37628de`;
+    let reqUrl = ``;
     let productId = getParam("id");
     if (productId) {
-        reqUrl = `${rootUrl}/products/${productId}`;
+        reqUrl = `${rootUrl}/products/${productId}?store_id=${storeId}`;
     }
     $(".ezMall-popup-alert").show().css("display", "flex").children().hide();
     $(".ezMall-loading").show();
@@ -150,7 +157,7 @@ function VariantCheck(variantId, optionId) {
         variantValid.forEach(item => {
             item.option_value.forEach(optionValid => {
                 
-                if(item.quantity !=0 ||!continue_sell){
+                if(item.quantity !=0 || continue_sell){
                     $(`#${option[i].id} #${optionValid.id} + label `).removeClass("disabled");
                 }
 
@@ -242,6 +249,7 @@ function addToCart(isBuyNow = false) {
         return false
     }
     if(!continue_sell){
+        
         let maxProduct =  Number($(`.ezMall-quantity-input`).attr("max"));
         if (quantity > maxProduct){
             $(".ezMall-popup-alert .ezMall-loading").hide();
