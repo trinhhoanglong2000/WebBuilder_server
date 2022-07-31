@@ -3,19 +3,16 @@ function getOrderParam(param){
     var value = url.searchParams.get(param);
     return value
 }
-
-function convertCurrency(value, currency) {
+function priceToString(value, currency) {
     switch (currency) {
-        case "VND": {
-            return Math.ceil(value);
+        case "VND":
+            return Math.ceil(Number(value)).toLocaleString('fi-FI', { style: 'currency', currency: 'VND' });
             break;
-        }
-        case "USD": {
-            return parseFloat(value).toFixed(2);
+        case "USD":
+            return Number(value).toLocaleString('fi-FI', { style: 'currency', currency: 'USD' });
             break;
-        }
         default:
-            return parseFloat(value).toFixed(2);
+            return `${value} ${currency}`
             break;
     }
 }
@@ -66,19 +63,19 @@ function embedOrderTrackingData(deploy) {
                         productList.append(`
                         <div class="row">
                             <div class="col-8"> <a href="/products?id=${element.id}">${element.product_name}</a> x${element.quantity}</div>
-                            <div class="col-3"> ${convertCurrency(totalPrice, data.order.currency)} </div>
+                            <div class="col-3"> ${priceToString(totalPrice, data.order.currency)} </div>
                         </div>`)
                     } else {
                         productList.append(`
                         <div class="row">
                             <div class="col-8"> ${element.quantity}x ${element.product_name}</div>
-                            <div class="col-3"> ${convertCurrency(totalPrice, data.order.currency)} </div>
+                            <div class="col-3"> ${priceToString(totalPrice, data.order.currency)} </div>
                         </div>`)
                     }
                 });
                 
-                let original_price = convertCurrency(data.order.original_price, data.order.currency);
-                let discount_price = convertCurrency(data.order.discount_price, data.order.currency);
+                let original_price = priceToString(data.order.original_price, data.order.currency);
+                let discount_price = priceToString(data.order.discount_price, data.order.currency);
                 let totalPrice = original_price  - discount_price;
                 $('.product-bill').find('.billing #subtotal_price').html(original_price);
                 $('.product-bill').find('.billing #discount_price').html(discount_price);

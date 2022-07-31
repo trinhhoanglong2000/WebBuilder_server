@@ -11,8 +11,9 @@ function embedOrderTrackingScriptForm(deploy) {
         $(this).find('#submitBtn').click(() => {
             let errorAlert  = $(this).find('.error').css('display', 'none');
             let notifyAlert = $(this).find('.notify').css('display', 'none');
-            let mail = $(this).find('#email').val();
+            let mail = $(this).find('#email').val().trim();
             let orderId = $(this).find('#orderCode').val().trim();
+            
             if (mail && orderId && ValidateEmail(mail) && orderId != "") {
                 let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm);
                 let storeId = $('nav[name="header"]').attr("store-id");

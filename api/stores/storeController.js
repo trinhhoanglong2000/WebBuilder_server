@@ -564,13 +564,9 @@ exports.getHeaderData = async (req, res) => {
 
 exports.updateStoreData = async (req, res) => {
     const storeId = req.params.storeId;
-    const logoUrl = req.body.logoUrl;
     const storeComponents = req.body.storeComponents;
 
-    const task1 = DBHelper.updateData({ id: storeId, logo_url: logoUrl }, "stores", "id");
-    const task2 = storeService.uploadStoreComponentsFile(storeId, storeComponents);
-
-    const result = await Promise.all([task1, task2]);
+    const result = await storeService.uploadStoreComponentsFile(storeId, storeComponents);
 
     if (result) {
         res.status(http.Success).json({
