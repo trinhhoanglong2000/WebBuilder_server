@@ -218,9 +218,10 @@ exports.updateProduct = async (req, res) => {
             if (i == 0) {
                 price = product[i].price
             }
-            if (product[i].price < price) {
+            if (parseFloat(product[i].price) < parseFloat(price)) {
                 price = product[i].price
             }
+            
             quantity += product[i].quantity
         }
         let updateQuery = {
@@ -230,6 +231,7 @@ exports.updateProduct = async (req, res) => {
         if (price) {
             updateQuery.price = price
         }
+
         const updateValue = await productService.updateProduct(updateQuery)
     }
     // let price = await productService.updatePrice({product_id : productId})

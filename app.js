@@ -35,7 +35,7 @@ var hbs = require('express-handlebars')
 const corsOptions = {
   origin: true,
   optionsSuccessStatus: 200,
-  credentials: false,
+  credentials: true,
   methods: "GET, PUT, POST, DELETE"
 }
 app.engine('hbs', hbs.engine({
