@@ -1,7 +1,7 @@
 const generateHeaderDropdownMenu = (mNavigation) => {
     let navbar = [];
     if (mNavigation) {
-        mNavigation = mNavigation?.slice(0, 4);
+        mNavigation = mNavigation?.slice(0, 6);
         mNavigation.forEach((element) => {
             if (element.expanded && element.children) {
                 let dropdown =  `<li class="nav-item">

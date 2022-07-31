@@ -35,6 +35,26 @@ exports.getFile = async (key) => {
   }
 };
 
+exports.uploadImageToS3 = async (key, data) => {
+  try {
+    const buf = Buffer.from(data.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+    const type = data.split(';')[0].split('/')[1];
+    const res = await s3.upload({
+      Body: buf,
+      Bucket: "ezmall-bucket",
+      ContentEncoding: 'base64',
+      ContentType: `image/${type}`,
+      ACL: 'public-read',
+      Key: `${key}.${type}`
+    }).promise();
+
+    return res.Location;
+
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
 
 exports.postImage = async (folder, data) => {
   try {
@@ -62,7 +82,7 @@ exports.postImage = async (folder, data) => {
 
 exports.deleteObject = async (url) => {
   try {
-    const key = url.substring(54);
+    const key = url.substr(54);
     const params = {
       Bucket: "ezmall-bucket",
       Key: key
@@ -146,8 +166,8 @@ exports.checkExistFile = async (key) => {
           throw err;
         }
       );
-      console.log(key)
-      return exists
+    console.log(key)
+    return exists
   } catch (error) {
     console.log(error);
     return null;
