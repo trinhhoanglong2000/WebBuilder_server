@@ -52,7 +52,7 @@ app.set('view engine', 'hbs')
 app.use(logger('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(passport.initialize());
 app.use(express.static('dist'))
 
