@@ -1741,7 +1741,8 @@ exports.averageTotalOrder = async (req, res) => {
         if (result[i].currency != currency) {
             price = await dataService.changeMoney({ from: result[i].currency, to: currency, price: price })
         }
-        total += price
+
+        total += parseFloat(price)
         totalProduct += result[i].total_products
         totalOrder += 1
         if (!newDay) {
