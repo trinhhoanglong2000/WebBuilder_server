@@ -37,12 +37,14 @@ const corsOptions = {
   optionsSuccessStatus: 200,
   credentials: true,
   methods: "GET, PUT, POST, DELETE"
+
 }
 app.engine('hbs', hbs.engine({
   extname: 'hbs',
   defaultLayout: 'layout',
   layoutsDir: __dirname + '/views/layouts/',
   partialsDir: __dirname + '/views/partials/',
+  
   runtimeOptions: {
       allowProtoPropertiesByDefault: true
   },
@@ -52,7 +54,7 @@ app.set('view engine', 'hbs')
 app.use(logger('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(passport.initialize());
 app.use(express.static('dist'))
 
@@ -73,7 +75,7 @@ app.use('/order', orderRouter)
 app.use('/data',dataRouter)
 app.use('/discount',discountRouter)
 app.get('/',function (req,res) {
-  res.send("Hi Ver 1.1")
+  res.send("Hi Ver 1.2")
 })
 app.use('/menu', menuRouter);
 app.use('/menu-item', menuItemRouter);
