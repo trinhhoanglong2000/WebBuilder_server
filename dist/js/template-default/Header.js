@@ -41,7 +41,7 @@ const generateHeaderDropdownMenu = (mNavigation) => {
             } else {
                 navbar.push(`<li class="nav-item">
                     <a href="${element.link}" class="nav-link"> ${element.title} </a>
-                    <a class="sx-nav-link">
+                    <a href="${element.link}" class="sx-nav-link">
                         ${element.title}
                     </a>
                 </li>`)
@@ -87,7 +87,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
             } else {
                 navbar.push(`<li class="nav-item">
                     <a href="${element.link}" class="nav-link p-1"> ${element.title} </a>
-                    <a class="sx-nav-link">
+                    <a href="${element.link}" class="sx-nav-link">
                         ${element.title}
                     </a>
                 </li>`)
