@@ -94,7 +94,7 @@ exports.createAccount = async (req, res) => {
         }
         else {
             let query = {
-                name: "template-default"
+                name: "Template Default"
             }
             const getTemplate = await templateService.getTemplate(query)
             let addQuery = {
