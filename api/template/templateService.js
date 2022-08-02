@@ -235,8 +235,11 @@ exports.useTemplate = async (query) => {
 
     // CREATE NEW STORE COMPONENT
 
+    const newTemplateName =  URLParser.generateURL(templateName)
 
-    const storeComponent = await fileService.getFile(`templates/${template[0].name}/_store-component.json`)
+    console.log(newTemplateName)
+    console.log(templateName)
+    const storeComponent = await fileService.getFile(`templates/${newTemplateName}/_store-component.json`)
 
     const id_store_content = storeComponent.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
     const content = JSON.parse(storeComponent.toString('utf-8').replace(id_store_content, `${query.store_id}`).replace(id_store_content, `${query.store_id}`));

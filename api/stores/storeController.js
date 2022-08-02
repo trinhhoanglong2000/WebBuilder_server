@@ -34,7 +34,7 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    const template = await templateService.getTemplate({ name: "template-default" })
+    const template = await templateService.getTemplate({ name: "Template Default" })
     await templateService.useTemplate({ user_id: req.user.id, store_id: storeId, template_id: template[0].id })
     await storeService.publishStore(storeId)
 
