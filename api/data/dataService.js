@@ -28,7 +28,7 @@ exports.changeMoney = async (query) => {
     let value = query.price
 
     if(query.to == query.from){
-        return value
+        return parseFloat(value)
     }
     switch (query.to) {
         case "VND":

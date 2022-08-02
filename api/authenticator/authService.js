@@ -50,9 +50,11 @@ exports.googleSignIn = async (tokenID, accessToken) => {
             if (!acc.gg_id) {
                 let obj = {
                     gg_id : ObjData.gg_id,
-                    email : ObjData.email
+                    email : ObjData.email,
+                    verified : true
                 }
                 await DBHelper.updateData(obj,"account","email")
+                DBHelper.deleteData("verification",{user_id : acc.id})
             }
         } else {
             let genderOfNewMember;
@@ -63,7 +65,8 @@ exports.googleSignIn = async (tokenID, accessToken) => {
                 fullname: ObjData.fullname,
                 gender: genderOfNewMember,
                 dob: ObjData.dob,
-                gg_id: ObjData.gg_id
+                gg_id: ObjData.gg_id,
+                verified : true
             }
             await accountService.createAccount(newAccount)
         }
@@ -96,29 +99,26 @@ exports.facebookSignIn = async (tokenID, callback) => {
             const data = response.data;
             if (data.error) callback(); 
             const acc = await accountService.getUserByEmail(data.email);
-            
+            console.log(acc)
+            console.log(data)
             if (!acc) {
-                let genderOfNewMember;
-                if (data.gender === 'male') genderOfNewMember = true;
-                else genderOfNewMember = false;
+        
                 newAccount = {
                     email: data.email,
-                    password: null,
                     fullname: data.name,
-                    phone: null,
-                    gender: genderOfNewMember ,
-                    dob: data.birthday,
                     fb_id: data.id,
-                    gg_id: null
+                    verified : true,
                 }
                 await accountService.createAccount(newAccount)
                 
-            } else if (!acc.fb_id && acc != null) {
+            } else if (!acc.fb_id && acc) {
                 let obj = {
                     fb_id : data.id,
-                    email : acc.email
+                    email : acc.email,
+                    verified : true
                 }
                 await DBHelper.updateData(obj,"account","email")
+                DBHelper.deleteData("verification",{user_id : acc.id})
             }
             
             const acc1 = await accountService.getUserByEmail(data.email)
