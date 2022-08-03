@@ -36,7 +36,7 @@ exports.googleSignIn = async (tokenID, accessToken) => {
         
         let date = birthdays[0].date;
         
-        const bod = date.day + "/" + date.month + "/" + date.year;
+        const bod = date.month + "/" + date.day + "/" + date.year;
         let gender = genders.value;
         const ObjData = {
             dob: bod, 
@@ -62,7 +62,7 @@ exports.googleSignIn = async (tokenID, accessToken) => {
             else genderOfNewMember = false;
             let newAccount = {
                 email: ObjData.email,
-                fullname: ObjData.fullname,
+                fullname: ObjData.fullname.replace(/'/g,"''"),
                 gender: genderOfNewMember,
                 dob: ObjData.dob,
                 gg_id: ObjData.gg_id,
@@ -99,13 +99,12 @@ exports.facebookSignIn = async (tokenID, callback) => {
             const data = response.data;
             if (data.error) callback(); 
             const acc = await accountService.getUserByEmail(data.email);
-            console.log(acc)
-            console.log(data)
+          
             if (!acc) {
         
                 newAccount = {
                     email: data.email,
-                    fullname: data.name,
+                    fullname: data.name.replace(/'/g,"''"),
                     fb_id: data.id,
                     verified : true,
                 }
