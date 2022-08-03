@@ -24,7 +24,7 @@ function embedOrderTrackingData(deploy) {
 
     $('.modal-loader').css('display', 'block')
     $('.modal-loader').find('#loader-popup').css('display', 'initial');
-
+    debugger
     fetch(`${serverURL}/stores/${storeId}/order/${orderId}`)
     .then((response) => response.json())
     .then((response) => {
@@ -76,12 +76,12 @@ function embedOrderTrackingData(deploy) {
                 
                 let original_price = priceToString(data.order.original_price, data.order.currency);
                 let discount_price = priceToString(data.order.discount_price, data.order.currency);
-                let totalPrice = original_price  - discount_price;
+                let totalPrice = data.order.original_price - data.order.discount_price;
+                totalPrice = priceToString(totalPrice, data.order.currency);
+
                 $('.product-bill').find('.billing #subtotal_price').html(original_price);
                 $('.product-bill').find('.billing #discount_price').html(discount_price);
                 $('.product-bill').find('.billing #total_price').html(totalPrice);
-                $('.product-bill').find('.billing #currency').html(data.order.currency);
-                
                 
                 $('#show_order_details button.btn-show-orders').on('click', function() {
                     $(this).css('display', 'none');
