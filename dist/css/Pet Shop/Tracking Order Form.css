@@ -1,0 +1,92 @@
+[name="trackingOrderForm"] {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+[name="trackingOrderForm"] .input-form {
+  width: 75%;
+  margin: 10px auto;
+}
+
+[name="trackingOrderForm"] .input-form input{
+  margin: 15px 5px;
+}
+
+[name="trackingOrderForm"] .input-form .error {
+  margin-left: 10px; 
+  color: rgb(247, 56, 30);
+  display: none;
+}
+
+[name="trackingOrderForm"] .input-form .notify {
+  margin-left: 10px; 
+  color: rgb(35, 129, 236);
+  display: none;
+}
+
+[name="trackingOrderForm"] .footer-btn {
+  width: 100%;
+  text-align: center;
+}
+
+[name="trackingOrderForm"] .footer-btn .btn {
+  width: 20%;
+  margin: 10px;
+  min-width: 120px;
+  color: #ffffff;
+  background-color: #65ca3e;
+  border-color: #65ca3e;
+}
+
+[name="trackingOrderForm"] .footer-btn .btn:hover {
+  background-color: #96e477;
+  border-color: #96e477;
+}
+
+@media only screen and (max-width: 480px) {
+  [name="trackingOrderForm"] .input-form {
+    width: 90%;
+  }
+}
+
+/* Css header trait */
+[name='trackingOrderForm'][theme='white'] .card-body { 
+    background-color: white;
+}
+
+[name='trackingOrderForm'][theme='white'] .card-body { 
+    color: black;
+}
+
+[name='trackingOrderForm'][theme='black'] .card-body { 
+    background-color: #282828;
+}
+
+[name='trackingOrderForm'][theme='black'] .card-body { 
+    color: white;
+}
+
+[name='trackingOrderForm'][theme='lGreen'] .card-body { 
+    background-color: #afffc2;
+}
+
+[name='trackingOrderForm'][theme='lGreen'] .card-body { 
+    color: black;
+}
+
+[name='trackingOrderForm'][theme='lBlue'] .card-body { 
+    background-color: #90e0ef; 
+}
+
+[name='trackingOrderForm'][theme='lBlue'] .card-body { 
+    color: black;
+}
+
+[name='trackingOrderForm'][theme='sand'] .card-body { 
+    background-color: #ffca83; 
+}
+
+[name='trackingOrderForm'][theme='sand'] .card-body { 
+    color: black;
+}
