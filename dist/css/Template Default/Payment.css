@@ -86,3 +86,14 @@ div[ez-mall-type = payment] #currency{
 .ezMall-discount-description div:hover i:hover::before{
     color: red;
 }
+
+.color-orange{
+    color: #f15e2c !important
+}
+.bg-orange{
+    background-color: #f15e2c !important;
+}
+.bg-orange:hover{
+    background-color: #f15e2c !important;
+    opacity: 0.8;
+}
