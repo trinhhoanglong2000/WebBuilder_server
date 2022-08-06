@@ -73,6 +73,7 @@ function buy() {
     $(rootEle).find(".ezMall-payment-alert .ezMall-loading").show();
     let storeId = $(rootEle).attr("ez-mall-store");
     let email = $(rootEle).find("#email").val();
+    let node =   $(rootEle).find("#note").val();
     if (!email) {
         $(rootEle).find(".email-alert").show();
         isOmitFill = true;
@@ -115,6 +116,7 @@ function buy() {
     let currency = payment == 1 ? "USD" : $(rootEle).find("#currency").val();
     let discountInfo = JSON.parse(localStorage.getItem('discount'));
 
+
     var payload = {
         order: {
             email: email,
@@ -128,7 +130,7 @@ function buy() {
             payment_method: payment,
             currency: currency,
             discount_id: discountInfo ? discountInfo.id : '',
-            note: ''
+            note: node??''
         },
         products: paymentItems.map((item) => {
             return {
