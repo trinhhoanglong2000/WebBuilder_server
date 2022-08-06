@@ -20,7 +20,7 @@ exports.createStore = async (storeObj) => {
         storeObj.mail_link = URLParser.generateURL(storeObj.name) + '@myeasymall.site';
         storeObj.original_mail = URLParser.generateURL(storeObj.name) + '@myeasymall.site';
     }
-    let template = await templateService.getTemplate({ name: "template-default" })
+    let template = await templateService.getTemplate({ name: "Template Default" })
     if (template) {
         storeObj.template_id = template[0].id
     }

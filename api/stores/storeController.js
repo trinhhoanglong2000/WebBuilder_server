@@ -34,7 +34,7 @@ exports.createStore = async (req, res) => {
     URLParser.createConfigHTML(storeId)
 
     //CREATE DEFAULT PAGE
-    const template = await templateService.getTemplate({ name: "template-default" })
+    const template = await templateService.getTemplate({ name: "Template Default" })
     await templateService.useTemplate({ user_id: req.user.id, store_id: storeId, template_id: template[0].id })
     await storeService.publishStore(storeId)
 
@@ -184,6 +184,27 @@ exports.getStoreById = async (req, res) => {
 
 exports.updateStoreInfo = async (req, res) => {
     const storeObj = req.body;
+    if (storeObj.currency){
+        const data = await storeService.findById(storeObj.id)
+        if (data.currency != storeObj.currency){
+            const products = await productService.getProductsByStoreId({store_id : storeObj.id})
+            for (let i = 0 ; i < products.length; i++){
+                let currentCurrency = products[i].currency
+                let money = await Promise.all([dataService.changeMoney({from : currentCurrency, to : storeObj.currency, price : products[i].price}), 
+                dataService.changeMoney({from : currentCurrency, to : storeObj.currency, price : products[i].cost_item})]) 
+
+                productService.updateProduct({id : products[i].id, currency : storeObj.currency, price : money[0], cost_item : money[1]})
+                if (products[i].is_variant){
+                    let variants = await productVariantService.getVariant(products[i].id)
+                  
+                    for (let j = 0; j < variants.length; j++){
+                        let moneyVariant = await dataService.changeMoney({from : currentCurrency, to : storeObj.currency, price : variants[j].price})
+                        productVariantService.updateVariant({id : variants[j].id, price : moneyVariant})
+                    }
+                }
+            }
+        }
+    }
     const result = await storeService.updateStoreInfo(storeObj);
     if (result) {
         res.status(http.Success).json({
@@ -648,6 +669,7 @@ exports.createProduct = async (req, res) => {
     //Create Variant
     let newPrice
     if (variantQuery) {
+
         for (let i = 0; i < variantQuery.length; i++) {
             let option_value_id = []
             let createVariantQuery = variantQuery[i]
@@ -671,15 +693,17 @@ exports.createProduct = async (req, res) => {
                 newPrice = createVariantQuery.price
             }
         }
+
+        let updateQuery = {
+            "id": productId,
+            "inventory": quantity,
+            "price": newPrice
+        }
+    
+        const updateValue = await productService.updateProduct(updateQuery)
     }
 
-    let updateQuery = {
-        "id": productId,
-        "inventory": quantity,
-        "price": newPrice
-    }
-
-    const updateValue = await productService.updateProduct(updateQuery)
+   
     if (newProduct) {
         res.status(http.Created).json({
             statusCode: http.Created,
@@ -1741,7 +1765,9 @@ exports.averageTotalOrder = async (req, res) => {
         if (result[i].currency != currency) {
             price = await dataService.changeMoney({ from: result[i].currency, to: currency, price: price })
         }
-        total += price
+
+        price = parseFloat(price)
+        total += parseFloat(price)
         totalProduct += result[i].total_products
         totalOrder += 1
         if (!newDay) {

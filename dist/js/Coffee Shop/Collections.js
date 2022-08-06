@@ -18,7 +18,9 @@ var GetRequest_ProductPage = debounce_ProductPage(async (e, idStore, limit, name
     fetch(`${urlProductSection}/stores/${idStore}/products?limit=${limit}&offset=${startProductSection}&status=Active&title=${name}${id ? `&collection_id=${id}` : ''}`)
         .then((response) => response.json())
         .then((data) => {
-
+            if (startProductSection==0 && data.data.length==0){
+                productHTML = `<div>No Items to display</div>`
+            }
             $(".dots ").addClass("d-none")
             startProductSection += parseInt(limit);
             if (data.data.length < limit) canLoadProductSection = false

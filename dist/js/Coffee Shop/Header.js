@@ -41,7 +41,7 @@ const generateHeaderDropdownMenu = (mNavigation) => {
             } else {
                 navbar.push(`<li class="nav-item">
                     <a href="${element.link}" class="nav-link"> ${element.title} </a>
-                    <a class="sx-nav-link">
+                    <a href="${element.link}" class="sx-nav-link">
                         ${element.title}
                     </a>
                 </li>`)
@@ -87,7 +87,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
             } else {
                 navbar.push(`<li class="nav-item">
                     <a href="${element.link}" class="nav-link p-1"> ${element.title} </a>
-                    <a class="sx-nav-link">
+                    <a href="${element.link}" class="sx-nav-link">
                         ${element.title}
                     </a>
                 </li>`)
@@ -100,7 +100,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
 }
 
 //==============|Data Selector|============
-function embedHeaderData() {
+function embedHeaderData(deploy) {
     $('nav[name="header"]').parent().css('overflow', 'initial')
     $('nav[name="header"]').parent().css('overflowX', 'initial')
 
@@ -141,6 +141,22 @@ function embedHeaderData() {
             $('#searchBound').animate({width: '350px'});
         })
 
+        $('#searchBound span').on('click', function() { 
+            let key = $('#searchBound input')?.val();
+            if (key && key.trim() != "" && deploy) {
+                window.location.href = `/collections?key=${key}`;
+            }
+        });
+
+        $('#searchBound input').on('keydown', function(e) { 
+            if (e.which == 13) {
+                let key = $('#searchBound input')?.val();
+                if (key && key.trim() != "" && deploy) {
+                    window.location.href = `/collections?key=${key}`;
+                }
+            }
+        });
+
         let cart = JSON.parse(localStorage.getItem('cart'));
         let numberProduct = cart? cart.length : 0;
         if (numberProduct == 0) {
@@ -176,10 +192,10 @@ function embedHeaderData() {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embedHeaderData();
+            embedHeaderData(false);
         })
     }
     else {
-        embedHeaderData();
+        embedHeaderData(true);
     } 
 })

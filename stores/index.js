@@ -28,8 +28,8 @@ router.get('/', async (req, res, next) => {
             })
         }))
         const result = await Promise.all([ip4, cName]);
-        // console.log(result[0])//ip4
-        // console.log(result[1])//Cname
+        console.log(result[0])//ip4
+        console.log(result[1])//Cname
 
 
         if (result[1]) {

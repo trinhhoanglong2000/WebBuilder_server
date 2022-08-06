@@ -1,6 +1,7 @@
 const templateService = require('./templateService');
 const http = require('../../const')
 const URLParser = require('../../helper/common/index')
+const pageService = require('../page/pageService')
 exports.useTemplate = async (req, res) => {
     const query = req.body
     query.template_id = req.params.id
@@ -15,10 +16,11 @@ exports.useTemplate = async (req, res) => {
         if (checkAccount.length > 0) {
             const result = await templateService.useTemplate(query)
 
+            const pageName = await pageService.getPageByName("Home",query.store_id)
             if (result) {
                 res.status(http.Success).json({
                     statusCode: http.Success,
-                    data: result,
+                    data: {id : pageName[0].id},
                     message: "Success Use Template"
                 })
             }

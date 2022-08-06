@@ -20,8 +20,10 @@ passport.use(
         if (!acc.verified) {
           return done(null, false, { message: "Email hasn't been verified yet. Check your inbox." });
         }
-        if (genSalt.compare(password, acc.password)) {
-          return done(null, { id: acc.id, email: email });
+        if (acc.password) {
+          if (genSalt.compare(password, acc.password)) {
+            return done(null, { id: acc.id, email: email });
+          }
         }
       }
       return done(null, false, { message: "Incorect email or password!" });

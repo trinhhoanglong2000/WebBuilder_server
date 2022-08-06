@@ -9,7 +9,8 @@ exports.validateAccount = (accountObj) => {
         gender: Joi.boolean(),
         dob: Joi.date(),
         fb_id: Joi.string(),
-        gg_id: Joi.string()
+        gg_id: Joi.string(),
+        verified : Joi.boolean()
     });
     return schema.validate(accountObj);
 }
