@@ -30,6 +30,8 @@ function payMent() {
         window.localStorage.setItem('paymentItems', JSON.stringify(listProductBuy));
         if(listProductBuy.length > 0){
             window.location.href = "/payment"
+        }else{
+            $("#cart-alert").html("Plase choose one or more items")
         }
 
     }
@@ -107,13 +109,13 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
     let checkedInput = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check:checked")
     if (items.length == 0) {
         $(rootEle).find("#ezMall-cart-zero-item").show().addClass("d-flex");
-        $(rootEle).find(".tableRoot").hide();
+        $(rootEle).find(".cart-container").hide();
         $(ezMallSumary).hide();
         $(tableHead).find("#cart-select-all-product").prop("checked", false)
     }
     else {
         $(rootEle).find("#ezMall-cart-zero-item").hide().removeClass("d-flex");
-        $(rootEle).find(".tableRoot").show();
+        $(rootEle).find(".cart-container").show();
         $(ezMallSumary).show();
         if (checkedInput.length == items.length) {
             $(tableHead).find("#cart-select-all-product").prop("checked", true)
@@ -310,13 +312,13 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
     let items = $(tableBody).find(".ezMall-cart-item ");
     if (items.length == 0) {
         $(rootEle).find("#ezMall-cart-zero-item").show().addClass("d-flex");
-        $(rootEle).find(".tableRoot").hide();
+        $(rootEle).find(".cart-container").hide();
         $(ezMallSumary).hide();
         $(tableHead).find("#cart-select-all-product").prop("checked", false)
     }
     else {
         $(rootEle).find("#ezMall-cart-zero-item").hide().removeClass("d-flex");
-        $(rootEle).find(".tableRoot").show();
+        $(rootEle).find(".cart-container").show();
         $(ezMallSumary).show();
     }
 }
