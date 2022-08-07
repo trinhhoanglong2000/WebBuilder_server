@@ -97,3 +97,16 @@ div[ez-mall-type = payment] #currency{
     background-color: #f15e2c !important;
     opacity: 0.8;
 }
+
+.ezMall-btn:hover{
+    color: black;
+    border-color: black;
+    background-color: white;
+    padding: 15px 35px;
+}
+.ezMall-btn {
+    color: white;
+    border-color: white;
+    background-color: black;
+    padding: 15px 35px;
+}

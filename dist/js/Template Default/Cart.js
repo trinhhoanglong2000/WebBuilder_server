@@ -31,7 +31,7 @@ function payMent() {
         if(listProductBuy.length > 0){
             window.location.href = "/payment"
         }else{
-            $("#cart-alert").html("Plase choose one or more items")
+            $("#cart-alert").html("Please choose one or more items")
         }
 
     }
@@ -205,7 +205,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                                                 <div class= "p-0 my-2 fw-bold d-flex text-secondary align-items-center fst-italic">
                                                     Price: 
                                                     <div class="ezMall-item-price px-1"> 
-                                                        ${element.price} 
+                                                        ${priceToString(element.price, element.currency)}
                                                     </div>    
                                                     <div class= "ezMall-item-price-type">
                                                         ${element.currency}
@@ -214,7 +214,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                                         </div>
                                         <div class="fw-bold d-flex text-secondary align-items-center px-0 fst-italic">
                                             <input type="number" min="0" id=${"val-" + id} class="form-control ezMall-item-quantity" value=${element.quantity}
-                                            style="min-width: 70px; width: 70px;">
+                                            style="min-width: 70px; width: 70px;" min=1>
                                         </div>
                                     </div>
                     </div>
