@@ -192,14 +192,14 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             <div class="name col-md-9">
                     <div class="row">
                                 <div class="col-md-4 col-7 row d-flex justify-content-start p-0">
-                                        <a href="/products/id=${id}">
+                                        <a href="/products?id=${id}">
                                             <img src=${element.thumnail} alt="Image"
                                             style="height: 150px;width: 100%;">
                                         </a>
                                     </div>
                                     <div class="col-md-8 col-5 d-flex flex-column justify-content-between px-3">
                                         <div class="px-0 py-0 my-2 justify-content-start  text-start fw-bold cart-item-tittle">
-                                            <a href="/products/id=${id}"> ${element.product_name} ${element.is_variant? ` - ${element.variant_name}`: ""}</a>
+                                            <a href="/products?id=${id}"> ${element.product_name} ${element.is_variant? ` - ${element.variant_name}`: ""}</a>
                                         </div>
                                         <div class = "d-flex justify-content-between px-0 ">
                                                 <div class= "p-0 my-2 fw-bold d-flex text-secondary align-items-center fst-italic">
