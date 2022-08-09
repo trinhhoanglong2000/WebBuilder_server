@@ -105,7 +105,6 @@ function embedHeaderData(deploy) {
     $('nav[name="header"]').parent().css('overflowX', 'initial')
 
     $('nav[name="header"]').find('#cartIcon').attr('href', '/cart');
-    $('nav[name="header"]').find('#searchIcon').attr('href', '/collections')
 
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
@@ -154,6 +153,8 @@ function embedHeaderData(deploy) {
                 if (key && key.trim() != "" && deploy) {
                     window.location.href = `/collections?key=${key}`;
                 }
+            } else {
+                return true;
             }
         });
 
@@ -192,7 +193,7 @@ function embedHeaderData(deploy) {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embedHeaderData(true);
+            embedHeaderData(false);
         })
     }
     else {

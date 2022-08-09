@@ -105,7 +105,6 @@ function embedHeaderData(deploy) {
     $('nav[name="header"]').parent().css('overflowX', 'initial')
 
     $('nav[name="header"]').find('#cartIcon').attr('href', '/cart');
-    $('nav[name="header"]').find('#searchIcon').attr('href', '/collections')
 
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
@@ -141,7 +140,7 @@ function embedHeaderData(deploy) {
             $('#searchBound').animate({width: '350px'});
         })
 
-        $('#searchBound > span').on('click', function() { 
+        $('#searchBound span').on('click', function() { 
             let key = $('#searchBound input')?.val();
             if (key && key.trim() != "" && deploy) {
                 window.location.href = `/collections?key=${key}`;
@@ -154,6 +153,8 @@ function embedHeaderData(deploy) {
                 if (key && key.trim() != "" && deploy) {
                     window.location.href = `/collections?key=${key}`;
                 }
+            } else {
+                return true;
             }
         });
 
