@@ -117,6 +117,9 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
         $(rootEle).find("#ezMall-cart-zero-item").hide().removeClass("d-flex");
         $(rootEle).find(".cart-container").show();
         $(ezMallSumary).show();
+        if(checkedInput.length != 0 ){
+            $("#cart-alert").html("")
+        }
         if (checkedInput.length == items.length) {
             $(tableHead).find("#cart-select-all-product").prop("checked", true)
         }
@@ -153,24 +156,24 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
 }
 function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
     let currency = JSON.parse(localStorage.getItem('storeCurrency'));
-    $(ezMallSumary).find("#ezMall-cart-sumary-unchecked-all").click(() => {
+    $(rootEle).find(".ezMall-cart-sumary-unchecked-all").click(() => {
         let checkedInput = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check:checked ")
         for (let i = 0; i < checkedInput.length; i++) {
             $(checkedInput[i]).prop("checked", false);
         }
         calculateTotal(tableBody, tableHead, ezMallSumary, rootEle);
     })
-    $(ezMallSumary).find(".ezMallSumary-total-cost").html(priceToString(0, currency));
+    $(rootEle).find(".ezMallSumary-total-cost").html(priceToString(0, currency));
 
-    $(tableHead).find(".ezMall-head-remove-all-items").click(() => {
+    $(rootEle).find(".ezMall-head-remove-all-items").click(() => {
         window.localStorage.setItem('cart', JSON.stringify([]));
         $(tableBody).html("")
-        $(tableHead).find("#cart-select-all-product").prop('checked', false);
+        $(rootEle).find("#cart-select-all-product").prop('checked', false);
         calculateTotal(tableBody, tableHead, ezMallSumary, rootEle);
         updateCart()
     });
 
-    $(tableHead).find("#cart-select-all-product").click((e) => {
+    $(rootEle).find("#cart-select-all-product").click((e) => {
         var checkBox = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check");
         for (let i = 0; i < checkBox.length; i++) {
             $(checkBox[i]).prop('checked', e.target.checked)
@@ -214,7 +217,7 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                                         </div>
                                         <div class="fw-bold d-flex text-secondary align-items-center px-0 fst-italic">
                                             <input type="number" min="0" id=${"val-" + id} class="form-control ezMall-item-quantity" value=${element.quantity}
-                                            style="min-width: 70px; width: 70px;" min=1>
+                                            style="min-width: 135px; width: 135px;" min=1>
                                         </div>
                                     </div>
                     </div>
@@ -289,12 +292,27 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
                     }
                     return false;
                 })
-                let currentQuantity = $(tableBody).find(`input#val-${id}`).val()
+                let currentQuantity = $(tableBody).find(`input#val-${id}`).val();
+
+                if(!currentQuantity.toString().match(/^[1-9]\d*$/)){
+                    $('.ezMallSumary button').attr('disabled','disabled');
+                    $(`#${id} input.ezMall-item-quantity`).css("border-color", "red").css("background","#ffdddd")  
+                    $(`#${id} input.ezMall-item-quantity`).attr('invalid', 'true') 
+                    return
+                }else{
+                    $(`#${id} input.ezMall-item-quantity`).css("border-color", "#ced4da").css("background","#fff")  
+                    $(`#${id} input.ezMall-item-quantity`).removeAttr('invalid')
+                    if($(`input.ezMall-item-quantity[invalid='true']`).length == 0){
+                        $('.ezMallSumary button').removeAttr('disabled');
+                    }
+
+                }
+
                 if(currentQuantity <=0){
                     $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click();
                     return
                 }
-                $(tableBody).find(`#${id} .ezMall-item-total .cart-item-tittle`).html(     priceToString((Number)(element.price) * currentQuantity, element.currency))
+                $(tableBody).find(`#${id} .ezMall-item-total .cart-item-tittle`).html( priceToString((Number)(element.price) * currentQuantity, element.currency))
                 let items = $(tableBody).find(".ezMall-cart-item ");
                 let totalCost = 0;
                 calculateTotal(tableBody, tableHead, ezMallSumary, rootEle)

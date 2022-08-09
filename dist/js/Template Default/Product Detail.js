@@ -21,7 +21,6 @@ function insertProductData(rootEle, data) {
     let imageArr = productData.images ? productData.images : [];
     let options = productData.is_variant ? data.option : [];
     let continue_sell= productData.continue_sell;
-    console.log(continue_sell)
     if(continue_sell){
        console.log($(rootEle).find('.ezMall-quantity i')) 
        $(rootEle).find('.ezMall-quantity i')[0].style.setProperty('display','none','important');
@@ -38,6 +37,7 @@ function insertProductData(rootEle, data) {
     $(rootEle).find(".ezMall-stick-slide").html("")
     let thumbnailImage = $(rootEle).find(".img-thumbnail")[0];
     $(thumbnailImage).prop("src", imageArr[0]??"https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png");
+    $(thumbnailImage).css({"height": "640px"});
     let imagesContainerEle = $(rootEle).find(".ezMall-stick-slide")[0];
     imageArr.forEach((item, index) => {
         let imageItem = `
@@ -250,8 +250,14 @@ function addToCart(isBuyNow = false) {
     let cart = JSON.parse(localStorage.getItem('cart'));
 
     let quantity = Number($(`input.ezMall-quantity-input`).first().val())
-    if(quantity == 0){
+   
+  
+    if(!quantity.toString().match(/^[1-9]\d*$/)){
         $(`.ezMall-quantity-input`).css("border-color", "red").css("background","#ffdddd")
+        $(".ezMall-popup-alert .ezMall-loading").hide();
+        $(`.ezMall-alert`).show();
+        $(".ezMall-popup-alert").hide()
+        $(`.ezMall-alert-text-option`).html("valid number");
         return false
     }
     if(!continue_sell){
