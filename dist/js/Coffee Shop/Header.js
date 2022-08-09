@@ -160,9 +160,9 @@ function embedHeaderData(deploy) {
         let cart = JSON.parse(localStorage.getItem('cart'));
         let numberProduct = cart? cart.length : 0;
         if (numberProduct == 0) {
-            $('i.fa.fa-shopping-bag span').css('display', 'none');
+            $('i.fa.fa-shopping-bag > span').addClass('d-none');
         } else {
-            $('i.fa.fa-shopping-bag span').css('display', 'initial');
+            $('i.fa.fa-shopping-bag > span').removeClass('d-none');
             $('#numberSelectedProduct').html(numberProduct);
         }
 
