@@ -73,6 +73,7 @@ function buy() {
     $(rootEle).find(".ezMall-payment-alert .ezMall-loading").show();
     let storeId = $(rootEle).attr("ez-mall-store");
     let email = $(rootEle).find("#email").val();
+    let node =   $(rootEle).find("#note").val();
     if (!email) {
         $(rootEle).find(".email-alert").show();
         isOmitFill = true;
@@ -115,6 +116,7 @@ function buy() {
     let currency = payment == 1 ? "USD" : $(rootEle).find("#currency").val();
     let discountInfo = JSON.parse(localStorage.getItem('discount'));
 
+
     var payload = {
         order: {
             email: email,
@@ -128,7 +130,7 @@ function buy() {
             payment_method: payment,
             currency: currency,
             discount_id: discountInfo ? discountInfo.id : '',
-            note: ''
+            note: node??''
         },
         products: paymentItems.map((item) => {
             return {
@@ -229,7 +231,7 @@ async function getDistrict(rootEle) {
     cityOptions[indexCity].data.forEach(item => {
         const rowHtml =
             `                            
-                <option value="${item.id}" >${item.name}</option>        
+                <option value="${item.name}" >${item.name}</option>        
             `
         paymentDistrictSelectContainer.insertAdjacentHTML("beforeend", rowHtml);
     })
@@ -417,13 +419,15 @@ function useDiscount() {
         })
         .then(function (res) { return res.json(); })
         .then(function (resData) {
-            if (resData.statusCode == 200 && data) {
+            if (resData.statusCode == 200 && resData.data) {
                 window.localStorage.setItem('discount', JSON.stringify(resData.data[0]));
+                $(rootEle).find("#incorrect-discount-alert").hide();
                 $(rootEle).find(".ezMall-discount-description").show();
-                let discount_text = $(rootEle).find(".ezMall-discount-description-text").html(resData.data[0].code);
+                $(rootEle).find(".ezMall-discount-description-text").html(resData.data[0].code);
             } else {
                 window.localStorage.removeItem('discount');
                 $(rootEle).find(".ezMall-discount-description").hide();
+                $(rootEle).find("#incorrect-discount-alert").show();
             }
         }).finally(() => {
             loadPaymentData(rootEle, false)
