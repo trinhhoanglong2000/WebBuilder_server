@@ -141,7 +141,7 @@ function embedHeaderData(deploy) {
             $('#searchBound').animate({width: '350px'});
         })
 
-        $('#searchBound span').on('click', function() { 
+        $('#searchBound > span').on('click', function() { 
             let key = $('#searchBound input')?.val();
             if (key && key.trim() != "" && deploy) {
                 window.location.href = `/collections?key=${key}`;

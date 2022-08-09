@@ -236,7 +236,6 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
 
             tableBody.insertAdjacentHTML("beforeend", rowHtml);
             $(tableBody).find(`#${id} button.ezMall-cart-item-delete`).click(() => {
-                debugger
                 let cart = JSON.parse(localStorage.getItem('cart'));
                 if (!cart) {
                     cart = []

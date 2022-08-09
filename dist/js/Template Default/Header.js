@@ -192,7 +192,7 @@ function embedHeaderData(deploy) {
 $(document).ready(function () {
     if ($('[data-gjs-type="wrapper"]').length) {
         $('[data-gjs-type="wrapper"]').ready(function () {
-            embedHeaderData(false);
+            embedHeaderData(true);
         })
     }
     else {
