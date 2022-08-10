@@ -105,7 +105,6 @@ function embedHeaderData(deploy) {
     $('nav[name="header"]').parent().css('overflowX', 'initial')
 
     $('nav[name="header"]').find('#cartIcon').attr('href', '/cart');
-    $('nav[name="header"]').find('#searchIcon').attr('href', '/collections')
 
     let serverURL = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
     let storeId = $('nav[name="header"]').attr("store-id");
@@ -154,6 +153,8 @@ function embedHeaderData(deploy) {
                 if (key && key.trim() != "" && deploy) {
                     window.location.href = `/collections?key=${key}`;
                 }
+            } else {
+                return true;
             }
         });
 
@@ -161,9 +162,9 @@ function embedHeaderData(deploy) {
         console.log(cart)
         let numberProduct = cart? cart.length : 0;
         if (numberProduct == 0) {
-            $('i.fa.fa-shopping-bag span').css('display', 'none');
+            $('i.fa.fa-shopping-bag > span').addClass('d-none');
         } else {
-            $('i.fa.fa-shopping-bag span').css('display', 'initial');
+            $('i.fa.fa-shopping-bag > span').removeClass('d-none');
             $('#numberSelectedProduct').html(numberProduct);
         }
 
