@@ -1,3 +1,5 @@
+let CURRENCYS_DATA = null;
+let STORE_CURRENCY = null;
 function payMent() {
     if ($('[data-gjs-type="wrapper"]').length>0){
         return
@@ -66,16 +68,16 @@ async function CartGenerateCodeItem(e) {
                         'Access-Control-Allow-Origin': '*'
                     }
                 }).then(res => res.json()).then(currencyRes => {
-                    console.log(currencyRes)
                     if (currencyRes.statusCode === 200) {
-                        window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+                        //window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+                        CURRENCYS_DATA = currencyRes.data;
                     }
                 })
 
 
         })
-    window.localStorage.setItem('storeCurrency', JSON.stringify(currency));
-
+    //window.localStorage.setItem('storeCurrency', JSON.stringify(currency));
+    STORE_CURRENCY =currency;
     let cart = JSON.parse(localStorage.getItem('cart'));
     if (!cart) {
         cart = []
@@ -103,7 +105,7 @@ $(document).ready(function () {
 
 function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
     
-    let currency = JSON.parse(localStorage.getItem('storeCurrency'));
+    let currency = STORE_CURRENCY;
     let totalCost = 0;
     let items = $(tableBody).find(".ezMall-cart-item ");
     let checkedInput = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check:checked")
@@ -155,7 +157,7 @@ function calculateTotal(tableBody, tableHead, ezMallSumary, rootEle) {
 
 }
 function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
-    let currency = JSON.parse(localStorage.getItem('storeCurrency'));
+    let currency = STORE_CURRENCY;
     $(rootEle).find(".ezMall-cart-sumary-unchecked-all").click(() => {
         let checkedInput = $(tableBody).find(".ezMall-cart-item .ezMall-cart-item-check:checked ")
         for (let i = 0; i < checkedInput.length; i++) {
@@ -195,9 +197,9 @@ function insertCartData(data, tableHead, tableBody, ezMallSumary, rootEle) {
             <div class="name col-md-9">
                     <div class="row">
                                 <div class="col-md-4 col-7 row d-flex justify-content-start p-0">
-                                        <a href="/products?id=${id}">
+                                        <a href="/products?id=${id}" class="d-flex justify-content-center">
                                             <img src=${element.thumnail} alt="Image"
-                                            style="height: 150px;width: 100%;">
+                                            style="height: 150px;max-width: 100%;">
                                         </a>
                                     </div>
                                     <div class="col-md-8 col-5 d-flex flex-column justify-content-between px-3">
@@ -368,7 +370,7 @@ function priceToString(value, currency) {
 }
 
 function convertCurrency(value, fromCurrency, toCurrency) {
-    let currencyOptions = JSON.parse(localStorage.getItem('currency'));
+    let currencyOptions = CURRENCYS_DATA;
     let dataFromCurrency = currencyOptions.findIndex(item => item.currency == fromCurrency);
     let dataToCurrency = currencyOptions.findIndex(item => item.currency == toCurrency);
 

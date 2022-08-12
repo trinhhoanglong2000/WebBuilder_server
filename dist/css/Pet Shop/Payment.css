@@ -86,3 +86,40 @@ div[ez-mall-type = payment] #currency{
 .ezMall-discount-description div:hover i:hover::before{
     color: red;
 }
+
+.color-orange{
+    color: #f15e2c !important
+}
+.bg-orange{
+    background-color: #f15e2c !important;
+}
+.bg-orange:hover{
+    background-color: #f15e2c !important;
+    opacity: 0.8;
+}
+
+.ezMall-btn:hover{
+    color: black;
+    border-color: black;
+    background-color: white;
+    padding: 15px 35px;
+}
+.ezMall-btn {
+    color: white;
+    border-color: white;
+    background-color: black;
+    padding: 15px 35px;
+}
+
+input#discount + .ezMall-btn {
+    color: white;
+    border-color: white;
+    background-color: black;
+    padding: 5px 5px;
+}
+input#discount + .ezMall-btn:hover {
+    color: black;
+    border-color: black;
+    background-color: white;
+    padding: 5px 5px;
+}

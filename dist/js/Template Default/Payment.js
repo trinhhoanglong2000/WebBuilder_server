@@ -1,3 +1,6 @@
+let STORE_CURRENCY = null;
+let CURRENCYS_DATA = null;
+let CITY_DATA = null;
 async function PaymentGenerateCodeStart() {
     
     $("div[ez-mall-type='payment']").each(async function (i) {
@@ -16,8 +19,9 @@ async function PaymentGenerateCodeStart() {
                     'Access-Control-Allow-Origin': '*'
                 }
             }).then(res => res.json()).then(res => res.data.currency).catch(e => "USD")
-        window.localStorage.setItem('storeCurrency', JSON.stringify(storeCurrency));
-        $(rootEle).find("#currency").val(storeCurrency)
+        //window.localStorage.setItem('storeCurrency', JSON.stringify(storeCurrency));
+        STORE_CURRENCY = storeCurrency;
+        $(rootEle).find("#currency").val(STORE_CURRENCY)
         await fetch(`${rootUrl}/data/rate`,
             {
                 mode: 'cors',
@@ -26,7 +30,8 @@ async function PaymentGenerateCodeStart() {
                 }
             }).then(res => res.json()).then(currencyRes => {
                 if (currencyRes.statusCode === 200) {
-                    window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+                    //window.localStorage.setItem('currency', JSON.stringify(currencyRes.data));
+                    CURRENCYS_DATA = currencyRes.data;
                 }
             }).finally(async () => {
                 await fetch(`${rootUrl}/data/city`
@@ -37,7 +42,8 @@ async function PaymentGenerateCodeStart() {
                         }
                     }).then(res => res.json()).then(cityRes => {
                         if (cityRes.statusCode === 200) {
-                            window.localStorage.setItem('city', JSON.stringify(cityRes.data));
+                            //window.localStorage.setItem('city', JSON.stringify(cityRes.data));
+                            CITY_DATA = cityRes.data
                         }
                     }).finally(async () => {
                         await loadPaymentData(this, true)
@@ -209,7 +215,7 @@ function buy() {
 }
 async function getDistrict(rootEle) {
     let paymentCitySelectContainer = $(rootEle).find("#city")[0];
-    let cityOptions = JSON.parse(localStorage.getItem('city'))
+    let cityOptions = CITY_DATA;
     let indexCity = cityOptions.findIndex(item => item.id === $(paymentCitySelectContainer).val())
     if (!('data' in cityOptions[indexCity])) {
         const rootUrl = $('script.ScriptClass').attr('src').match(/.+(?=\/js|css)/gm)
@@ -242,7 +248,7 @@ async function loadPaymentData(rootEle, firstRun) {
     if (firstRun) {
         // Render Currency
         let paymentCurrencySelectCoptainer = $(rootEle).find("#currency")[0];
-        let currencyOptions = JSON.parse(localStorage.getItem('currency'))
+        let currencyOptions = CURRENCYS_DATA;
         $(paymentCurrencySelectCoptainer).html("")
 
         currencyOptions.forEach((element, index) => {
@@ -252,14 +258,14 @@ async function loadPaymentData(rootEle, firstRun) {
             `
             paymentCurrencySelectCoptainer.insertAdjacentHTML("beforeend", rowHtml);
         });
-        let storeCurrency = JSON.parse(localStorage.getItem('storeCurrency'));
+        let storeCurrency =STORE_CURRENCY;
         $(rootEle).find("#currency").val(storeCurrency)
         $(paymentCurrencySelectCoptainer).on("change", async () => {
             await loadPaymentData(rootEle, false)
         })
         // Render City
         let paymentCitySelectContainer = $(rootEle).find("#city")[0];
-        let cityOptions = JSON.parse(localStorage.getItem('city'))
+        let cityOptions = CITY_DATA
         $(paymentCitySelectContainer).html("")
         cityOptions.forEach((element, index) => {
             const rowHtml =
@@ -309,7 +315,7 @@ async function loadPaymentData(rootEle, firstRun) {
                             ${variantInfo.join("<br/>")} 
                             </div>
                             <div class = "d-flex flex-row fst-italic text-secondary">
-                                <span class="fw-bold">
+                                <span class="fw-bold"  style = "padding: 0px 5px">
                                     x${element.quantity} 
                                 </span>
                             </div>
@@ -327,10 +333,10 @@ async function loadPaymentData(rootEle, firstRun) {
                 `
                 <div class=" px-1">
                     <div class=" py-2 d-flex justify-content-between" >
-                        <div class = "row fw-bold"">
+                        <div class = "fw-bold"  >
                             ${element.product_name} 
                         </div>
-                        <div class = "fst-italic text-secondary">
+                        <div class = "fst-italic text-secondary" style = "padding: 0px 5px">
                                 <span class="fw-bold">x${element.quantity}</span>
                         </div>
                         <div class ="fw-bold">
@@ -356,7 +362,7 @@ async function loadPaymentData(rootEle, firstRun) {
     return finalCost;
 }
 function convertCurrency(value, fromCurrency, toCurrency) {
-    let currencyOptions = JSON.parse(localStorage.getItem('currency'));
+    let currencyOptions = CURRENCYS_DATA;
     let dataFromCurrency = currencyOptions.findIndex(item => item.currency == fromCurrency);
     let dataToCurrency = currencyOptions.findIndex(item => item.currency == toCurrency);
 
