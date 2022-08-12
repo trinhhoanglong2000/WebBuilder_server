@@ -1,5 +1,5 @@
-.ezMallCart *{
-    font-size: 16px!important;
+.cart-item-tittle{
+    font-size: 20px;
 }
 .ezMall-item-price-type{
     display: none;
@@ -17,4 +17,67 @@ a.ezMall-item-link{
 a.ezMall-item-link:hover{
     text-decoration:underline ;
     color:rgb(10, 88, 202) ;
+}
+
+.ezMall-popup-alert {
+    z-index: 2;
+    left: 0;
+    position: absolute;
+    height:100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 1);
+    display: none;
+    top: 0;
+    justify-content: center;
+    align-items: center;
+}
+.cart-item-tittle a{
+    color:  black;
+    text-decoration: none;
+}
+.cart-item-tittle a:hover{
+    color: #f15e2c !important;
+
+}
+
+.color-orange{
+    color: #f15e2c !important
+}
+.bg-orange{
+    background-color: #f15e2c !important;
+}
+
+.ezMall-btn:hover{
+    color: black;
+    border-color: black;
+    background-color: white;
+    padding: 15px 35px;
+}
+.ezMall-btn {
+    color: white;
+    border-color: white;
+    background-color: black;
+    padding: 15px 35px;
+}
+
+.style-black{
+    color: #fff;
+    border-color: #fff;
+    background-color: black;
+}
+
+.bg-orange:hover{
+    background-color: #f15e2c !important;
+    opacity: 0.8;
+}
+
+.align-items-center label{
+    font-weight: 600;
+    font-style: italic;
+}
+
+.align-items-center label:hover{
+    font-weight: 600;
+    font-style: italic;
+    color: #f15e2c !important
 }
