@@ -9,21 +9,21 @@ function getParam(param) {
     return value
 }
 function insertProductData(rootEle, data) {
-    if ($('[data-gjs-type="wrapper"]').length>0){
+    if ($('[data-gjs-type="wrapper"]').length > 0) {
         return
-    } 
+    }
     if ($(rootEle).find(".slick-initialized").length != 0) {
         return;
     }
     window.localStorage.setItem('productData', JSON.stringify(data));
     let productData = data.product[0];
-    let variantData = productData.is_variant? data.variant: [];
+    let variantData = productData.is_variant ? data.variant : [];
     let imageArr = productData.images ? productData.images : [];
     let options = productData.is_variant ? data.option : [];
-    let continue_sell= productData.continue_sell;
-    if(continue_sell){
-       console.log($(rootEle).find('.ezMall-quantity i')) 
-       $(rootEle).find('.ezMall-quantity i')[0].style.setProperty('display','none','important');
+    let continue_sell = productData.continue_sell;
+    if (continue_sell) {
+        console.log($(rootEle).find('.ezMall-quantity i'))
+        $(rootEle).find('.ezMall-quantity i')[0].style.setProperty('display', 'none', 'important');
     }
     // For render image
     $(rootEle).find(`.ezMall-quantity-remain`).html(productData.inventory);
@@ -32,12 +32,12 @@ function insertProductData(rootEle, data) {
     $(rootEle).find(".ezMall-type-value").html(productData.type ?? "None")
     $(rootEle).find(".ezMall-status-value").html(productData.status)
     $(rootEle).find(".ezMall-description").html(productData.description)
-    $(rootEle).find(`.ezMall-price .price`).html(priceToString(productData.is_variant? variantData[0].price: productData.price, productData.currency));
+    $(rootEle).find(`.ezMall-price .price`).html(priceToString(productData.is_variant ? variantData[0].price : productData.price, productData.currency));
     //$(rootEle).find(".ezMall-price .currency").html(productData.currency)
     $(rootEle).find(".ezMall-stick-slide").html("")
     let thumbnailImage = $(rootEle).find(".img-thumbnail")[0];
-    $(thumbnailImage).prop("src", imageArr[0]??"https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png");
-    $(thumbnailImage).css({"height": "640px"});
+    $(thumbnailImage).prop("src", imageArr[0] ?? "https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png");
+    $(thumbnailImage).css({ "height": "640px" });
     let imagesContainerEle = $(rootEle).find(".ezMall-stick-slide")[0];
     imageArr.forEach((item, index) => {
         let imageItem = `
@@ -139,12 +139,12 @@ $(document).ready(function () {
 function VariantCheck(variantId, optionId) {
     let itemData = JSON.parse(localStorage.getItem('productData'));
     let productData = itemData ? itemData.product[0] : [];
-    let continue_sell= productData.continue_sell;
+    let continue_sell = productData.continue_sell;
     let variantData = itemData.variant;
     let option = itemData.option;
     let indexOption = option.findIndex((item) => item.id === variantId)
     let variantValid = variantData.filter(variant => variant.option_value.filter(option => option.id == optionId).length > 0)
-    
+
     for (let i = 0; i < indexOption; i++) {
         let checkedInput = $(`#${option[i].id} input[type=radio]:checked`);
         if (checkedInput != null && checkedInput.length > 0) {
@@ -159,8 +159,8 @@ function VariantCheck(variantId, optionId) {
         $(`#${option[i].id} input[type=radio] + label`).addClass("disabled");
         variantValid.forEach(item => {
             item.option_value.forEach(optionValid => {
-                
-                if(item.quantity !=0 || continue_sell){
+
+                if (item.quantity != 0 || continue_sell) {
                     $(`#${option[i].id} #${optionValid.id} + label `).removeClass("disabled");
                 }
 
@@ -179,7 +179,7 @@ function VariantCheck(variantId, optionId) {
         }
     }
     if (variantValid != null && variantValid.length == 1) {
-        $(`.ezMall-price .price`).html( priceToString(variantValid[0].price, productData.currency));
+        $(`.ezMall-price .price`).html(priceToString(variantValid[0].price, productData.currency));
         $(`.ezMall-quantity-remain`).html(variantValid[0].quantity);
         $(`.ezMall-quantity-input`).prop("max", variantValid[0].quantity);
         if ($(`.ezMall-quantity-input`).val > variantValid[0].quantity) {
@@ -202,13 +202,13 @@ function VariantCheck(variantId, optionId) {
 }
 
 function addToCart(isBuyNow = false) {
-    if ($('[data-gjs-type="wrapper"]').length>0){
+    if ($('[data-gjs-type="wrapper"]').length > 0) {
         return false
-    } 
-    $(`.ezMall-quantity-input`).css("border-color", "black").css("background","none")
+    }
+    $(`.ezMall-quantity-input`).css("border-color", "black").css("background", "none")
     $(".ezMall-popup-alert").show().css("display", "flex").children().hide()
     $(".ezMall-popup-alert .ezMall-loading").show();
- 
+
     let itemData = JSON.parse(localStorage.getItem('productData'));
 
     let productData = itemData ? itemData.product[0] : [];
@@ -219,9 +219,9 @@ function addToCart(isBuyNow = false) {
     let arrayOption = [];
     let arrayAlert = [];
 
-    
-    let continue_sell= productData.continue_sell;
-    
+
+    let continue_sell = productData.continue_sell;
+
 
     if (is_variant) {
         options.forEach(option => {
@@ -234,7 +234,7 @@ function addToCart(isBuyNow = false) {
         })
     }
 
-   
+
     if (arrayAlert.length > 0) {
         $(".ezMall-popup-alert .ezMall-loading").hide();
         $(`.ezMall-alert`).show();
@@ -250,28 +250,28 @@ function addToCart(isBuyNow = false) {
     let cart = JSON.parse(localStorage.getItem('cart'));
 
     let quantity = Number($(`input.ezMall-quantity-input`).first().val())
-   
-  
-    if(!quantity.toString().match(/^[1-9]\d*$/)){
-        $(`.ezMall-quantity-input`).css("border-color", "red").css("background","#ffdddd")
+
+
+    if (!quantity.toString().match(/^[1-9]\d*$/)) {
+        $(`.ezMall-quantity-input`).css("border-color", "red").css("background", "#ffdddd")
         $(".ezMall-popup-alert .ezMall-loading").hide();
         $(`.ezMall-alert`).show();
         $(".ezMall-popup-alert").hide()
         $(`.ezMall-alert-text-option`).html("valid number");
         return false
     }
-    if(!continue_sell){
-        
-        let maxProduct =  Number($(`.ezMall-quantity-input`).attr("max"));
-        if (quantity > maxProduct){
+    if (!continue_sell) {
+
+        let maxProduct = Number($(`.ezMall-quantity-input`).attr("max"));
+        if (quantity > maxProduct) {
             $(".ezMall-popup-alert .ezMall-loading").hide();
             $(".ezMall-popup-alert").hide()
             $(".ezMall-alert-text-config").hide()
             $(`.ezMall-alert`).show();
             $(`.ezMall-alert-text-option`).html(`${maxProduct} products remain`)
-            $(`.ezMall-quantity-input`).css("border-color", "red").css("background","#ffdddd")
+            $(`.ezMall-quantity-input`).css("border-color", "red").css("background", "#ffdddd")
             return false
-        }else{
+        } else {
             $(`.ezMall-alert`).hide();
         }
     }
@@ -289,37 +289,37 @@ function addToCart(isBuyNow = false) {
         "description": productData.description,
         "optionName": optionName
     }
+
+    if (cart == null) {
+        cart = [];
+        cart.push(newItem)
+    } else {
+        let indexInArr = cart.findIndex((item) => {
+            if (is_variant) {
+                if (item.id == productData.id && item.variant_id == variantSelected.id && item.variant_name == variantSelected.name) {
+                    return true;
+                }
+            } else {
+                if (item.id == productData.id) {
+                    return true
+                }
+            }
+            return false;
+        })
+        if (indexInArr == -1) {
+            cart = [...cart, newItem]
+        } else {
+            cart[indexInArr].quantity = Number(cart[indexInArr].quantity) + Number(quantity);
+        }
+
+    }
+    window.localStorage.setItem('cart', JSON.stringify(cart));
     if (isBuyNow) {
         let paymentItems = [];
         paymentItems.push(newItem)
         window.localStorage.setItem('paymentItems', JSON.stringify(paymentItems));
     }
     else {
-        if (cart == null) {
-            cart = [];
-            cart.push(newItem)
-        } else {
-            let indexInArr = cart.findIndex((item) => {
-                if (is_variant) {
-                    if (item.id == productData.id && item.variant_id == variantSelected.id && item.variant_name == variantSelected.name) {
-                        return true;
-                    }
-                } else {
-                    if (item.id == productData.id) {
-                        return true
-                    }
-                }
-                return false;
-            })
-            if (indexInArr == -1) {
-                cart = [...cart, newItem]
-            } else {
-                cart[indexInArr].quantity = Number(cart[indexInArr].quantity) + Number(quantity);
-            }
-
-        }
-
-        window.localStorage.setItem('cart', JSON.stringify(cart));
         $("#numberSelectedProduct").html(cart ? cart.length : 0)
         $(".ezMall-popup-alert").show().css("display", "flex").css("background-color", "rgba(255, 255, 255, 0.5)").children().hide()
         $(".ezMall-popup-alert .ezMall-popup-success").fadeIn()
@@ -343,7 +343,7 @@ function updateCart() {
     if (!cart) {
         cart = []
     }
-    let numberProduct = cart? cart.length : 0;
+    let numberProduct = cart ? cart.length : 0;
     if (numberProduct == 0) {
         $('i.fa.fa-shopping-bag > span').addClass('d-none');
     } else {
