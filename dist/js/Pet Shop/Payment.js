@@ -164,7 +164,7 @@ function buy() {
                 paymentItems.forEach(product => {
                     let cart = JSON.parse(localStorage.getItem('cart'));
                     if (!cart) {
-                        []
+                        cart = []
                     }
                     let indexInArr = cart.findIndex((item) => {
                         debugger
