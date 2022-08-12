@@ -167,7 +167,6 @@ function buy() {
                         cart = []
                     }
                     let indexInArr = cart.findIndex((item) => {
-                        debugger
                         if (product.is_variant) {
                             if (item.variant_id == product.variant_id) {
                                 return true;

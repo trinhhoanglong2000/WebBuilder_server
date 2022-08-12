@@ -24,7 +24,7 @@ function embedOrderTrackingData(deploy) {
 
     $('.modal-loader').css('display', 'block')
     $('.modal-loader').find('#loader-popup').css('display', 'initial');
-    debugger
+
     fetch(`${serverURL}/stores/${storeId}/order/${orderId}`)
     .then((response) => response.json())
     .then((response) => {

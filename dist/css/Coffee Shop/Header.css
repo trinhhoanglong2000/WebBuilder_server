@@ -128,16 +128,18 @@
 [name="header"].navbar .search-bound {
     position: absolute;
     background-color: white;
-    right: 10px;
-    width: 80px;
-    height: 45px;
-    border: 2px solid #666666;
+    right: 6px;
+    height: 80%;
+    border: 1px solid #b4b4b4;
     border-radius: 5px;
     padding: 10px;
     justify-content: center;
     display: none;
+    max-height: 60px;
+    z-index: 1;
     animation-duration: 0.5s;
     max-width: 90%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
 }
 
 [name="header"].navbar .search-bound button {
@@ -163,18 +165,14 @@
 
 [name="header"].navbar .search-bound span {
     position: relative;
-    top: -3px;
     left: 2px;
+    display: flex;
+    align-items: center;
     cursor: pointer;
 }
 
 [name="header"].navbar .search-bound span i {
     padding: 0px;
-}
-
-[name='header'] .header-icon {
-    min-width: 100px;
-    margin-right: 6px;
 }
 
 [name="header"].navbar li a i {
@@ -216,14 +214,16 @@
     }
 
     [name="header"].navbar .search-bound {
-        right: 10px;
-        top: 29px;
+        right: 3px;
+        padding: 0px;
         padding-left: 3px;
         padding-right: 3px;
+        width: 220px !important;
     }
 
     [name="header"].navbar .search-bound span {
         left: 0px;
+        top: 0px;
     }
 
     [name="header"].navbar i.fa-shopping-bag span {
