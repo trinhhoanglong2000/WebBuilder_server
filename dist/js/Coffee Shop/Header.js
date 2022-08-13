@@ -159,7 +159,6 @@ function embedHeaderData(deploy) {
         });
 
         let cart = JSON.parse(localStorage.getItem('cart'));
-        console.log(cart)
         let numberProduct = cart? cart.length : 0;
         if (numberProduct == 0) {
             $('i.fa.fa-shopping-bag > span').addClass('d-none');
