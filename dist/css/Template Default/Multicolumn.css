@@ -28,7 +28,7 @@
 
 .ezMall-column-item .card-body{
     padding: 0px;
-    color: black!important ;
+    color: black ;
 
 }
 .ezMall-column-item .card-body *{
@@ -84,4 +84,12 @@
         flex: 0 0 auto;
         width: 33.33333333%;;
     }
+}
+div[data-gjs-type="columnItem-title"] a{
+    color: #f15e2c !important;
+}
+
+div[data-gjs-type="columnItem-title"] a:hover {
+    color: #f15e2c !important;
+    opacity: 0.8;
 }
