@@ -80,8 +80,8 @@
     padding: 15px 35px;
 }
 
-.carousel-display-off .carousel-caption * {
-    display: none;
+.carousel-display-off .carousel-caption *, .carousel-display-off .carousel-caption {
+    display: none !important;
 }
 
 .carousel-display-top-center .carousel-caption,
@@ -149,7 +149,7 @@
 .ezMall-carousel .carousel-caption {
     position: absolute;
     height: 100%;
-    display: flex !important;
+    display: flex ;
     flex-direction: column;
     width: 100%;
     right: 0;

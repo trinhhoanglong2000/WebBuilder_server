@@ -60,9 +60,9 @@ function Render(data,itemID,e){
     carouselIndicators.insertAdjacentHTML("beforeend", htmlButtonInsert);
     let htmlCarouselItemInsert = `
   <div class="carousel-item ${index == 0 ? "active" : ""}">
-    <div  class="d-block w-100 image-container">
+    <a class="d-block w-100 image-container" href=${item.link??"#"}>
       <img src="${item.image??""}" alt="${item.image??""}">
-    </div>
+    </a>
     <div class="carousel-caption">
       <div class = "ezMall-carousel-contents">
         <div class="ezMall-carousel-text-container d-block">
