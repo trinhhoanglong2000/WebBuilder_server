@@ -175,7 +175,7 @@
 }
 
 .ezMall-carousel .image-container img{
-    /* display: block;
+    display: block;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -188,9 +188,15 @@
     min-height: 100%;
     min-width: 100%;
     width: auto;
-    height: auto; */
-    background: #999;
+    height: auto;
+    /* background: #999;
     min-width: 100%;
-    width: auto;
+    width: 100%;
+    height: auto; */
+}
+
+.image-container{
+    display: flex;
+    justify-content: center;
     height: 100%;
 }
