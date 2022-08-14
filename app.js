@@ -75,7 +75,7 @@ app.use('/order', orderRouter)
 app.use('/data',dataRouter)
 app.use('/discount',discountRouter)
 app.get('/',function (req,res) {
-  res.send("Hi Ver 2.1")
+  res.send("Hi Ver 2.2")
 })
 app.use('/menu', menuRouter);
 app.use('/menu-item', menuItemRouter);
