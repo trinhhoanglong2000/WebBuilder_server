@@ -1,21 +1,19 @@
 .carousel-height-medium .carousel-item {
-    height: 560px;
+    height: calc(35vw);
 }
 .carousel-height-lager .carousel-item {
-    height: 720px;
+    height: calc(50vw);
 }
 .carousel-height-small .carousel-item {
-    height: 420px;
+    height: auto;
 }
 @media only screen and (max-width: 720px) {
     .carousel-height-medium .carousel-item {
-        height: 280px;
-    }
-    .carousel-height-lager .carousel-item {
-        height: 360px;
+        height: calc(35vw);
     }
     .carousel-height-small .carousel-item {
-        height: 490px;
+        height: auto;
+        max-height: 50vh;
     } 
 }
 
@@ -175,6 +173,14 @@
 }
 
 .ezMall-carousel .image-container img{
+    width: 100%;
+    height: auto;
+    /* background: #999;
+    min-width: 100%;
+    width: 100%;
+    height: auto; */
+}
+.carousel-height-medium .image-container img{
     display: block;
     position: absolute;
     top: 50%;
@@ -186,11 +192,6 @@
     transform: translate(-50%, -50%);
     background: #999;
     min-height: 100%;
-    min-width: 100%;
     width: auto;
-    height: auto;
-    /* background: #999;
-    min-width: 100%;
-    width: 100%;
-    height: auto; */
+    height: 100%;
 }
