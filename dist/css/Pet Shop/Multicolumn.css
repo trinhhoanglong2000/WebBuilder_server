@@ -85,11 +85,12 @@
         width: 33.33333333%;;
     }
 }
-div[data-gjs-type="columnItem-title"] a{
+
+div[data-gjs-type="columnItem-title"] a,  .card-title a{
     color: #f15e2c !important;
 }
 
-div[data-gjs-type="columnItem-title"] a:hover {
+div[data-gjs-type="columnItem-title"] a:hover, .card-title a:hover{
     color: #f15e2c !important;
     opacity: 0.8;
 }
