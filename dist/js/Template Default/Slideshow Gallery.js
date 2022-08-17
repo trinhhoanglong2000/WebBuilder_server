@@ -13,6 +13,8 @@ function embedSlideShowGalarryData(deploy) {
             })
     
             prevBtn.on("click", () => {
+                const optionImage = $(this).find('div:not(.d-none).column > img.option-image')
+
                 const active = $(this).find('img.option-image.active')
                 const index = $(active).parent().closest('div').index() - 1;
                 if (index > -1 && index < optionImage.length) { 
@@ -24,6 +26,8 @@ function embedSlideShowGalarryData(deploy) {
             })
     
             nextBtn.on("click", () => {
+                const optionImage = $(this).find('div:not(.d-none).column > img.option-image')
+
                 const active = $(this).find('img.option-image.active');
                 const index = $(active).parent().closest('div').index() + 1;
                 
