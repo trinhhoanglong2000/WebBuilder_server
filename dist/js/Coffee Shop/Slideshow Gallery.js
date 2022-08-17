@@ -5,7 +5,7 @@ function embedSlideShowGalarryData(deploy) {
             const optionImage = $(this).find('div:not(.d-none).column > img.option-image');
             const prevBtn= $(this).find('a.prev');
             const nextBtn = $(this).find('a.next');
-            debugger
+
             optionImage.on("click", function() {
                 optionImage.each(function() { $(this).removeClass('active'); })
                 $(this).addClass('active');
