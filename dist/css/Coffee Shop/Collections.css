@@ -286,3 +286,11 @@
     opacity: 0;
   }
 }
+
+[name="products-section"] div.border-bottom.py-3 {
+  padding: 1rem !important;
+}
+
+[name="products-section"] .d-flex.align-items-center label {
+  padding-right: 5px;
+}

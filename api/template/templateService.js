@@ -8,7 +8,8 @@ const pageService = require('../page/pageService')
 const URLParser = require('../../helper/common/index')
 const menuService = require('../menu/menuService')
 const menuItemService = require('../menuItem/menuItemService')
-const fileService = require('../files/fileService')
+const fileService = require('../files/fileService');
+const { content_v2 } = require('googleapis');
 exports.getTemplate = async (query) => {
 
     let config = {
@@ -237,13 +238,10 @@ exports.useTemplate = async (query) => {
 
     const newTemplateName =  URLParser.generateURL(templateName)
 
-    console.log(newTemplateName)
-    console.log(templateName)
     const storeComponent = await fileService.getFile(`templates/${newTemplateName}/_store-component.json`)
 
     const id_store_content = storeComponent.toString('utf-8').match(/(?<=(?:store-id=\\\"))((?:.|\n)*?)(?=\\\")/g)[0]
     const content = JSON.parse(storeComponent.toString('utf-8').replace(id_store_content, `${query.store_id}`).replace(id_store_content, `${query.store_id}`));
-    
     await fileService.uploadTextFileToS3(JSON.stringify(content),`storeComponents/${query.store_id}`,'json')
     
 

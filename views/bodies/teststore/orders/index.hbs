@@ -1,0 +1,121 @@
+
+        <body >
+            <main class="main-content"><div class="container" name="trackingOrder" slideIndex="1"><article class="card"><h1 class="card-header"> Tracking order </h1>
+                            <div id="tracking-order" class="card-body">
+                                <h6 id="order_id">Order ID: <span></span></h6>
+                                <article class="card">
+                                    <div class="card-body row">
+                                        <div id="customer_name" class="col-md-6 col-sm-12"> <strong>Customer:</strong> <span></span>  </div>
+                                        <div id="order_time" class="col-md-6 col-sm-12"> <strong>Order time:</strong> <span></span> </div>
+                                        <div id="delivery_address" class="col-md-6 col-sm-12"> <strong>Delivery Address:</strong> <span></span> </div>
+                                        <div id="phone" class="col-md-6 col-sm-12"> <strong>Phone:</strong> <span></span>  </div>
+                                        <div id="delivery_method" class="col-md-6 col-sm-12"> <strong>Delivery method:</strong> <span></span> </div>
+                                        <div id="payment_method" class="col-md-6 col-sm-12"> <strong>Payment method:</strong> <span></span> </div>
+                                        <div id="order_Status" class="col-md-6 col-sm-12"> <strong>Order status:</strong> <span> </span> </div>
+                                        <div id="order_note" class="col-md-6 col-sm-12"> <strong>Note:</strong> <span> </span> </div>
+                                    </div>
+                                </article>
+                                <div class="track">
+                                    <div class="step"> <span class="icon"> <?xml version="1.0" encoding="iso-8859-1"?>
+    <svg width="16" height="16" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+         viewBox="0 0 458.531 458.531" style="enable-background:new 0 0 458.531 458.531;" xml:space="preserve">
+    <g id="XMLID_830_">
+        <g>
+            <g>
+                <path d="M336.688,343.962L336.688,343.962c-21.972-0.001-39.848-17.876-39.848-39.848v-66.176
+                    c0-21.972,17.876-39.847,39.848-39.847h103.83c0.629,0,1.254,0.019,1.876,0.047v-65.922c0-16.969-13.756-30.725-30.725-30.725
+                    H30.726C13.756,101.49,0,115.246,0,132.215v277.621c0,16.969,13.756,30.726,30.726,30.726h380.943
+                    c16.969,0,30.725-13.756,30.725-30.726v-65.922c-0.622,0.029-1.247,0.048-1.876,0.048H336.688z"/>
+                <path d="M440.518,219.925h-103.83c-9.948,0-18.013,8.065-18.013,18.013v66.176c0,9.948,8.065,18.013,18.013,18.013h103.83
+                    c9.948,0,18.013-8.064,18.013-18.013v-66.176C458.531,227.989,450.466,219.925,440.518,219.925z M372.466,297.024
+                    c-14.359,0-25.999-11.64-25.999-25.999s11.64-25.999,25.999-25.999c14.359,0,25.999,11.64,25.999,25.999
+                    C398.465,285.384,386.825,297.024,372.466,297.024z"/>
+                <path d="M358.169,45.209c-6.874-20.806-29.313-32.1-50.118-25.226L151.958,71.552h214.914L358.169,45.209z"/>
+            </g>
+        </g>
+    </g>
+    </svg>
+    </i> </span> <span class="text"> Pre-pay </span> </div>
+                                    <div class="step"> <span class="icon"> <i class="fa fa-check"></i> </span> <span class="text"> Order placed </span> </div>
+                                    <div class="step"> <span class="icon"> <i class="fa fa-gift "></i> </span> <span class="text"> In production </span> </div>
+                                    <div class="step"> <span class="icon"> <i class="fa fa-truck"></i> </span> <span class="text"> In shipping  </span> </div>
+                                    <div class="step"> <span class="icon"> <i class="fa fa-home"></i> </span> <span class="text"> Delivered </span> </div>
+                                </div>                              
+                            </div>
+                            <div id="order_details" class="card-body">
+                                <h1> Order Summary </h1>
+                                <div class="product-bill w-md-100 w-xl-75">
+                                    <div class="product">
+                                        <div class="row">
+                                            <div class="col-8"> Product </div>
+                                            <div class="col-3"> Price </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                    <hr>
+                                    <div class="billing">
+                                        <div class="row">
+                                            <div class="col-md-4 col-4"> Subtotal: </div>  
+                                            <div class="col-md-7 col-6" id="subtotal_price"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-4"> Discount: </div>  
+                                            <div class="col-md-7 col-6" id="discount_price"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-4"> Total: </div>  
+                                            <div class="col-md-7 col-6" id="total_price"></div>
+                                            <div class="col" id="currency"> </div> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="show_order_details" class="card-body ">
+                                <hr>
+                                <button class="btn btn-show-orders"> Invoice details </button>
+                                <button class="btn btn-primary btn-payment">Payment</button>
+                                <button class="btn btn-cancel_order"> Cancel order </button>
+                            </div>
+                            <div class="modal-loader">
+                                <div class="modal-content">
+                                    <div id="confirm-popup">
+                                        <div class="warning"> <i class="fa fa-exclamation-triangle"></i></div>
+                                        <h2 id="title"> Are you sure to cancel this order? </h2>
+                                        <div class="footer-button">
+                                            <button class="btn btn-yes"> YES </button>
+                                            <button class="btn btn-no"> NO </button>
+                                        </div>
+                                    </div>
+                                    <div id="reason-popup">
+                                        <div class="warning"> <i class="fa fa-exclamation-triangle"></i></div>
+                                        <h2 id="title"> What make you want to cancel this order? </h2>
+                                        <textarea class="form form-control" rows="4" cols="50" placeholder="Reason"></textarea>
+                                        <div class="footer-button">
+                                            <button class="btn btn-yes"> CONFIRM </button>
+                                            <button class="btn btn-no"> NOT NOW </button>
+                                        </div>
+                                    </div>
+                                    <div id="loader-popup">
+                                        <div class="loader"> </div>
+                                        <p> Waiting a second... </p>
+                                    </div>
+                                    <div id="success-popup">
+                                        <div class="success"> <i class="fa fa-check-circle-o" aria-hidden="true"></i></div>
+                                        <h2 id="title"> Cancel order successfully! </h2>
+                                        <div class="footer-button">
+                                            <button class="btn btn-ok"> OK </button>
+                                        </div>
+                                    </div>
+                                    <div id="error-popup">
+                                    <div class="error"> <p> ! </p> </div>
+                                        <h2 id="title"> Server error... ! </h2>
+                                        <div class="footer-button">
+                                            <button class="btn btn-ok"> OK </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </article></div></main>
+        </body>
+      
+        
