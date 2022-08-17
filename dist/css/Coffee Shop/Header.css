@@ -114,6 +114,7 @@
 
 [name="header"].navbar .navbar-brand img {
     max-width: 100px;
+    background: transparent;
 }
 
 [name="header"].navbar .navbar-brand {
