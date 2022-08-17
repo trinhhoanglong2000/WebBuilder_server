@@ -204,12 +204,8 @@ function embedOrderTrackingData(deploy) {
                     + " " + zeroPad(parsed.getHours()) + ":" + zeroPad(parsed.getMinutes()) + ":" + zeroPad(parsed.getSeconds());
                 }
 
-                data.status.forEach((element) => {
-                    if (element.status === "RESTOCK" || element.status === "CREATED")  {
-                        let createTime = pgFormatDate(element.create_at);  
-                        $('div[name="trackingOrder"]').find('#order_time span').html(createTime)
-                    }
-                })
+                let createTime = pgFormatDate(data.status[data.status.length - 1].create_at);  
+                $('div[name="trackingOrder"]').find('#order_time span').html(createTime)
 
                 buttonCancel.on('click', function() {
                     $('.modal-loader').css('display', 'block')
