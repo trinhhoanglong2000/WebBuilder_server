@@ -2,7 +2,7 @@ function embedSlideShowGalarryData(deploy) {
     if (deploy) {
         $('[name="slideshowGallery"]').each(function() {
             const curSlide = $(this).find('.mySlides img');
-            const optionImage = $(this).find('div:not(.d-none) > img.option-image');
+            const optionImage = $(this).find('div:not(.d-none).column > img.option-image');
             const prevBtn= $(this).find('a.prev');
             const nextBtn = $(this).find('a.next');
             debugger
