@@ -1,8 +1,9 @@
 [name="rich-text"] {
-  text-align: center;
   width: calc(100% - 15rem);
   margin: auto;
   min-height: 50px;
+  display: flex;
+  flex-direction: column;
 }
 @media only screen and (max-width: 600px) {
   [name="rich-text"] {
