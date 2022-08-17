@@ -140,7 +140,7 @@ let getStoreLogoById = exports.getStoreLogoById = async (id) => {
 exports.uploadStoreLogo = async (id, img) => {
 
     const oldURL = await getStoreLogoById(id).then(res => res.logo_url);
-    if (oldURL) {
+    if (oldURL && oldURL !== 'https://ezmall-bucket.s3.ap-southeast-1.amazonaws.com/DefaultImage/default-image-620x600.png') {
         await fileService.deleteObject(oldURL);
     }
 
