@@ -2,7 +2,7 @@
     height: calc(35vw);
 }
 .carousel-height-lager .carousel-item {
-    height: calc(50vw);
+    max-height: calc(50vw);
 }
 .carousel-height-small .carousel-item {
     height: auto;
@@ -15,6 +15,9 @@
         height: auto;
         max-height: 50vh;
     } 
+    .carousel-caption{
+        display: none !important;
+    }
 }
 
 .ezMall-carousel .carousel-control-next, 
