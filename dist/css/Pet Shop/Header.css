@@ -352,5 +352,5 @@
 }
 
 [name='header'].sticky-top {
-    z-index: 2 !important;
+    z-index: 55 !important;
 }
