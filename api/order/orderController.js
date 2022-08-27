@@ -28,8 +28,8 @@ exports.changeOrderStatus = async (req, res) => {
     query.order_id = req.params.id
     const result = await orderService.changeOrderStatus(query)
     if (result) {
-        
-        if (result == "Fail"){
+
+        if (result == "Fail") {
             res.status(http.Success).json({
                 statusCode: http.Success,
                 data: false,
@@ -43,7 +43,7 @@ exports.changeOrderStatus = async (req, res) => {
                 message: "Successfully Change Status"
             })
         }
-        
+
     }
     else {
         res.status(http.NotAcceptable).json({
@@ -112,9 +112,9 @@ exports.deleteOrderStatus = async (req, res) => {
     let paypalId = orderData[0].paypal_id
 
     // Payment refund start
-   
-    if(orderData[0].payment_method == 1){
-        let refundFlag = true;
+
+    if (orderData[0].payment_method == 1) {
+        let refundFlag = true; 
         const checkStatus = await orderService.paypalCheckOrder(storeId, paypalId).catch(e => null)
         if (checkStatus.status == "COMPLETED") {
             refundFlag = false
@@ -122,16 +122,16 @@ exports.deleteOrderStatus = async (req, res) => {
             const capture = purchase_units.payments.captures[0];
             const amount = capture.amount
             const refundLinks = capture.links.find(item => item.rel === "refund")
-            if(refundLinks){
+            if (refundLinks) {
                 const resRefund = await orderService.paypalRefundOrder(storeId, refundLinks.href, amount)
-                if(resRefund){
-                    if(resRefund.id && res.status){
+                if (resRefund) {
+                    if (resRefund.id && res.status) {
                         refundFlag = true
                     }
                 }
             }
-        }   
-        if(!refundFlag){
+        }
+        if (!refundFlag) {
             res.status(http.ServerError).json({
                 statusCode: http.ServerError,
                 message: "Server Error"
@@ -146,13 +146,13 @@ exports.deleteOrderStatus = async (req, res) => {
         let mailStoreQuery = {
             store_id: storeId,
             subject: `Order #${query.order_id} has been delete`,
-            receiver : `${orderData[0].email}`,
-            html : `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders?id=" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
+            receiver: `${orderData[0].email}`,
+            html: `<p>We sorry to inform you that your order <a href=${storeData.store_link + "/orders?id=" + query.order_id}>#${query.order_id}</a> from ${storeData.name} has been deleted</p> <br>
             <p>You can still view your order status by click the link above or visit our website at  <a href=${storeData.store_link}>${storeData.store_link}</a>. We sorry for this inconvience</p>
             `
         }
         const account = await accountService.getUserInfo(storeData.user_id)
-        
+
         const html = emailService.createUserMailString(`<p>Your stores order #${query.order_id} have been delete from store ${storeData.name}</p> <br>
         <p>You can view your order status by go to <a href=${process.env.MANAGEMENT_CLIENT_URL}>easymall.site</a>.</p>`)
         let mailQuery = {
@@ -198,6 +198,7 @@ exports.restoreOrder = async (req, res) => {
         return
     }
 
+    const storeId = req.body.store_id
     const query = req.body
     delete query["store_id"]
     query.order_id = req.params.id
@@ -212,20 +213,47 @@ exports.restoreOrder = async (req, res) => {
     }
     if (status.length > 1) {
         if (status[0].status == "DELETED") {
-           
-            if (status[1].status == "CREATE" || status[1].status == "RESTOCK" || status[1].status == "PRE-PAID" || status[1].status == "PREPAID & RESTOCK" ||status[1].status == "PAID & RESTOCK") {
+
+            if (status[1].status == "CREATE" || status[1].status == "RESTOCK" || status[1].status == "PRE-PAID" || status[1].status == "PREPAID & RESTOCK" || status[1].status == "PAID & RESTOCK") {
                 query.status = status[1].status
             }
             else {
                 query.status = "CONFIRMED"
             }
-            
+
+            if (status[status.length - 1].status.includes("PAID")) {
+                query.status = "PREPAID & RESTOCK"
+            }
             if (status[1].status != "PREPAID & RESTOCK" && status[1].status != "PAID & RESTOCK" && status[1].status != "RESTOCK") {
-                await orderService.RestoreOrderProduct({order_id : query.order_id})
+                await orderService.RestoreOrderProduct({ order_id: query.order_id })
             }
 
+            if (query.status = "PREPAID & RESTOCK") {
+                let paypalOrderRes = null;
+                const orderData = await Promise.all([orderService.getAllOrder({id : req.params.id}), orderService.getOrderProduct({order_id : req.params.id})])
+                let orderQuery = { 
+                    id: req.params.id,
+                    store_id : storeId,
+                    original_price : orderData[0][0].original_price,
+                    discount_price : orderData[0][0].discount_price,
+                }
+                const productQuery = orderData[1]
+                paypalOrderRes = await orderService.createPaypalOrder(orderQuery.store_id, productQuery, orderQuery.original_price, orderQuery.discount_price, orderQuery.id);
+                if (paypalOrderRes.id) {
+                    orderQuery.paypal_id = paypalOrderRes.id;
+                }
+                else {
+                    res.status(http.ServerError).json({
+                        statusCode: http.ServerError,
+                        message: "Server error!"
+                    })
+                    return
+                }
+
+                await orderService.updateOrder(orderQuery)
+            }
             result = await orderService.createOrderStatus(query)
-            
+
         }
         else {
             res.status(http.NotAcceptable).json({

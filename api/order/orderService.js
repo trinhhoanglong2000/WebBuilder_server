@@ -33,6 +33,11 @@ exports.createOrderId = async () => {
     return orderId
 }
 
+exports.updateOrder = async (query) => {
+   return DBHelper.updateData(query,"orders","id")
+}
+
+
 exports.createOrderProduct = async (query) => {
     return DBHelper.insertData(query, "order_products", true)
 }
