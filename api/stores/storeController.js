@@ -1753,6 +1753,7 @@ exports.averageTotalOrder = async (req, res) => {
     const arr = []
     const result = await orderService.getAllOrder(query)
 
+    console.log(result)
     let newDay = false
     let totalDay = 0
     let totalProductDay = 0
@@ -1777,19 +1778,25 @@ exports.averageTotalOrder = async (req, res) => {
             totalOrderDay = 1
             nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
             currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
+          
             if (i == result.length - 1) {
                 arr.push({ day: currentDay, total_sale: totalDay, total_products: totalProductDay, total_order: totalOrderDay })
             }
         }
         else {
-
+           
             if (result[i].create_at > nextDay) {
+               
                 arr.push({ day: currentDay, total_sale: totalDay, total_products: totalProductDay, total_order: totalOrderDay })
                 nextDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate() + 1, 7)
                 currentDay = new Date(result[i].create_at.getFullYear(), result[i].create_at.getMonth(), result[i].create_at.getDate())
+                
                 totalDay = price
                 totalProductDay = result[i].total_products
                 totalOrderDay = 1
+                if (i == result.length - 1) {
+                    arr.push({ day: currentDay, total_sale: totalDay, total_products: totalProductDay, total_order: totalOrderDay })
+                }
             }
             else {
                 totalDay += price
