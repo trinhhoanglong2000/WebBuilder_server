@@ -3,7 +3,7 @@ const generateHeaderDropdownMenu = (mNavigation) => {
     if (mNavigation) {
         mNavigation = mNavigation?.slice(0, 6);
         mNavigation.forEach((element) => {
-            if (element.expanded && element.children && element.children.length > 0) {
+            if (element.children && element.children.length > 0) {
                 let dropdown =  `<li class="nav-item">
                 <a class="nav-link" href="${element.link}">
                     ${element.title} <i class="fa fa-chevron-down" aria-hidden="true"></i>
@@ -11,7 +11,7 @@ const generateHeaderDropdownMenu = (mNavigation) => {
                 <ul class="submenu">`;
 
                 element.children.forEach((element, index) => {
-                    if (element.expanded && element.children && element.children.length > 0) {
+                    if (element.children && element.children.length > 0) {
                         if (index != 0) {
                             dropdown += `<hr>`
                         }
@@ -58,7 +58,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
     if (mNavigation) {
         mNavigation = mNavigation?.slice(0, 4);
         mNavigation.forEach((element) => {
-            if (element.expanded && element.children && element.children.length > 0) {
+            if (element.children && element.children.length > 0) {
                 let dropdown =  `<li class="nav-item">
                 <a class="sx-nav-link expanded" href="${element.link}">
                     ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i>
@@ -66,7 +66,7 @@ const generateHeaderExpandMenu = (mNavigation) => {
                 <ul class="navbar-nav expand-ul"><li class="expand-li"> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 
                 element.children.forEach((element) => {
-                    if (element.expanded && element.children && element.children.length > 0) {
+                    if (element.children && element.children.length > 0) {
                         dropdown += `<li class="expand-li"> <a class="expanded" href="${element.link}"> ${element.title} <i class="fa fa-chevron-right" aria-hidden="true"></i> </a>
                                         <ul class="navbar-nav expand-ul2"><li> <a class="back-button" role="button"> <i class="fa fa-chevron-left"></i> Back </a> </li>`;
 
